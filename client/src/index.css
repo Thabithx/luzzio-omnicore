@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand-black: #000000;
+    --brand-white: #FFFFFF;
+    --brand-grey: #F6F6F6;
+    --brand-border: #000000;
+  }
+
+  * {
+    @apply border-black;
+  }
+
+  /* Reset all common elements to square, but allow utility overrides */
+  div,
+  section,
+  article,
+  aside,
+  header,
+  footer,
+  main,
+  nav,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  h7,
+  p,
+  span,
+  a,
+  input,
+  select,
+  textarea,
+  button,
+  img {
+    border-radius: 0;
+  }
+
+  body {
+    @apply antialiased text-black bg-white select-none;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Balenciaga Typography System */
+  h1,
+  h2,
+  h3,
+  h4,
+  .brand-label {
+    @apply uppercase tracking-[0.2em] font-bold;
+  }
+
+  .text-small-brand {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    line-height: 1.4;
+    @apply uppercase font-bold;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply rounded-none border-black focus:ring-0 focus:border-black;
+  }
+
+  button {
+    @apply rounded-none transition-all duration-300;
+  }
+
+  /* Scrollbar Minimalism */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: black;
+  }
+}
+
+@layer components {
+  .btn-brand {
+    @apply bg-black text-white px-8 py-4 text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-black border border-black transition-all duration-300;
+  }
+
+  .btn-brand-outline {
+    @apply bg-white text-black px-8 py-4 text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-black hover:text-white border border-black transition-all duration-300;
+  }
+
+  .border-brand {
+    @apply border border-black;
+  }
+
+  .border-thin {
+    @apply border-b border-black;
+  }
+
+  .card-minimal {
+    @apply bg-[#F6F6F6] border border-black transition-opacity duration-500 hover:opacity-90;
+  }
+}

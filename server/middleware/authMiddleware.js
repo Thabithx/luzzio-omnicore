@@ -1,0 +1,59 @@
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+
+const protect = async (req, res, next) => {
+   let token;
+
+   if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+   ) {
+      try {
+         // Get token from header
+         token = req.headers.authorization.split(' ')[1];
+
+         // Verify token
+         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+         // Get user from the token
+         req.user = await User.findById(decoded.id).select('-password');
+
+         if (!req.user) {
+            throw new Error('User not found');
+         }
+
+         next();
+      } catch (error) {
+         console.error('Auth protect error:', error);
+
+         // If it's a database connection error, return 503
+         if (error.name === 'MongooseServerSelectionError' || error.message.includes('ENOTFOUND') || error.message.includes('buffering timed out')) {
+            return res.status(503).json({
+               success: false,
+               message: 'Database connection failed. Please check your internet or database status.',
+               error: error.message
+            });
+         }
+
+         res.status(401).json({
+            success: false,
+            message: 'Not authorized, token failed',
+            error: error.message
+         });
+      }
+   }
+
+   if (!token) {
+      res.status(401).json({ success: false, message: 'Not authorized, no token' });
+   }
+};
+
+const admin = (req, res, next) => {
+   if (req.user && req.user.role === 'admin') {
+      next();
+   } else {
+      res.status(401).json({ success: false, message: 'Not authorized as an admin' });
+   }
+};
+
+module.exports = { protect, admin };
