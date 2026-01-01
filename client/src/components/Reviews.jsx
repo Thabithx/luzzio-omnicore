@@ -6,6 +6,9 @@ import { cn } from '../utils/cn';
 import api from '../services/api';
 
 export function Reviews({ productId, reviews = [], onReviewAdded }) {
+   // Sort reviews by rating (highest first)
+   const sortedReviews = [...reviews].sort((a, b) => b.rating - a.rating);
+
    const [formData, setFormData] = useState({
       rating: 5,
       comment: '',
@@ -29,7 +32,7 @@ export function Reviews({ productId, reviews = [], onReviewAdded }) {
 
       try {
          setUploading(true);
-         const res = await api.post('/upload', uploadData, {
+         const res = await api.post('/upload/public', uploadData, {
             headers: { 'Content-Type': 'multipart/form-data' }
          });
          setFormData(prev => ({
@@ -174,7 +177,7 @@ export function Reviews({ productId, reviews = [], onReviewAdded }) {
             <div className="border-t border-black pt-16">
                <h3 className="text-center text-lg font-black uppercase tracking-tight mb-12">Archive Records ({reviews.length})</h3>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
-                  {reviews.map((review, i) => (
+                  {sortedReviews.map((review, i) => (
                      <div key={i} className="space-y-4">
                         <div className="flex justify-between items-start">
                            <div>

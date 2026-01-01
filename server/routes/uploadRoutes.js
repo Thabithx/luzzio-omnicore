@@ -39,4 +39,31 @@ router.post('/', protect, admin, (req, res) => {
    });
 });
 
+// Route for public uploads (Reviews) - No Auth Required
+router.post('/public', (req, res) => {
+   upload.array('images', 5)(req, res, (err) => {
+      if (err) {
+         console.error('Multer public upload error:', err);
+         return res.status(500).json({
+            success: false,
+            message: err.message || 'Error during file upload process'
+         });
+      }
+
+      if (!req.files || req.files.length === 0) {
+         return res.status(400).json({ success: false, message: 'No files uploaded' });
+      }
+
+      const uploadedFiles = req.files.map(file => ({
+         url: file.path,
+         public_id: file.filename
+      }));
+
+      res.status(200).json({
+         success: true,
+         files: uploadedFiles
+      });
+   });
+});
+
 module.exports = router;
