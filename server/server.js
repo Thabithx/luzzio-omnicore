@@ -14,51 +14,22 @@ app.use(express.json());
 app.use(cors());
 
 // Database Connection
-const { seedDatabaseInternal } = require('./controllers/seedController');
-
-const seedDatabase = async () => {
-   try {
-      const Product = require('./models/Product');
-      const count = await Product.countDocuments();
-      if (count === 0) {
-         console.log('Database empty. Auto-seeding...');
-         await seedDatabaseInternal();
-         console.log('Auto-seed successful.');
-      }
-   } catch (err) {
-      console.error('Auto-seed error:', err);
-   }
-};
-
 const connectDB = async () => {
    let mongoUri = process.env.MONGO_URI;
 
    try {
       if (mongoUri) {
-         console.log('Attempting to connect to Local MongoDB...');
-         // Try connecting with a 3-second timeout to avoid long hangs
-         await mongoose.connect(mongoUri, {
-            serverSelectionTimeoutMS: 3000,
-         });
-         console.log('Connected to Local MongoDB');
+         console.log('Attempting to connect to MongoDB...');
+         await mongoose.connect(mongoUri);
+         console.log('Connected to MongoDB');
       } else {
-         throw new Error('No MONGO_URI provided');
-      }
-   } catch (err) {
-      console.warn('Local MongoDB connection failed. Falling back to In-Memory MongoDB...');
-      try {
-         const { MongoMemoryServer } = require('mongodb-memory-server');
-         const mongod = await MongoMemoryServer.create();
-         const memoryUri = mongod.getUri();
-         await mongoose.connect(memoryUri);
-         console.log('Connected to In-Memory MongoDB');
-      } catch (memErr) {
-         console.error('Critical Error: Could not connect to any database:', memErr);
+         console.error('Error: MONGO_URI is not defined in .env');
          process.exit(1);
       }
+   } catch (err) {
+      console.error('MongoDB connection failed:', err);
+      process.exit(1);
    }
-
-   await seedDatabase();
 };
 
 connectDB();
