@@ -240,16 +240,53 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                      </Button>
                   </div>
                   <div className="pt-6 space-y-2">
-                     <label className="text-small-brand text-gray-400">Size Chart Guide (Image URL)</label>
-                     <div className="flex gap-2">
-                        <Input
-                           placeholder="PASTE IMAGE URL OR UPLOAD BELOW..."
-                           value={formData.sizeChart}
-                           onChange={(e) => setFormData({ ...formData, sizeChart: e.target.value })}
-                           className="flex-1 rounded-none border-black focus:border-black text-[10px] tracking-widest uppercase font-bold"
-                        />
+                     <label className="text-small-brand text-gray-400">Size Chart Guide (Image)</label>
+                     <div className="flex gap-4 items-center">
+                        {formData.sizeChart ? (
+                           <div className="relative group w-24 h-24 border border-black">
+                              <img src={formData.sizeChart} alt="Size Chart" className="w-full h-full object-cover" />
+                              <button
+                                 type="button"
+                                 onClick={() => setFormData({ ...formData, sizeChart: '' })}
+                                 className="absolute top-0 right-0 p-1 bg-black text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                 <X size={12} />
+                              </button>
+                           </div>
+                        ) : (
+                           <div className="relative border border-dashed border-black/20 hover:border-black transition-colors w-24 h-24 flex flex-col items-center justify-center gap-2 bg-brand-grey/30 group">
+                              {uploading ? (
+                                 <Loader2 size={16} className="animate-spin text-black" />
+                              ) : (
+                                 <Upload size={16} className="text-black/40 group-hover:text-black" />
+                              )}
+                              <p className="text-[7px] font-black uppercase tracking-widest text-center px-1">Upload Guide</p>
+                              <input
+                                 type="file"
+                                 className="absolute inset-0 opacity-0 cursor-pointer"
+                                 onChange={async (e) => {
+                                    const file = e.target.files[0];
+                                    if (!file) return;
+                                    const data = new FormData();
+                                    data.append('images', file);
+                                    try {
+                                       setUploading(true);
+                                       const res = await api.post('/upload', data, {
+                                          headers: { 'Content-Type': 'multipart/form-data' }
+                                       });
+                                       setFormData({ ...formData, sizeChart: res.data.files[0].url });
+                                    } catch (err) {
+                                       alert('Upload failed');
+                                    } finally {
+                                       setUploading(false);
+                                    }
+                                 }}
+                                 disabled={uploading}
+                                 accept="image/*"
+                              />
+                           </div>
+                        )}
                      </div>
-                     {/* Optional: Add a specific upload button for size chart if prefer file upload */}
                   </div>
                </div>
 
@@ -360,46 +397,6 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                         ))}
                      </div>
 
-                     <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">External Source URL</label>
-                        <div className="flex gap-2">
-                           <Input
-                              placeholder="ENTER EXTERNAL ASSET PATH..."
-                              className="flex-1 rounded-none border-black focus:border-black text-[10px] tracking-widest uppercase font-bold"
-                              onKeyDown={(e) => {
-                                 if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    const url = e.target.value.trim();
-                                    if (url) {
-                                       setFormData({
-                                          ...formData,
-                                          images: [...formData.images.filter(img => img !== ''), url]
-                                       });
-                                       e.target.value = '';
-                                    }
-                                 }
-                              }}
-                           />
-                           <Button
-                              type="button"
-                              onClick={(e) => {
-                                 const input = e.currentTarget.previousSibling;
-                                 const url = input.value.trim();
-                                 if (url) {
-                                    setFormData({
-                                       ...formData,
-                                       images: [...formData.images.filter(img => img !== ''), url]
-                                    });
-                                    input.value = '';
-                                 }
-                              }}
-                              className="px-6 py-2 h-10 text-[10px] font-black"
-                           >
-                              Add
-                           </Button>
-                        </div>
-                        <p className="text-[8px] text-gray-400 italic">Press Enter or click Add to append external URL</p>
-                     </div>
                   </div>
                </div>
 
@@ -507,7 +504,7 @@ const AdminProducts = () => {
 
          {/* Table Section */}
          <div className="bg-white border border-black">
-            <div className="overflow-x-auto max-w-full">
+            <div className="overflow-x-auto w-full">
                <table className="w-full text-left min-w-[1000px]">
                   <thead>
                      <tr className="bg-brand-grey border-b border-black">
