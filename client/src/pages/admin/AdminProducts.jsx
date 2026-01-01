@@ -17,7 +17,8 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
       sizes: ['S', 'M', 'L'],
       colors: [],
       material: '',
-      salePrice: ''
+      salePrice: '',
+      sizeChart: ''
    });
    const [uploading, setUploading] = useState(false);
    const { token } = useAuth();
@@ -30,7 +31,8 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
             images: product.images.length > 0 ? product.images : [''],
             colors: product.colors || [],
             material: product.material || '',
-            salePrice: product.salePrice || ''
+            salePrice: product.salePrice || '',
+            sizeChart: product.sizeChart || ''
          });
       } else {
          setFormData({
@@ -43,7 +45,8 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
             sizes: ['S', 'M', 'L'],
             colors: [],
             material: '',
-            salePrice: ''
+            salePrice: '',
+            sizeChart: ''
          });
       }
    }, [product, isOpen, categories]);
@@ -185,30 +188,69 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
 
                {/* SIZE MANAGEMENT */}
                <div className="space-y-4 pt-4 border-t border-black/10">
-                  <label className="text-small-brand text-gray-400">Available Sizes (Archive Dimensions)</label>
-                  <div className="flex flex-wrap gap-3">
-                     {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
-                        <button
-                           key={size}
-                           type="button"
-                           onClick={() => {
-                              const newSizes = formData.sizes.includes(size)
-                                 ? formData.sizes.filter(s => s !== size)
-                                 : [...formData.sizes, size];
-                              setFormData({ ...formData, sizes: newSizes });
-                           }}
-                           className={cn(
-                              "px-5 py-2.5 text-[10px] font-black uppercase tracking-widest border transition-all",
-                              formData.sizes.includes(size)
-                                 ? "bg-black text-white border-black"
-                                 : "bg-white text-black border-black hover:bg-brand-grey"
-                           )}
-                        >
+                  <label className="text-small-brand text-gray-400">Available Sizes (Custom Dimensions)</label>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                     {formData.sizes?.map((size, index) => (
+                        <span key={index} className="flex items-center gap-2 px-3 py-1.5 bg-black text-white text-[9px] font-black uppercase tracking-widest">
                            {size}
-                        </button>
+                           <button
+                              type="button"
+                              onClick={() => {
+                                 const newSizes = formData.sizes.filter((_, i) => i !== index);
+                                 setFormData({ ...formData, sizes: newSizes });
+                              }}
+                              className="hover:text-red-500 transition-colors"
+                           >
+                              <X size={10} />
+                           </button>
+                        </span>
                      ))}
+                     {formData.sizes?.length === 0 && (
+                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest italic">No sizes defined</span>
+                     )}
                   </div>
-                  <p className="text-[8px] text-gray-400 italic">Toggle available sizes to display on product page</p>
+                  <div className="flex gap-2">
+                     <Input
+                        placeholder="ADD SIZE (E.G. UK 6, 42, OS)..."
+                        className="flex-1 rounded-none border-black focus:border-black text-[10px] tracking-widest uppercase font-bold"
+                        onKeyDown={(e) => {
+                           if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const val = e.target.value.trim();
+                              if (val && !formData.sizes.includes(val)) {
+                                 setFormData({ ...formData, sizes: [...formData.sizes, val] });
+                                 e.target.value = '';
+                              }
+                           }
+                        }}
+                     />
+                     <Button
+                        type="button"
+                        onClick={(e) => {
+                           const input = e.currentTarget.previousSibling;
+                           const val = input.value.trim();
+                           if (val && !formData.sizes.includes(val)) {
+                              setFormData({ ...formData, sizes: [...formData.sizes, val] });
+                              input.value = '';
+                           }
+                        }}
+                        className="px-6 py-2 h-10 text-[10px] font-black uppercase tracking-widest"
+                     >
+                        Add
+                     </Button>
+                  </div>
+                  <div className="pt-6 space-y-2">
+                     <label className="text-small-brand text-gray-400">Size Chart Guide (Image URL)</label>
+                     <div className="flex gap-2">
+                        <Input
+                           placeholder="PASTE IMAGE URL OR UPLOAD BELOW..."
+                           value={formData.sizeChart}
+                           onChange={(e) => setFormData({ ...formData, sizeChart: e.target.value })}
+                           className="flex-1 rounded-none border-black focus:border-black text-[10px] tracking-widest uppercase font-bold"
+                        />
+                     </div>
+                     {/* Optional: Add a specific upload button for size chart if prefer file upload */}
+                  </div>
                </div>
 
                {/* COLOR MANAGEMENT */}

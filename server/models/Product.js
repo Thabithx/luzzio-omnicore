@@ -42,17 +42,39 @@ const productSchema = new mongoose.Schema({
    },
    sizes: {
       type: [String],
-      enum: ['XS', 'S', 'M', 'L', 'XL'],
-      default: ['S', 'M', 'L']
+      default: []
+   },
+   sizeChart: {
+      type: String
    },
    material: {
       type: String,
       trim: true
    },
+   reviews: [
+      {
+         user: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+            required: false // Allow guest reviews possibly or require auth
+         },
+         name: { type: String, required: true },
+         email: { type: String, required: true },
+         rating: { type: Number, required: true },
+         comment: { type: String, required: true },
+         images: { type: [String], default: [] },
+         createdAt: { type: Date, default: Date.now }
+      }
+   ],
    rating: {
       type: Number,
-      min: 1,
-      max: 5
+      min: 0,
+      max: 5,
+      default: 0
+   },
+   numReviews: {
+      type: Number,
+      default: 0
    },
    createdAt: {
       type: Date,

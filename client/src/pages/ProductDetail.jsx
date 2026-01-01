@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import Meta from '../components/ui/Meta';
-import { ChevronDown, Plus, Minus } from 'lucide-react';
+import { ChevronDown, Plus, Minus, X } from 'lucide-react';
 import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { cn } from '../utils/cn';
+import { Reviews } from '../components/Reviews';
 
 export function ProductDetail() {
    const { id } = useParams();
@@ -16,6 +17,7 @@ export function ProductDetail() {
    const [selectedSize, setSelectedSize] = useState('');
    const [selectedColor, setSelectedColor] = useState('');
    const [adding, setAdding] = useState(false);
+   const [showSizeGuide, setShowSizeGuide] = useState(false);
 
    const [activeImageIndex, setActiveImageIndex] = useState(0);
    const scrollContainerRef = useRef(null);
@@ -166,7 +168,14 @@ export function ProductDetail() {
                   <div className="space-y-6 pt-12 border-t border-black">
                      <div className="flex justify-between items-baseline">
                         <span className="text-[10px] uppercase font-black tracking-[0.15em] text-black">Size (US/EU)</span>
-                        <button className="text-[9px] uppercase font-bold text-black/30 hover:text-black transition-colors border-b border-transparent hover:border-black">Size Guide</button>
+                        {product.sizeChart && (
+                           <button
+                              onClick={() => setShowSizeGuide(true)}
+                              className="text-[9px] uppercase font-bold text-black/30 hover:text-black transition-colors border-b border-transparent hover:border-black"
+                           >
+                              Size Guide
+                           </button>
+                        )}
                      </div>
                      <div className="relative group">
                         <select
@@ -267,6 +276,43 @@ export function ProductDetail() {
                </div>
             </div>
          </div>
-      </div>
+
+         {/* REVIEWS SECTION */}
+         <div className="px-6 md:px-12 lg:px-20 py-32 border-t border-black">
+            <Reviews
+               productId={product._id}
+               reviews={product.reviews || []}
+               onReviewAdded={(newReview) => {
+                  setProduct(prev => ({
+                     ...prev,
+                     reviews: [...prev.reviews, newReview],
+                     numReviews: prev.numReviews + 1,
+                     rating: ((prev.rating * prev.numReviews) + newReview.rating) / (prev.numReviews + 1)
+                  }));
+               }}
+            />
+         </div>
+
+         {/* SIZE GUIDE MODAL */}
+         {
+            showSizeGuide && (
+               <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setShowSizeGuide(false)}>
+                  <div className="bg-white max-w-4xl w-full max-h-[90vh] overflow-auto relative" onClick={e => e.stopPropagation()}>
+                     <button
+                        onClick={() => setShowSizeGuide(false)}
+                        className="absolute top-4 right-4 p-2 bg-black text-white hover:bg-stone-800 transition-colors z-10"
+                     >
+                        <X size={20} />
+                     </button>
+                     <img
+                        src={product.sizeChart}
+                        alt="Size Guide"
+                        className="w-full h-auto"
+                     />
+                  </div>
+               </div>
+            )
+         }
+      </div >
    );
 }

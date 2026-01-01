@@ -139,7 +139,44 @@ exports.deleteProduct = async (req, res) => {
          success: true,
          data: {}
       });
-   } catch (err) {
       res.status(500).json({ success: false, message: err.message });
+   }
+};
+
+// @desc    Create new review
+// @route   POST /api/products/:id/reviews
+// @access  Public
+exports.createProductReview = async (req, res) => {
+   try {
+      const { rating, comment, name, email, images } = req.body;
+
+      const product = await Product.findById(req.params.id);
+
+      if (!product) {
+         return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+
+      const review = {
+         name,
+         email,
+         rating: Number(rating),
+         comment,
+         images: images || [],
+         user: req.user ? req.user._id : null
+      };
+
+      product.reviews.push(review);
+
+      // Recalculate Average Rating
+      product.numReviews = product.reviews.length;
+      product.rating =
+         product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+         product.reviews.length;
+
+      await product.save();
+
+      res.status(201).json({ success: true, message: 'Review added', data: review });
+   } catch (err) {
+      res.status(400).json({ success: false, message: err.message });
    }
 };
