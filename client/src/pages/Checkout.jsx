@@ -132,10 +132,10 @@ export function Checkout() {
    );
 
    return (
-      <div className="min-h-screen bg-white pt-24 pb-40 px-6 md:px-10">
-         <Meta title="Secure Checkout | Luzzio" />
+      <div className="min-h-screen bg-gray-50/50 pt-32 pb-20">
+         <Meta title="Secure Checkout" description="Complete your purchase securely at Luzzio." />
 
-         <div className="max-w-[1920px] mx-auto">
+         <div className="max-w-7xl mx-auto px-6 lg:px-20">
             <div className="flex items-center gap-4 mb-16 md:mb-20 text-small-brand">
                <Link to="/cart" className="hover:opacity-50 flex items-center gap-2">
                   <ChevronLeft size={12} /> Return to Bag
@@ -229,7 +229,7 @@ export function Checkout() {
                      disabled={loading || cart.length === 0}
                      className="btn-brand w-full py-6 mt-8"
                   >
-                     {loading ? "Authenticating Transaction..." : `Confirm & Pay LKR ${(subtotal + 390).toLocaleString()}.00`}
+                     {loading ? "Authenticating Transaction..." : `Confirm & Pay LKR ${(subtotal + 390).toLocaleString()} .00`}
                   </button>
                </div>
 

@@ -74,7 +74,10 @@ export function ProductDetail() {
 
    return (
       <div className="min-h-screen bg-white">
-         <Meta title={`${product.name} | Luzzio`} />
+         <Meta
+            title={`${product.name} | Luzzio`}
+            description={product.description || `Buy ${product.name} at Luzzio. Luxury fashion archive.`}
+         />
 
          <div className="flex flex-col lg:flex-row">
             {/* LEFT: VISUAL GALLERY */}
