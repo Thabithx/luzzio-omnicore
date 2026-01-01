@@ -99,7 +99,7 @@ export function Checkout() {
          });
 
          if (res.data.success) {
-            const orderId = res.data.order._id;
+            const orderId = res.data.data._id;
 
             if (paymentMethod === 'PayHere') {
                // 3. Initiate PayHere Payment
