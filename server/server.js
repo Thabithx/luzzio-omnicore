@@ -53,10 +53,28 @@ app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10kb' })); // Body limit
 
 // CORS Configuration
+// CORS Configuration
+const allowedOrigins = [
+   process.env.CLIENT_URL,
+   'https://luzziopremium.com', // Explicit production domain
+   'https://www.luzziopremium.com', // www subdomain
+   'http://localhost:5173', // Local development
+   'http://localhost:5174'
+].filter(Boolean);
+
 const corsOptions = {
-   origin: process.env.NODE_ENV === 'production'
-      ? process.env.CLIENT_URL || false // Only allow defined CLIENT_URL in prod
-      : '*', // Allow all in dev
+   origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+         callback(null, true);
+      } else {
+         console.warn(`CORS Blocked Origin: ${origin}`);
+         callback(new Error('Not allowed by CORS'));
+      }
+   },
+   credentials: true,
    optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
