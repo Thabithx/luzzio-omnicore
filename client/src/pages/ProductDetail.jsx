@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import Meta from '../components/ui/Meta';
@@ -17,12 +17,31 @@ export function ProductDetail() {
    const [selectedColor, setSelectedColor] = useState('');
    const [adding, setAdding] = useState(false);
 
+   const [activeImageIndex, setActiveImageIndex] = useState(0);
+   const scrollContainerRef = useRef(null);
+
+   const handleScroll = () => {
+      if (scrollContainerRef.current) {
+         const { scrollLeft, offsetWidth } = scrollContainerRef.current;
+         const index = Math.round(scrollLeft / offsetWidth);
+         setActiveImageIndex(index);
+      }
+   };
+
    const handleAddToCart = async () => {
       if (!selectedSize || (product.colors?.length > 0 && !selectedColor)) return;
       setAdding(true);
       await addToCart(product, 1, selectedSize, selectedColor);
       setAdding(false);
-      navigate('/cart');
+      // Feedback is handled by cart context or UI, but we stay on page
+   };
+
+   const handleBuyNow = async () => {
+      if (!selectedSize || (product.colors?.length > 0 && !selectedColor)) return;
+      setAdding(true);
+      await addToCart(product, 1, selectedSize, selectedColor);
+      setAdding(false);
+      navigate('/checkout');
    };
 
    useEffect(() => {
@@ -59,7 +78,11 @@ export function ProductDetail() {
             {/* LEFT: VISUAL GALLERY */}
             <div className="w-full lg:w-[60%] flex flex-col bg-white overflow-hidden">
                {/* Mobile Slider Container */}
-               <div className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scroll-smooth no-scrollbar relative group">
+               <div
+                  ref={scrollContainerRef}
+                  onScroll={handleScroll}
+                  className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scroll-smooth no-scrollbar relative group touch-pan-x"
+               >
                   {productImages.map((img, index) => (
                      <div
                         key={index}
@@ -73,12 +96,17 @@ export function ProductDetail() {
                      </div>
                   ))}
 
-                  {/* Mobile Slider Indicators */}
-                  <div className="lg:hidden absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md px-3 py-1.5 flex items-center justify-center gap-2">
-                     <span className="text-[10px] font-black text-white uppercase tracking-widest">
-                        {/* Simple CSS-based indicator or just use state if needed, but for minimalist feel we can just show total */}
-                        Gallery / {productImages.length}
-                     </span>
+                  {/* Mobile Slider Indicators (Dots) */}
+                  <div className="lg:hidden absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 z-10">
+                     {productImages.map((_, index) => (
+                        <div
+                           key={index}
+                           className={cn(
+                              "w-2 h-2 rounded-full transition-all duration-300 drop-shadow-md",
+                              activeImageIndex === index ? "bg-white scale-110" : "bg-white/40"
+                           )}
+                        />
+                     ))}
                   </div>
                </div>
             </div>
@@ -99,11 +127,11 @@ export function ProductDetail() {
                      <div className="pt-2 flex flex-col">
                         {product.salePrice > 0 ? (
                            <>
-                              <p className="text-lg font-bold text-black tracking-tighter">${product.salePrice}.00</p>
-                              <p className="text-xs font-bold text-gray-400 line-through tracking-tight opacity-50">${product.price}.00</p>
+                              <p className="text-lg font-bold text-black tracking-tighter">LKR {product.salePrice.toLocaleString()}.00</p>
+                              <p className="text-xs font-bold text-gray-400 line-through tracking-tight opacity-50">LKR {product.price.toLocaleString()}.00</p>
                            </>
                         ) : (
-                           <p className="text-lg font-bold text-black tracking-tighter">${product.price}.00</p>
+                           <p className="text-lg font-bold text-black tracking-tighter">LKR {product.price.toLocaleString()}.00</p>
                         )}
                      </div>
                   </div>
@@ -159,23 +187,37 @@ export function ProductDetail() {
 
                   {/* ADD TO BAG */}
                   <div className="space-y-4 pt-4">
-                     <button
-                        disabled={!selectedSize || (product.colors?.length > 0 && !selectedColor) || adding}
-                        onClick={handleAddToCart}
-                        className={cn(
-                           "w-full py-6 text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500",
-                           (selectedSize && (product.colors?.length > 0 ? selectedColor : true))
-                              ? "bg-black text-white hover:bg-stone-900 border border-black shadow-xl"
-                              : "bg-gray-50 text-stone-300 cursor-not-allowed border border-gray-100"
-                        )}
-                     >
-                        {adding ? "Initializing..." : "Add to Shopping Bag"}
-                     </button>
+                     <div className="grid grid-cols-2 gap-4">
+                        <button
+                           disabled={!selectedSize || (product.colors?.length > 0 && !selectedColor) || adding}
+                           onClick={handleAddToCart}
+                           className={cn(
+                              "w-full py-6 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
+                              (selectedSize && (product.colors?.length > 0 ? selectedColor : true))
+                                 ? "bg-white text-black hover:bg-black hover:text-white border border-black"
+                                 : "bg-gray-50 text-stone-300 cursor-not-allowed border border-gray-100"
+                           )}
+                        >
+                           {adding ? "..." : "Add to Bag"}
+                        </button>
+                        <button
+                           disabled={!selectedSize || (product.colors?.length > 0 && !selectedColor) || adding}
+                           onClick={handleBuyNow}
+                           className={cn(
+                              "w-full py-6 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
+                              (selectedSize && (product.colors?.length > 0 ? selectedColor : true))
+                                 ? "bg-black text-white hover:bg-stone-900 border border-black shadow-xl"
+                                 : "bg-gray-50 text-stone-300 cursor-not-allowed border border-gray-100"
+                           )}
+                        >
+                           Buy It Now
+                        </button>
+                     </div>
                      <button
                         onClick={() => navigate('/products')}
-                        className="w-full py-6 text-[10px] font-black uppercase tracking-[0.3em] text-black border border-black bg-white hover:bg-black hover:text-white transition-all duration-500"
+                        className="w-full py-4 text-[9px] font-bold uppercase tracking-[0.2em] text-black/40 hover:text-black transition-colors"
                      >
-                        Find in Store
+                        Continue Browsing
                      </button>
                   </div>
 

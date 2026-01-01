@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { X, Minus, Plus, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Trash2, Minus, Plus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import Meta from '../components/ui/Meta';
 
@@ -69,7 +69,7 @@ export function Cart() {
                                  onClick={() => removeFromCart(item.product._id, item.size)}
                                  className="text-black hover:opacity-50 transition-opacity"
                               >
-                                 <X size={18} strokeWidth={1.5} />
+                                 <Trash2 size={18} strokeWidth={1.5} />
                               </button>
                            </div>
 
@@ -92,11 +92,11 @@ export function Cart() {
                               <div className="flex flex-col items-end">
                                  {item.product?.salePrice > 0 ? (
                                     <>
-                                       <p className="text-sm md:text-xl font-black text-black">${item.product.salePrice * item.quantity}.00</p>
-                                       <p className="text-[10px] md:text-xs font-bold text-gray-400 line-through opacity-50">${item.product.price * item.quantity}.00</p>
+                                       <p className="text-sm md:text-xl font-black text-black">LKR {(item.product.salePrice * item.quantity).toLocaleString()}.00</p>
+                                       <p className="text-[10px] md:text-xs font-bold text-gray-400 line-through opacity-50">LKR {(item.product.price * item.quantity).toLocaleString()}.00</p>
                                     </>
                                  ) : (
-                                    <p className="text-sm md:text-xl font-black">${(item.product?.price || 0) * item.quantity}.00</p>
+                                    <p className="text-sm md:text-xl font-black">LKR {((item.product?.price || 0) * item.quantity).toLocaleString()}.00</p>
                                  )}
                               </div>
                            </div>
@@ -113,19 +113,19 @@ export function Cart() {
                      <div className="space-y-4 text-[11px] font-bold uppercase tracking-widest">
                         <div className="flex justify-between">
                            <span className="text-gray-400">Subtotal</span>
-                           <span>${subtotal}.00</span>
+                           <span>LKR {subtotal.toLocaleString()}.00</span>
                         </div>
                         <div className="flex justify-between">
-                           <span className="text-gray-400">Shipping (Priority)</span>
-                           <span className="text-black">Complimentary</span>
+                           <span className="text-gray-400">Shipping (Standard)</span>
+                           <span className="text-black">LKR 390.00</span>
                         </div>
                         <div className="flex justify-between">
                            <span className="text-gray-400">Estimated Tax</span>
-                           <span>$0.00</span>
+                           <span>LKR 0.00</span>
                         </div>
                         <div className="border-t border-black pt-6 flex justify-between text-lg font-black tracking-tighter">
                            <span>Total</span>
-                           <span>${subtotal}.00</span>
+                           <span>LKR {(subtotal + 390).toLocaleString()}.00</span>
                         </div>
                      </div>
 

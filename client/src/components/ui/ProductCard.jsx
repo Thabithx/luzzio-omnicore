@@ -37,14 +37,14 @@ export function ProductCard({ product }) {
                   <h3 className="text-small-brand group-hover:opacity-50 transition-opacity">
                      {product.name}
                   </h3>
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-row items-baseline gap-2 justify-center">
                      {product.salePrice > 0 ? (
                         <>
-                           <p className="text-sm font-black tracking-tight text-black">${product.salePrice}</p>
-                           <p className="text-[10px] font-black text-gray-400 line-through opacity-50">${product.price}</p>
+                           <p className="text-sm font-black tracking-tight text-black">LKR {product.salePrice.toLocaleString()}</p>
+                           <p className="text-[10px] font-black text-gray-400 line-through opacity-50">LKR {product.price.toLocaleString()}</p>
                         </>
                      ) : (
-                        <p className="text-sm font-black tracking-tight">${product.price}</p>
+                        <p className="text-sm font-black tracking-tight">LKR {product.price.toLocaleString()}</p>
                      )}
                   </div>
                </div>
@@ -62,7 +62,7 @@ export function ProductCard({ product }) {
                      {added ? (
                         <>
                            <Check size={12} strokeWidth={3} />
-                           Archived
+                           Added
                         </>
                      ) : (
                         "Add to Bag"
