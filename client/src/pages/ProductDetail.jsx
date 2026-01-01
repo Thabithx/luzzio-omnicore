@@ -246,6 +246,11 @@ export function ProductDetail() {
                            <Minus size={12} className="hidden group-open:block text-black/40" />
                         </summary>
                         <div className="mt-10 text-[10px] leading-[2] font-medium text-black/60 uppercase tracking-[0.15em] space-y-6 max-w-sm">
+                           {product.sizeChart && (
+                              <div className="mb-6 border border-black p-2">
+                                 <img src={product.sizeChart} alt="Size Guide" className="w-full h-auto" />
+                              </div>
+                           )}
                            <p className="normal-case font-normal text-xs text-black/80 italic px-2 border-l-2 border-black/5">
                               {product.description}
                            </p>

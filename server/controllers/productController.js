@@ -163,7 +163,8 @@ exports.createProductReview = async (req, res) => {
          rating: Number(rating),
          comment,
          images: images || [],
-         user: req.user ? req.user._id : null
+         user: req.user ? req.user._id : null,
+         createdAt: new Date()
       };
 
       product.reviews.push(review);
