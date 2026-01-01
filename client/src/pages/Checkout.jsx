@@ -99,14 +99,52 @@ export function Checkout() {
          });
 
          if (res.data.success) {
-            // PayHere / Cocopay Integration Protocol
-            clearCart();
-            navigate('/payment-success');
+            const orderId = res.data.order._id;
+
+            if (paymentMethod === 'PayHere') {
+               // 3. Initiate PayHere Payment
+               try {
+                  const payHereRes = await api.post('/payments/payhere/initiate', { orderId });
+
+                  if (payHereRes.data.success) {
+                     const payment = payHereRes.data.params;
+
+                     // Configure PayHere
+                     window.payhere.onCompleted = function onCompleted(orderId) {
+                        console.log("Payment completed. OrderID:" + orderId);
+                        clearCart();
+                        navigate('/payment-success');
+                     };
+
+                     window.payhere.onDismissed = function onDismissed() {
+                        console.log("Payment dismissed");
+                        setLoading(false);
+                     };
+
+                     window.payhere.onError = function onError(error) {
+                        console.log("Error:" + error);
+                        setLoading(false);
+                        alert("Payment functionality is currently in Sandbox mode or failed. Error: " + error);
+                     };
+
+                     // Start Payment
+                     window.payhere.startPayment(payment);
+                  }
+               } catch (payErr) {
+                  console.error('PayHere Init Failed:', payErr);
+                  alert('Failed to initiate PayHere payment');
+                  setLoading(false);
+               }
+            } else {
+               // Other methods (e.g. Stripe or Cocopay if impl)
+               // For now, default to success for non-integrated
+               clearCart();
+               navigate('/payment-success');
+            }
          }
       } catch (err) {
          console.error('Checkout protocol failure:', err);
-      } finally {
-         setLoading(false);
+         setLoading(false); // Ensure loading stops on error
       }
    };
 
