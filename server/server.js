@@ -63,9 +63,7 @@ app.use('/api/faq', faqRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/payments', paymentRoutes);
 
-// Seeding Route (Dev Only)
-const seedController = require('./controllers/seedController');
-app.post('/api/seed', seedController.seedDatabase);
+
 
 const path = require('path');
 
