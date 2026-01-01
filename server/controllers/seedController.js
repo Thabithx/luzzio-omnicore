@@ -9,8 +9,8 @@ const seedDatabaseInternal = async () => {
 
    const admin = await User.create({
       name: 'Admin User',
-      email: 'admin@luzzio.com',
-      password: 'password123',
+      email: process.env.ADMIN_EMAIL || 'admin@luzzio.com',
+      password: process.env.ADMIN_PASSWORD || 'password123',
       role: 'admin'
    });
 
