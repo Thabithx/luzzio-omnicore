@@ -53,11 +53,9 @@ app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10kb' })); // Body limit
 
 // CORS Configuration
-// CORS Configuration
 const allowedOrigins = [
    process.env.CLIENT_URL,
    'https://luzziopremium.com', // Explicit production domain
-   'https://www.luzziopremium.com', // www subdomain
    'http://localhost:5173', // Local development
    'http://localhost:5174'
 ].filter(Boolean);
