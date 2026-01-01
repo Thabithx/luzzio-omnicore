@@ -177,20 +177,24 @@ export function ProductDetail() {
                            </button>
                         )}
                      </div>
-                     <div className="relative group">
-                        <select
-                           value={selectedSize}
-                           onChange={(e) => setSelectedSize(e.target.value)}
-                           className="w-full border border-black px-6 py-5 text-[10px] font-black uppercase tracking-[0.15em] focus:outline-none appearance-none bg-white cursor-pointer group-hover:bg-gray-50 transition-colors"
-                        >
-                           <option value="">Select Size</option>
-                           {product.sizes?.map(size => (
-                              <option key={size} value={size}>{size}</option>
-                           ))}
-                        </select>
-                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
-                           <ChevronDown size={14} className="text-black/40 group-hover:text-black transition-colors" />
-                        </div>
+                     <div className="flex flex-wrap gap-2">
+                        {product.sizes?.map(size => (
+                           <button
+                              key={size}
+                              onClick={() => setSelectedSize(size)}
+                              className={cn(
+                                 "px-6 py-3 text-[10px] font-black uppercase tracking-[0.15em] border transition-all duration-300",
+                                 selectedSize === size
+                                    ? "bg-black text-white border-black"
+                                    : "bg-white text-black border-gray-200 hover:border-black"
+                              )}
+                           >
+                              {size}
+                           </button>
+                        ))}
+                        {(!product.sizes || product.sizes.length === 0) && (
+                           <p className="text-[10px] text-gray-400 italic">One Size</p>
+                        )}
                      </div>
                   </div>
 
