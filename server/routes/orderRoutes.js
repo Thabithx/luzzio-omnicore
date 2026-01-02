@@ -10,11 +10,12 @@ const { protect, admin } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
+router.post('/', createOrder);
+
 router.use(protect);
 
 router.route('/')
-   .get(admin, getOrders)
-   .post(createOrder);
+   .get(admin, getOrders);
 
 router.route('/myorders').get(getMyOrders);
 
