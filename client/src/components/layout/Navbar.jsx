@@ -57,7 +57,10 @@ export function Navbar() {
    };
 
    return (
-      <nav className="fixed top-[28px] md:top-8 left-0 right-0 z-[100] bg-white border-b border-black">
+      <nav className={cn(
+         "fixed left-0 right-0 border-b border-black bg-white transition-all duration-300",
+         isMenuOpen ? "z-[400] top-0" : "z-[100] top-[28px] md:top-8"
+      )}>
          <div className="max-w-[1920px] mx-auto px-6 md:px-10 h-14 md:h-12 flex items-center justify-between relative">
 
             {/* Left: Navigation Pages */}
@@ -199,7 +202,7 @@ export function Navbar() {
 
          {/* Balenciaga-Style Mobile Menu Overlay */}
          {isMenuOpen && (
-            <div className="fixed inset-0 bg-white z-[200] flex flex-col animate-in fade-in slide-in-from-left duration-500 overflow-y-auto">
+            <div className="fixed inset-0 bg-white z-[300] flex flex-col animate-in fade-in slide-in-from-left duration-500 overflow-y-auto">
                {/* Menu Header */}
                <div className="flex justify-between items-center px-6 h-14 border-b border-black">
                   <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-xl font-black uppercase tracking-[0.4em]">Luzzio</Link>
@@ -208,33 +211,14 @@ export function Navbar() {
                   </button>
                </div>
 
-               {/* Menu Search */}
-               <div className="px-6 py-4 border-b border-black">
-                  <div className="flex items-center gap-4 bg-brand-grey/30 border border-black/10 px-4 py-3">
-                     <Search size={16} className="text-black/30" />
-                     <form onSubmit={handleSearch} className="flex-1">
-                        <input
-                           type="text"
-                           placeholder="WHAT ARE YOU LOOKING FOR?"
-                           className="w-full bg-transparent border-none focus:ring-0 text-[10px] font-black uppercase tracking-widest outline-none placeholder:text-black/30"
-                           value={searchQuery}
-                           onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                     </form>
-                  </div>
-               </div>
 
-               {/* Navigation Links */}
+               {/* Navigation Links - Aligned with Desktop */}
                <div className="flex flex-col border-b border-black">
                   {[
-                     { name: 'Spring 26', link: '/products?collection=spring-26' },
-                     { name: 'Gifts', link: '/products?category=gifts', hasArrow: true },
-                     { name: 'Fragrances', link: '/products?category=fragrances' },
-                     { name: 'Bags', link: '/products?category=bags', hasArrow: true },
-                     { name: 'Women', link: '/products?category=women', hasArrow: true },
-                     { name: 'Men', link: '/products?category=men', hasArrow: true },
-                     { name: 'Couture', link: '/products?category=couture' },
-                     { name: 'Explore', link: '/explore', hasArrow: true }
+                     { name: 'Contact', link: '/contact' },
+                     { name: 'FAQ', link: '/faq' },
+                     { name: 'Shipping', link: '/shipping-policy' },
+                     { name: 'Returns', link: '/return-policy' }
                   ].map((item, idx) => (
                      <Link
                         key={idx}
@@ -243,7 +227,7 @@ export function Navbar() {
                         onClick={() => setIsMenuOpen(false)}
                      >
                         <span className="text-[11px] font-black uppercase tracking-[0.2em] group-hover:opacity-50">{item.name}</span>
-                        {item.hasArrow && <ArrowRight size={14} className="text-black/30" />}
+                        <ArrowRight size={14} className="text-black/30" />
                      </Link>
                   ))}
                </div>
@@ -259,17 +243,8 @@ export function Navbar() {
                            <button onClick={handleLogout} className="text-start text-[9px] font-black uppercase tracking-widest hover:opacity-50">Logout Session</button>
                         </>
                      )}
-                     <Link to="/saved" className="text-[9px] font-black uppercase tracking-widest hover:opacity-50" onClick={() => setIsMenuOpen(false)}>Saved Items</Link>
-                  </div>
-
-                  <div className="flex flex-col space-y-4 pt-6 border-t border-black/5">
                      <span className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Country / Region: International Version</span>
                      <span className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Language: English</span>
-                     <Link to="/contact" className="text-[8px] font-bold text-black/40 uppercase tracking-widest hover:text-black" onClick={() => setIsMenuOpen(false)}>Client Services</Link>
-                     <Link to="/faq" className="text-[8px] font-bold text-black/40 uppercase tracking-widest hover:text-black" onClick={() => setIsMenuOpen(false)}>Book an Appointment</Link>
-                     <div className="flex space-x-4 pt-2">
-                        <span className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Follow Us</span>
-                     </div>
                   </div>
                </div>
             </div>

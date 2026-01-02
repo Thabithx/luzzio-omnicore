@@ -12,6 +12,7 @@ import heroImg from '../assets/hero.jpg';
 import bootsImg from '../assets/boots.png';
 import hoodieCat from '../assets/hoodie.jpg';
 import bootCat from '../assets/boot.jpg';
+import bagsImg from '../assets/bags.jpg';
 
 export function Home() {
    const [products, setProducts] = useState([]);
@@ -126,11 +127,10 @@ export function Home() {
             {/* CATEGORY 2: BAGS / ARCHIVE */}
             <div className="relative aspect-square md:h-screen w-full flex items-end justify-center group overflow-hidden border-b border-black">
                <img
-                  src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?q=80&w=1920&auto=format&fit=crop"
+                  src={bagsImg}
                   alt="Leather Archive"
                   className="absolute inset-0 w-full h-full object-cover"
                />
-               <div className="absolute inset-0 bg-black/5" />
                <div className="relative w-full pb-4 md:pb-12 flex flex-col items-center space-y-2 px-6">
                   <h4 className="text-white text-[9px] md:text-[11px] font-black uppercase tracking-[0.5em] drop-shadow-md text-center">Bags & Archive</h4>
                   <Link to="/products?category=accessories">
