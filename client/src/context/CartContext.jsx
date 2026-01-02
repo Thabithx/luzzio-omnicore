@@ -24,7 +24,8 @@ export const CartProvider = ({ children }) => {
                   await api.post('/cart', {
                      productId: item.product._id,
                      quantity: item.quantity,
-                     size: item.size
+                     size: item.size,
+                     color: item.color
                   });
                }
                // Clear local storage after successful sync
@@ -50,13 +51,14 @@ export const CartProvider = ({ children }) => {
       fetchCart();
    }, [token]);
 
-   const addToCart = async (product, quantity, size) => {
+   const addToCart = async (product, quantity, size, color) => {
       if (token) {
          try {
             const res = await api.post('/cart', {
                productId: product._id,
                quantity,
-               size
+               size,
+               color
             });
             setCart(res.data.data.items);
          } catch (err) {
@@ -64,38 +66,38 @@ export const CartProvider = ({ children }) => {
          }
       } else {
          const localCart = JSON.parse(localStorage.getItem('cart')) || [];
-         const index = localCart.findIndex(item => item.product._id === product._id && item.size === size);
+         const index = localCart.findIndex(item => item.product._id === product._id && item.size === size && item.color === color);
          if (index > -1) {
             localCart[index].quantity += quantity;
          } else {
-            localCart.push({ product, quantity, size });
+            localCart.push({ product, quantity, size, color });
          }
          setCart([...localCart]);
          localStorage.setItem('cart', JSON.stringify(localCart));
       }
    };
 
-   const removeFromCart = async (productId, size) => {
+   const removeFromCart = async (productId, size, color) => {
       if (token) {
          try {
-            const res = await api.delete(`/cart/${productId}/${size}`);
+            const res = await api.delete(`/cart/${productId}/${size}/${color}`);
             setCart(res.data.data.items);
          } catch (err) {
             console.error('Error removing from cart:', err);
          }
       } else {
          const localCart = JSON.parse(localStorage.getItem('cart')) || [];
-         const updatedCart = localCart.filter(item => !(item.product._id === productId && item.size === size));
+         const updatedCart = localCart.filter(item => !(item.product._id === productId && item.size === size && item.color === color));
          setCart(updatedCart);
          localStorage.setItem('cart', JSON.stringify(updatedCart));
       }
    };
 
-   const updateQuantity = async (productId, size, quantity) => {
+   const updateQuantity = async (productId, size, color, quantity) => {
       // Optimistic Update
       const previousCart = [...cart];
       const updatedCart = cart.map(item =>
-         (item.product._id === productId && item.size === size)
+         (item.product._id === productId && item.size === size && item.color === color)
             ? { ...item, quantity }
             : item
       );
@@ -110,6 +112,7 @@ export const CartProvider = ({ children }) => {
             const res = await api.put('/cart', {
                productId,
                size,
+               color,
                quantity
             });
             setCart(res.data.data.items);

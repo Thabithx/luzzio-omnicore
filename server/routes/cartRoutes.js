@@ -18,7 +18,7 @@ router.route('/')
    .put(updateCartItem)
    .delete(clearCart);
 
-router.route('/:productId/:size')
+router.route('/:productId/:size/:color')
    .delete(removeItemFromCart);
 
 module.exports = router;

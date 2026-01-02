@@ -68,7 +68,7 @@ export function Cart() {
                                  </div>
                               </div>
                               <button
-                                 onClick={() => removeFromCart(item.product._id, item.size)}
+                                 onClick={() => removeFromCart(item.product._id, item.size, item.color)}
                                  className="text-black hover:opacity-50 transition-opacity"
                               >
                                  <Trash2 size={18} strokeWidth={1.5} />
@@ -78,14 +78,14 @@ export function Cart() {
                            <div className="flex justify-between items-end">
                               <div className="flex items-center border border-black scale-90 md:scale-100 origin-left">
                                  <button
-                                    onClick={() => updateQuantity(item.product._id, item.size, Math.max(1, item.quantity - 1))}
+                                    onClick={() => updateQuantity(item.product._id, item.size, item.color, Math.max(1, item.quantity - 1))}
                                     className="p-2 md:p-3 hover:bg-black hover:text-white transition-all border-r border-black"
                                  >
                                     <Minus size={10} />
                                  </button>
                                  <span className="px-4 md:px-6 text-[10px] md:text-[11px] font-black">{item.quantity}</span>
                                  <button
-                                    onClick={() => updateQuantity(item.product._id, item.size, item.quantity + 1)}
+                                    onClick={() => updateQuantity(item.product._id, item.size, item.color, item.quantity + 1)}
                                     className="p-2 md:p-3 hover:bg-black hover:text-white transition-all border-l border-black"
                                  >
                                     <Plus size={10} />

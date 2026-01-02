@@ -26,7 +26,7 @@ exports.getCart = async (req, res) => {
 // @access  Private
 exports.addItemToCart = async (req, res) => {
    try {
-      const { productId, quantity, size } = req.body;
+      const { productId, quantity, size, color } = req.body;
 
       let cart = await Cart.findOne({ user: req.user.id });
 
@@ -34,15 +34,15 @@ exports.addItemToCart = async (req, res) => {
          cart = new Cart({ user: req.user.id, items: [] });
       }
 
-      // Check if product already in cart with same size
+      // Check if product already in cart with same size and color
       const itemIndex = cart.items.findIndex(
-         item => item.product.toString() === productId && item.size === size
+         item => item.product.toString() === productId && item.size === size && item.color === color
       );
 
       if (itemIndex > -1) {
          cart.items[itemIndex].quantity += quantity || 1;
       } else {
-         cart.items.push({ product: productId, quantity: quantity || 1, size });
+         cart.items.push({ product: productId, quantity: quantity || 1, size, color });
       }
 
       cart.updatedAt = Date.now();
@@ -64,7 +64,7 @@ exports.addItemToCart = async (req, res) => {
 // @access  Private
 exports.updateCartItem = async (req, res) => {
    try {
-      const { productId, size, quantity } = req.body;
+      const { productId, size, color, quantity } = req.body;
       const cart = await Cart.findOne({ user: req.user.id });
 
       if (!cart) {
@@ -72,7 +72,7 @@ exports.updateCartItem = async (req, res) => {
       }
 
       const itemIndex = cart.items.findIndex(
-         item => item.product.toString() === productId && item.size === size
+         item => item.product.toString() === productId && item.size === size && item.color === color
       );
 
       if (itemIndex === -1) {
@@ -99,7 +99,7 @@ exports.updateCartItem = async (req, res) => {
 // @access  Private
 exports.removeItemFromCart = async (req, res) => {
    try {
-      const { productId, size } = req.params;
+      const { productId, size, color } = req.params;
       const cart = await Cart.findOne({ user: req.user.id });
 
       if (!cart) {
@@ -107,7 +107,7 @@ exports.removeItemFromCart = async (req, res) => {
       }
 
       cart.items = cart.items.filter(
-         item => !(item.product.toString() === productId && item.size === size)
+         item => !(item.product.toString() === productId && item.size === size && item.color === color)
       );
 
       cart.updatedAt = Date.now();
