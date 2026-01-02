@@ -156,7 +156,7 @@ exports.initiatePayHerePayment = async (req, res) => {
       const hash = crypto.createHash('md5').update(hashSource).digest('hex').toUpperCase();
 
       const payHereParams = {
-         sandbox: true, // TODO: Toggle based on NODE_ENV
+         sandbox: process.env.NODE_ENV !== 'production',
          merchant_id: merchantId,
          return_url: `${process.env.CLIENT_URL}/payment-success`,
          cancel_url: `${process.env.CLIENT_URL}/cart`,
