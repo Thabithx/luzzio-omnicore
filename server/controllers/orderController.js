@@ -4,6 +4,7 @@ const Cart = require('../models/Cart');
 const { createNotification } = require('./notificationController');
 const sendEmail = require('../utils/sendEmail');
 const { orderConfirmationTemplate, trackingUpdateTemplate } = require('../utils/emailTemplates');
+const crypto = require('crypto');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -48,25 +49,57 @@ exports.createOrder = async (req, res) => {
          await Cart.findOneAndUpdate({ user: req.user.id }, { items: [] });
       }
 
-      // Dispatch Confirmation Email Protocol
-      try {
-         const emailRecipient = createdOrder.email;
-         const recipientName = req.user ? (await User.findById(req.user.id))?.name : `${shippingAddress.firstName || ''} ${shippingAddress.lastName || ''}`.trim();
+      // 3. Prepare PayHere parameters if needed (to shave off a round-trip)
+      let payhereParams = null;
+      if (paymentMethod === 'PayHere') {
+         const merchantId = (process.env.PAYHERE_MERCHANT_ID || '').trim();
+         const merchantSecret = (process.env.PAYHERE_SECRET || '').trim();
+         const amount = createdOrder.totalPrice.toFixed(2);
+         const currency = 'LKR';
 
-         if (emailRecipient) {
-            await sendEmail({
-               email: emailRecipient,
-               subject: `LUZZIO ARCHIVE DISPATCH: ORDER #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
-               html: orderConfirmationTemplate(createdOrder, { name: recipientName || 'Valued Client' })
-            });
-         }
-      } catch (emailErr) {
-         console.error('Email Protocol Deferred:', emailErr.message);
+         const hashedSecret = crypto.createHash('md5').update(merchantSecret).digest('hex').toUpperCase();
+         const hashSource = merchantId + createdOrder._id + amount + currency + hashedSecret;
+         const hash = crypto.createHash('md5').update(hashSource).digest('hex').toUpperCase();
+
+         const isSandbox = process.env.PAYHERE_MODE === 'sandbox' || (process.env.NODE_ENV !== 'production' && process.env.PAYHERE_MODE !== 'live');
+
+         payhereParams = {
+            sandbox: isSandbox,
+            merchant_id: merchantId,
+            return_url: `${process.env.CLIENT_URL}/payment-success`,
+            cancel_url: `${process.env.CLIENT_URL}/cart`,
+            notify_url: `${process.env.SERVER_URL || 'https://luzzio-production.up.railway.app'}/api/payments/payhere/notify`,
+            order_id: createdOrder._id,
+            items: `Order ${createdOrder._id}`,
+            amount: amount,
+            currency: currency,
+            hash: hash,
+            first_name: shippingAddress.firstName,
+            last_name: shippingAddress.lastName,
+            email: createdOrder.email,
+            phone: '0771234567',
+            address: shippingAddress.address,
+            city: shippingAddress.city,
+            country: 'Sri Lanka',
+         };
+      }
+
+      // Dispatch Confirmation Email Protocol (Non-blocking)
+      const emailRecipient = createdOrder.email;
+      const recipientName = req.user ? (await User.findById(req.user.id))?.name : `${shippingAddress.firstName || ''} ${shippingAddress.lastName || ''}`.trim();
+
+      if (emailRecipient) {
+         sendEmail({
+            email: emailRecipient,
+            subject: `LUZZIO ARCHIVE DISPATCH: ORDER #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
+            html: orderConfirmationTemplate(createdOrder, { name: recipientName || 'Valued Client' })
+         }).catch(emailErr => console.error('Email Protocol Deferred:', emailErr.message));
       }
 
       res.status(201).json({
          success: true,
-         data: createdOrder
+         data: createdOrder,
+         payhereParams
       });
    } catch (err) {
       res.status(400).json({ success: false, message: err.message });

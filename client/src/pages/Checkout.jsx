@@ -63,25 +63,25 @@ export function Checkout() {
             image: item.product.images[0],
             price: (item.product.salePrice > 0) ? item.product.salePrice : item.product.price,
             product: item.product._id,
-            size: item.size
+            size: item.size,
+            color: item.color
          }));
 
-         // 1. Update Profile Background Sync
-         try {
-            if (token) {
-               const profileRes = await api.put('/auth/profile', {
-                  shippingAddress: {
-                     address: formData.address,
-                     city: formData.city,
-                     postalCode: formData.postalCode
-                  }
-               });
+         // 1. Update Profile Background Sync (Non-blocking for speed)
+         if (token) {
+            api.put('/auth/profile', {
+               shippingAddress: {
+                  address: formData.address,
+                  city: formData.city,
+                  postalCode: formData.postalCode
+               }
+            }).then(profileRes => {
                if (profileRes.data.success) {
                   updateUser(profileRes.data);
                }
-            }
-         } catch (syncErr) {
-            console.warn('Profile background synchronization deferred:', syncErr);
+            }).catch(syncErr => {
+               console.warn('Profile background synchronization deferred:', syncErr);
+            });
          }
 
          // 2. Create Order
@@ -103,43 +103,48 @@ export function Checkout() {
 
          if (res.data.success) {
             const orderId = res.data.data._id;
+            const preGeneratedParams = res.data.payhereParams;
 
             if (paymentMethod === 'PayHere') {
-               // 3. Initiate PayHere Payment
-               try {
-                  const payHereRes = await api.post('/payments/payhere/initiate', { orderId });
+               // 3. Initiate PayHere Payment (Using pre-generated params for speed)
+               const startPayHere = (payment) => {
+                  window.payhere.onCompleted = function onCompleted(orderId) {
+                     console.log("Payment completed. OrderID:" + orderId);
+                     clearCart();
+                     navigate('/payment-success');
+                  };
 
-                  if (payHereRes.data.success) {
-                     const payment = payHereRes.data.params;
+                  window.payhere.onDismissed = function onDismissed() {
+                     console.log("Payment dismissed");
+                     setLoading(false);
+                  };
 
-                     // Configure PayHere
-                     window.payhere.onCompleted = function onCompleted(orderId) {
-                        console.log("Payment completed. OrderID:" + orderId);
-                        clearCart();
-                        navigate('/payment-success');
-                     };
+                  window.payhere.onError = function onError(error) {
+                     console.log("Error:" + error);
+                     setLoading(false);
+                     alert("Payment failed or dismissed. Error: " + error);
+                  };
 
-                     window.payhere.onDismissed = function onDismissed() {
-                        console.log("Payment dismissed");
+                  window.payhere.startPayment(payment);
+               };
+
+               if (preGeneratedParams) {
+                  startPayHere(preGeneratedParams);
+               } else {
+                  // Fallback for unexpected missing params
+                  try {
+                     const payHereRes = await api.post('/payments/payhere/initiate', { orderId });
+                     if (payHereRes.data.success) {
+                        startPayHere(payHereRes.data.params);
+                     } else {
+                        alert('Failed to initiate PayHere payment: ' + (payHereRes.data.message || 'Unknown error'));
                         setLoading(false);
-                     };
-
-                     window.payhere.onError = function onError(error) {
-                        console.log("Error:" + error);
-                        setLoading(false);
-                        alert("Payment functionality is currently in Sandbox mode or failed. Error: " + error);
-                     };
-
-                     // Start Payment
-                     window.payhere.startPayment(payment);
-                  } else {
-                     alert('Failed to initiate PayHere payment: ' + (payHereRes.data.message || 'Unknown error'));
+                     }
+                  } catch (payErr) {
+                     console.error('PayHere Init Failed:', payErr);
+                     alert('Failed to initiate PayHere payment');
                      setLoading(false);
                   }
-               } catch (payErr) {
-                  console.error('PayHere Init Failed:', payErr);
-                  alert('Failed to initiate PayHere payment');
-                  setLoading(false);
                }
             } else {
                // Other methods (e.g. Stripe or Cocopay if impl)
@@ -211,7 +216,7 @@ export function Checkout() {
                               <img src={item.product.images[0]} alt="" className="w-12 h-16 object-cover border border-black" />
                               <div className="flex-1 text-[9px] uppercase font-bold tracking-widest">
                                  <p className="text-black">{item.product.name} x {item.quantity}</p>
-                                 <p className="text-gray-400 mt-1">{item.size}</p>
+                                 <p className="text-gray-400 mt-1">{item.size} / {item.color || 'Noir'}</p>
                               </div>
                               <p className="text-[10px] font-black">LKR {(item.product.price * item.quantity).toLocaleString()}.00</p>
                            </div>
@@ -296,6 +301,7 @@ export function Checkout() {
                                  <p className="text-[11px] font-black uppercase tracking-tight truncate text-black">{item.product.name}</p>
                                  <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-widest text-gray-400">
                                     <p>Size: {item.size}</p>
+                                    <p>Color: {item.color || 'Noir'}</p>
                                     <p>Qty: {item.quantity}</p>
                                  </div>
                                  <p className="border-t border-black pt-2 mt-2 text-[11px] font-black">

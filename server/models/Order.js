@@ -22,6 +22,7 @@ const orderSchema = new mongoose.Schema({
             required: true
          },
          size: { type: String, required: true },
+         color: { type: String, default: 'Noir' },
          trackingNumber: { type: String, default: '' }
       }
    ],
