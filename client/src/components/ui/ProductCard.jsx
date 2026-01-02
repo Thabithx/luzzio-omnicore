@@ -23,18 +23,18 @@ export function ProductCard({ product }) {
 
    return (
       <div className="group relative cursor-pointer transition-all duration-500 hover:bg-brand-grey/50 p-6 h-full">
-         <Link to={`/products/${product._id}`}>
-            <div className="aspect-[3/4] bg-white relative overflow-hidden">
+         <Link to={`/products/${product._id}`} className="flex flex-col h-full">
+            <div className="aspect-[3/4] bg-white relative overflow-hidden shrink-0">
                <img
                   src={imageUrl}
                   alt={product.name}
-                  className="absolute inset-0 w-full h-full object-contain transition-all duration-700 bg-white"
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-700 bg-white"
                />
             </div>
 
-            <div className="mt-6 flex flex-col items-center text-center space-y-4">
-               <div className="space-y-1">
-                  <h3 className="text-small-brand group-hover:opacity-50 transition-opacity">
+            <div className="mt-6 flex flex-col flex-1 justify-between items-center text-center space-y-4">
+               <div className="space-y-1 w-full">
+                  <h3 className="text-small-brand group-hover:opacity-50 transition-opacity line-clamp-2 min-h-[2.5em]">
                      {product.name}
                   </h3>
                   <div className="flex flex-row items-baseline gap-2 justify-center">
@@ -52,7 +52,7 @@ export function ProductCard({ product }) {
                <button
                   onClick={handleQuickAdd}
                   className={cn(
-                     "w-full py-3 text-[9px] font-black uppercase tracking-[0.2em] border border-black transition-all duration-500",
+                     "w-full py-3 text-[9px] font-black uppercase tracking-[0.2em] border border-black transition-all duration-500 mt-auto",
                      added
                         ? "bg-black text-white"
                         : "bg-transparent text-black hover:bg-black hover:text-white"
