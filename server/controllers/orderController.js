@@ -10,6 +10,9 @@ const crypto = require('crypto');
 // @route   POST /api/orders
 // @access  Private
 exports.createOrder = async (req, res) => {
+   const start = Date.now();
+   console.log(`[ORDER PROTOCOL START] User: ${req.user ? req.user.id : 'Guest'}`);
+
    try {
       const {
          orderItems,
@@ -25,11 +28,9 @@ exports.createOrder = async (req, res) => {
          return res.status(400).json({ success: false, message: 'No order items' });
       }
 
-      let orderEmail = email;
-      if (req.user) {
-         const currentUser = await User.findById(req.user.id);
-         if (currentUser) orderEmail = currentUser.email;
-      }
+      // 1. Efficient Email & Name selection (No redundant DB trips)
+      const orderEmail = req.user ? req.user.email : email;
+      const recipientName = req.user ? req.user.name : `${shippingAddress.firstName || ''} ${shippingAddress.lastName || ''}`.trim();
 
       const order = new Order({
          orderItems,
@@ -42,14 +43,17 @@ exports.createOrder = async (req, res) => {
          email: orderEmail
       });
 
-      const createdOrder = await order.save();
-
-      // Clear user cart after order if logged in
+      console.time('DB_OPERATIONS');
+      // 2. Parallelize DB Save and Cart Clear for maximum throughput
+      const saveTasks = [order.save()];
       if (req.user) {
-         await Cart.findOneAndUpdate({ user: req.user.id }, { items: [] });
+         saveTasks.push(Cart.findOneAndUpdate({ user: req.user.id }, { items: [] }));
       }
 
-      // 3. Prepare PayHere parameters if needed (to shave off a round-trip)
+      const [createdOrder] = await Promise.all(saveTasks);
+      console.timeEnd('DB_OPERATIONS');
+
+      // 3. Prepare PayHere parameters if needed (Calculated locally, near-instant)
       let payhereParams = null;
       if (paymentMethod === 'PayHere') {
          const merchantId = (process.env.PAYHERE_MERCHANT_ID || '').trim();
@@ -84,24 +88,28 @@ exports.createOrder = async (req, res) => {
          };
       }
 
-      // Dispatch Confirmation Email Protocol (Non-blocking)
-      const emailRecipient = createdOrder.email;
-      const recipientName = req.user ? (await User.findById(req.user.id))?.name : `${shippingAddress.firstName || ''} ${shippingAddress.lastName || ''}`.trim();
-
-      if (emailRecipient) {
-         sendEmail({
-            email: emailRecipient,
-            subject: `LUZZIO ARCHIVE DISPATCH: ORDER #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
-            html: orderConfirmationTemplate(createdOrder, { name: recipientName || 'Valued Client' })
-         }).catch(emailErr => console.error('Email Protocol Deferred:', emailErr.message));
-      }
-
+      // 4. IMMEDIATE RESPONSE DISPATCH (Background everything else)
       res.status(201).json({
          success: true,
          data: createdOrder,
          payhereParams
       });
+
+      console.log(`[ORDER PROTOCOL DISPATCHED] Time to respond: ${Date.now() - start}ms`);
+
+      // 5. ASYNC BACKGROUND TASKS (Not blocking the user)
+      setImmediate(() => {
+         if (orderEmail) {
+            sendEmail({
+               email: orderEmail,
+               subject: `LUZZIO ARCHIVE DISPATCH: ORDER #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
+               html: orderConfirmationTemplate(createdOrder, { name: recipientName || 'Valued Client' })
+            }).catch(emailErr => console.error('Background Email Protocol Deferred:', emailErr.message));
+         }
+      });
+
    } catch (err) {
+      console.error(`[ORDER PROTOCOL FAILURE] Time elapsed: ${Date.now() - start}ms - Error: ${err.message}`);
       res.status(400).json({ success: false, message: err.message });
    }
 };
