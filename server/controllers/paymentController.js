@@ -56,7 +56,7 @@ exports.createCheckoutSession = async (req, res) => {
          mode: 'payment',
          success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
          cancel_url: `${process.env.CLIENT_URL}/cart`,
-         customer_email: order.user.email,
+         customer_email: order.email,
          client_reference_id: orderId.toString(),
          metadata: {
             orderId: orderId.toString()
@@ -168,7 +168,7 @@ exports.initiatePayHerePayment = async (req, res) => {
          hash: hash,
          first_name: order.shippingAddress.firstName,
          last_name: order.shippingAddress.lastName,
-         email: order.user.email,
+         email: order.email,
          phone: '0771234567', // Optional, can collect from user if needed
          address: order.shippingAddress.address,
          city: order.shippingAddress.city,

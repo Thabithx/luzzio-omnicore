@@ -9,11 +9,11 @@ const {
 const { protect } = require('../middleware/authMiddleware');
 
 // Stripe
-router.post('/create-checkout-session', protect, createCheckoutSession);
+router.post('/create-checkout-session', createCheckoutSession);
 router.post('/webhook', stripeWebhook);
 
 // PayHere
-router.post('/payhere/initiate', protect, initiatePayHerePayment);
+router.post('/payhere/initiate', initiatePayHerePayment);
 router.post('/payhere/notify', payHereNotify); // Webhook, public
 
 module.exports = router;
