@@ -143,8 +143,8 @@ exports.initiatePayHerePayment = async (req, res) => {
          return res.status(404).json({ success: false, message: 'Order protocol not found' });
       }
 
-      const merchantId = process.env.PAYHERE_MERCHANT_ID;
-      const merchantSecret = process.env.PAYHERE_SECRET;
+      const merchantId = (process.env.PAYHERE_MERCHANT_ID || '').trim();
+      const merchantSecret = (process.env.PAYHERE_SECRET || '').trim();
       const amount = order.totalPrice.toFixed(2); // Ensure 2 decimal places
       const currency = 'LKR';
 
@@ -155,12 +155,14 @@ exports.initiatePayHerePayment = async (req, res) => {
       const hashSource = merchantId + orderId + amountFormatted + currency + hashedSecret;
       const hash = crypto.createHash('md5').update(hashSource).digest('hex').toUpperCase();
 
+      const isSandbox = process.env.PAYHERE_MODE !== 'live';
+
       const payHereParams = {
-         sandbox: process.env.NODE_ENV !== 'production',
+         sandbox: isSandbox,
          merchant_id: merchantId,
          return_url: `${process.env.CLIENT_URL}/payment-success`,
          cancel_url: `${process.env.CLIENT_URL}/cart`,
-         notify_url: `${process.env.SERVER_URL || 'http://localhost:5001'}/api/payments/payhere/notify`,
+         notify_url: `${process.env.SERVER_URL || 'https://luzzio-production.up.railway.app'}/api/payments/payhere/notify`,
          order_id: orderId,
          items: `Order ${orderId}`,
          amount: amount,
@@ -169,11 +171,17 @@ exports.initiatePayHerePayment = async (req, res) => {
          first_name: order.shippingAddress.firstName,
          last_name: order.shippingAddress.lastName,
          email: order.email,
-         phone: '0771234567', // Optional, can collect from user if needed
+         phone: '0771234567',
          address: order.shippingAddress.address,
          city: order.shippingAddress.city,
          country: 'Sri Lanka',
       };
+
+      console.log(`PayHere Initiation Protocol [${isSandbox ? 'SANDBOX' : 'LIVE'}]:`, {
+         orderId,
+         amount,
+         email: order.email
+      });
 
       res.status(200).json({
          success: true,
