@@ -70,64 +70,89 @@ export function Home() {
             </div>
          </section>
 
-         {/* SECTION 3: CATEGORY VISUALS - BALENCIAGA REDESIGN */}
-         <section className="flex flex-col">
-            {/* CATEGORY 1: READY-TO-WEAR */}
-            <div className="relative h-[80vh] md:h-screen w-full flex items-center justify-center bg-white border-b border-black group overflow-hidden">
-               <div className="absolute inset-0 flex items-center justify-center p-10 md:p-20">
-                  <img
-                     src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1920&auto=format&fit=crop"
-                     alt="Ready to Wear"
-                     className="max-h-full w-auto object-contain transition-transform duration-1000 group-hover:scale-105"
-                  />
-               </div>
-               <div className="absolute inset-x-0 bottom-20 flex flex-col items-center space-y-6">
-                  <h4 className="text-xl md:text-3xl font-black uppercase tracking-[0.4em] text-black">Ready-to-Wear</h4>
-                  <Link to="/products?category=ready-to-wear">
-                     <button className="px-12 py-3 border border-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-500 bg-white/80 backdrop-blur-sm md:bg-transparent">
-                        Shop Men
-                     </button>
-                  </Link>
-               </div>
+         {/* SECTION 3: CATEGORY 1 - FULL SCREEN IMMERSIVE */}
+         <section className="relative h-screen w-full flex items-center justify-center group overflow-hidden border-b border-black">
+            <img
+               src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop"
+               alt="Ready to Wear"
+               className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/10 transition-opacity duration-1000 group-hover:opacity-30" />
+            <div className="absolute inset-x-0 bottom-32 flex flex-col items-center space-y-6 z-10 px-6">
+               <h4 className="text-white text-2xl md:text-5xl font-black uppercase tracking-[0.6em] drop-shadow-lg text-center">Ready-to-Wear</h4>
+               <Link to="/products?category=ready-to-wear">
+                  <button className="px-16 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-700 shadow-2xl">
+                     Shop Men
+                  </button>
+               </Link>
+            </div>
+         </section>
+
+         {/* SELECTED ARCHIVE GRID (RESTORED) */}
+         <section className="bg-white border-b border-black">
+            <div className="flex flex-col items-center text-center py-24 bg-brand-grey border-b border-black">
+               <h2 className="text-2xl md:text-3xl font-black uppercase tracking-[0.4em]">Selected Archives</h2>
+               <p className="text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-6 italic">Winter 25/26 Collection</p>
             </div>
 
-            {/* CATEGORY 2: DENIM / ARCHIVE */}
-            <div className="relative h-[80vh] md:h-screen w-full flex items-center justify-center bg-brand-grey border-b border-black group overflow-hidden">
-               <div className="absolute inset-0">
-                  <img
-                     src="https://images.unsplash.com/photo-1542272230-7f39364515c1?q=80&w=1920&auto=format&fit=crop"
-                     alt="Archive Denim"
-                     className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-700" />
-               </div>
-               <div className="absolute inset-x-0 bottom-20 flex flex-col items-center space-y-6 z-10">
-                  <h4 className="text-xl md:text-2xl font-black uppercase tracking-[0.4em] text-white">Denim Archive</h4>
-                  <Link to="/products?category=denim">
-                     <button className="px-12 py-3 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-500">
-                        Shop Archive
-                     </button>
-                  </Link>
-               </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-black">
+               {loading ? (
+                  Array(4).fill(0).map((_, i) => (
+                     <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
+                  ))
+               ) : (
+                  products.map((product, idx) => (
+                     <div key={product._id} className={cn(
+                        "border-black",
+                        "border-b md:border-b-0",
+                        idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
+                        idx % 4 === 3 ? "md:border-r-0" : ""
+                     )}>
+                        <ProductCard product={product} />
+                     </div>
+                  ))
+               )}
             </div>
+            <div className="py-12 flex justify-center bg-brand-grey">
+               <Link to="/products" className="text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
+                  View Full Archive
+               </Link>
+            </div>
+         </section>
 
-            {/* CATEGORY 3: ACCESSORIES */}
-            <div className="relative h-[80vh] md:h-screen w-full flex items-center justify-center bg-white border-b border-black group overflow-hidden">
-               <div className="absolute inset-0 flex items-center justify-center p-10 md:p-20">
-                  <img
-                     src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1920&auto=format&fit=crop"
-                     alt="Accessories"
-                     className="max-h-[60%] w-auto object-contain transition-transform duration-1000 group-hover:scale-110"
-                  />
-               </div>
-               <div className="absolute inset-x-0 bottom-20 flex flex-col items-center space-y-6">
-                  <h4 className="text-xl md:text-3xl font-black uppercase tracking-[0.4em] text-black">Accessories</h4>
-                  <Link to="/products?category=accessories">
-                     <button className="px-12 py-3 border border-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-500 bg-white/80 backdrop-blur-sm md:bg-transparent">
-                        Shop Recent
-                     </button>
-                  </Link>
-               </div>
+         {/* SECTION 4: CATEGORY 2 - FULL SCREEN IMMERSIVE */}
+         <section className="relative h-screen w-full flex items-center justify-center group overflow-hidden border-b border-black">
+            <img
+               src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?q=80&w=1920&auto=format&fit=crop"
+               alt="Leather Archive"
+               className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/5 transition-opacity duration-1000 group-hover:opacity-25" />
+            <div className="absolute inset-x-0 bottom-32 flex flex-col items-center space-y-6 z-10 px-6">
+               <h4 className="text-white text-2xl md:text-5xl font-black uppercase tracking-[0.6em] drop-shadow-lg text-center">Bags & Archive</h4>
+               <Link to="/products?category=accessories">
+                  <button className="px-16 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-700 shadow-2xl">
+                     Shop Now
+                  </button>
+               </Link>
+            </div>
+         </section>
+
+         {/* SECTION 5: CATEGORY 3 - FULL SCREEN IMMERSIVE */}
+         <section className="relative h-screen w-full flex items-center justify-center group overflow-hidden border-b border-black">
+            <img
+               src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop"
+               alt="Footwear Collection"
+               className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/10 transition-opacity duration-1000 group-hover:opacity-30" />
+            <div className="absolute inset-x-0 bottom-32 flex flex-col items-center space-y-6 z-10 px-6">
+               <h4 className="text-white text-2xl md:text-5xl font-black uppercase tracking-[0.6em] drop-shadow-lg text-center">Footwear</h4>
+               <Link to="/products?category=footwear">
+                  <button className="px-16 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-700 shadow-2xl">
+                     Shop Men
+                  </button>
+               </Link>
             </div>
          </section>
 
