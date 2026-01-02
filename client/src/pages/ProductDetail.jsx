@@ -122,13 +122,9 @@ export function ProductDetail() {
 
                   {/* BRANDING & PRICE */}
                   <div className="space-y-4">
-                     <p className="text-[10px] uppercase font-black tracking-[0.2em] text-black">SPRING 26 / READY-TO-WEAR</p>
                      <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight leading-[1.1] text-black">
                         {product.name}
                      </h1>
-                     <p className="text-[11px] font-medium text-black/60 uppercase tracking-[0.15em] leading-relaxed">
-                        {product.description?.split('.')[0]}
-                     </p>
                      <div className="pt-2 flex flex-col">
                         {product.salePrice > 0 ? (
                            <>
