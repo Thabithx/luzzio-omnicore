@@ -5,7 +5,8 @@ import {
    Users,
    DollarSign,
    ArrowRight,
-   Loader2
+   Loader2,
+   X
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import api from '../../services/api';

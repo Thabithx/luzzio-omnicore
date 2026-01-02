@@ -504,7 +504,7 @@ const AdminProducts = () => {
 
          {/* Table Section */}
          <div className="bg-white border border-black">
-            <div className="overflow-x-auto w-full">
+            <div className="overflow-x-auto w-full max-w-full">
                <table className="w-full text-left min-w-[1000px]">
                   <thead>
                      <tr className="bg-brand-grey border-b border-black">
