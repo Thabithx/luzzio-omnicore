@@ -70,83 +70,64 @@ export function Home() {
             </div>
          </section>
 
-         {/* SECTION 3: CATEGORY VISUALS */}
-         <section className="grid grid-cols-1 md:grid-cols-2">
-            <div className="aspect-[4/5] relative group overflow-hidden border-r border-black border-y">
-               <img src={bootsImg} alt="Footwear" className="absolute inset-0 w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-1000" />
-               <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />
-               <div className="absolute bottom-10 inset-x-0 text-center space-y-4">
-                  <h4 className="text-white text-2xl font-black uppercase tracking-widest">Premium Denim</h4>
-                  <div className="flex justify-center gap-4">
-                     <Link to="/products" className="px-6 py-2 bg-white text-black text-[10px] font-black uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all">Shop</Link>
-                  </div>
+         {/* SECTION 3: CATEGORY VISUALS - BALENCIAGA REDESIGN */}
+         <section className="flex flex-col">
+            {/* CATEGORY 1: READY-TO-WEAR */}
+            <div className="relative h-[80vh] md:h-screen w-full flex items-center justify-center bg-white border-b border-black group overflow-hidden">
+               <div className="absolute inset-0 flex items-center justify-center p-10 md:p-20">
+                  <img
+                     src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1920&auto=format&fit=crop"
+                     alt="Ready to Wear"
+                     className="max-h-full w-auto object-contain transition-transform duration-1000 group-hover:scale-105"
+                  />
                </div>
-            </div>
-            <div className="aspect-[4/5] bg-brand-grey flex flex-col items-center justify-center p-20 space-y-10 text-center border-l border-y border-black">
-               <div className="space-y-4">
-                  <p className="text-small-brand text-gray-400">The New Standard</p>
-                  <h2 className="text-5xl font-black uppercase tracking-tighter">Spring 26 Explore</h2>
-               </div>
-               <p className="text-sm text-gray-600 leading-relaxed font-medium">
-                  An exploration of volume, silhouette, and the deconstruction of the everyday. Designed for the bold and the uncompromising.
-               </p>
-               <Link to="/products" className="btn-brand">
-                  Explore Collection
-               </Link>
-            </div>
-         </section>
-
-         {/* NEW ARRIVALS GRID */}
-         <section className="border-t border-black">
-            <div className="flex flex-col items-center text-center py-20 border-b border-black bg-brand-grey">
-               <h2 className="text-3xl font-black uppercase tracking-widest">Selected Archives</h2>
-               <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-black/30 mt-4">Spring 26 New Arrivals</p>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-0 border-b border-black">
-               {loading ? (
-                  Array(4).fill(0).map((_, i) => (
-                     <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
-                  ))
-               ) : (
-                  products.map((product, idx) => (
-                     <div key={product._id} className={cn(
-                        "border-black border-b lg:border-b-0",
-                        idx % 2 === 0 ? "border-r" : "border-r-0 lg:border-r",
-                        idx % 4 === 3 ? "lg:border-r-0" : ""
-                     )}>
-                        <ProductCard product={product} />
-                     </div>
-                  ))
-               )}
-            </div>
-         </section>
-
-         {/* SECTION 4: CATEGORY SHOWCASE - FULL WIDTH IMPACT */}
-         <section className="border-t border-black">
-            <div className="grid grid-cols-1 md:grid-cols-3">
-               {[
-                  { name: 'Ready-to-Wear', img: heroImg, link: '/products?category=ready-to-wear' },
-                  { name: 'Denim Archive', img: bootsImg, link: '/products?category=denim' },
-                  { name: 'Accessories', img: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop', link: '/products?category=accessories' }
-               ].map((cat, i) => (
-                  <Link
-                     key={i}
-                     to={cat.link}
-                     className="relative aspect-[4/5] group overflow-hidden border-b md:border-b-0 md:border-r border-black last:border-r-0"
-                  >
-                     <img
-                        src={cat.img}
-                        alt={cat.name}
-                        className="absolute inset-0 w-full h-full object-cover grayscale transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0"
-                     />
-                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
-                     <div className="absolute inset-0 flex flex-col items-center justify-center p-10 text-center space-y-4">
-                        <h4 className="text-white text-2xl font-black uppercase tracking-[0.2em]">{cat.name}</h4>
-                        <span className="text-white text-[9px] font-black uppercase tracking-[0.4em] border-b border-white pb-1 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">Explore Collection</span>
-                     </div>
+               <div className="absolute inset-x-0 bottom-20 flex flex-col items-center space-y-6">
+                  <h4 className="text-xl md:text-3xl font-black uppercase tracking-[0.4em] text-black">Ready-to-Wear</h4>
+                  <Link to="/products?category=ready-to-wear">
+                     <button className="px-12 py-3 border border-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-500 bg-white/80 backdrop-blur-sm md:bg-transparent">
+                        Shop Men
+                     </button>
                   </Link>
-               ))}
+               </div>
+            </div>
+
+            {/* CATEGORY 2: DENIM / ARCHIVE */}
+            <div className="relative h-[80vh] md:h-screen w-full flex items-center justify-center bg-brand-grey border-b border-black group overflow-hidden">
+               <div className="absolute inset-0">
+                  <img
+                     src="https://images.unsplash.com/photo-1542272230-7f39364515c1?q=80&w=1920&auto=format&fit=crop"
+                     alt="Archive Denim"
+                     className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-700" />
+               </div>
+               <div className="absolute inset-x-0 bottom-20 flex flex-col items-center space-y-6 z-10">
+                  <h4 className="text-xl md:text-2xl font-black uppercase tracking-[0.4em] text-white">Denim Archive</h4>
+                  <Link to="/products?category=denim">
+                     <button className="px-12 py-3 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-500">
+                        Shop Archive
+                     </button>
+                  </Link>
+               </div>
+            </div>
+
+            {/* CATEGORY 3: ACCESSORIES */}
+            <div className="relative h-[80vh] md:h-screen w-full flex items-center justify-center bg-white border-b border-black group overflow-hidden">
+               <div className="absolute inset-0 flex items-center justify-center p-10 md:p-20">
+                  <img
+                     src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1920&auto=format&fit=crop"
+                     alt="Accessories"
+                     className="max-h-[60%] w-auto object-contain transition-transform duration-1000 group-hover:scale-110"
+                  />
+               </div>
+               <div className="absolute inset-x-0 bottom-20 flex flex-col items-center space-y-6">
+                  <h4 className="text-xl md:text-3xl font-black uppercase tracking-[0.4em] text-black">Accessories</h4>
+                  <Link to="/products?category=accessories">
+                     <button className="px-12 py-3 border border-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-500 bg-white/80 backdrop-blur-sm md:bg-transparent">
+                        Shop Recent
+                     </button>
+                  </Link>
+               </div>
             </div>
          </section>
 
