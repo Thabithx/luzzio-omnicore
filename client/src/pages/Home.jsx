@@ -10,6 +10,8 @@ import { cn } from '../utils/cn';
 // Import brand assets
 import heroImg from '../assets/hero.jpg';
 import bootsImg from '../assets/boots.png';
+import hoodieCat from '../assets/hoodie.jpg';
+import bootCat from '../assets/boot.jpg';
 
 export function Home() {
    const [products, setProducts] = useState([]);
@@ -102,21 +104,20 @@ export function Home() {
             </div>
          </section>
 
-         {/* REFINED CATEGORY BOXES - MOBILE FOCUS */}
+         {/* REFINED CATEGORY BOXES - ASSET INTEGRATION */}
          <section className="flex flex-col">
             {/* CATEGORY 1: READY-TO-WEAR */}
-            <div className="relative aspect-square md:h-screen w-full flex items-end justify-center group overflow-hidden border-b border-black">
+            <div className="relative aspect-square md:h-screen w-full flex items-end justify-center group overflow-hidden border-b border-black bg-white">
                <img
-                  src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop"
+                  src={hoodieCat}
                   alt="Ready to Wear"
                   className="absolute inset-0 w-full h-full object-cover"
                />
-               <div className="absolute inset-0 bg-black/5" />
-               <div className="relative w-full pb-10 md:pb-32 flex flex-col items-center space-y-4 md:space-y-6 px-6">
-                  <h4 className="text-white text-base md:text-5xl font-black uppercase tracking-[0.6em] drop-shadow-md text-center">Ready-to-Wear</h4>
+               <div className="relative w-full pb-8 md:pb-24 flex flex-col items-center space-y-3 px-6">
+                  <h4 className="text-black text-[12px] md:text-2xl font-black uppercase tracking-[0.5em] text-center">Ready-to-Wear</h4>
                   <Link to="/products?category=ready-to-wear">
-                     <button className="px-8 md:px-16 py-2 md:py-4 bg-white text-black text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-xl">
-                        Shop Collection
+                     <button className="px-10 md:px-16 py-2 border border-black text-black text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all">
+                        Shop Men
                      </button>
                   </Link>
                </div>
@@ -130,10 +131,10 @@ export function Home() {
                   className="absolute inset-0 w-full h-full object-cover"
                />
                <div className="absolute inset-0 bg-black/5" />
-               <div className="relative w-full pb-10 md:pb-32 flex flex-col items-center space-y-4 md:space-y-6 px-6">
-                  <h4 className="text-white text-base md:text-5xl font-black uppercase tracking-[0.6em] drop-shadow-md text-center">Bags & Archive</h4>
+               <div className="relative w-full pb-8 md:pb-24 flex flex-col items-center space-y-3 px-6">
+                  <h4 className="text-white text-[12px] md:text-2xl font-black uppercase tracking-[0.5em] drop-shadow-md text-center">Bags & Archive</h4>
                   <Link to="/products?category=accessories">
-                     <button className="px-8 md:px-16 py-2 md:py-4 bg-white text-black text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-xl">
+                     <button className="px-10 md:px-16 py-2 bg-white/90 backdrop-blur-sm border border-black text-black text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all">
                         Shop Now
                      </button>
                   </Link>
@@ -141,17 +142,16 @@ export function Home() {
             </div>
 
             {/* CATEGORY 3: FOOTWEAR */}
-            <div className="relative aspect-square md:h-screen w-full flex items-end justify-center group overflow-hidden border-b border-black">
+            <div className="relative aspect-square md:h-screen w-full flex items-end justify-center group overflow-hidden border-b border-black bg-white">
                <img
-                  src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop"
+                  src={bootCat}
                   alt="Footwear Collection"
                   className="absolute inset-0 w-full h-full object-cover"
                />
-               <div className="absolute inset-0 bg-black/5" />
-               <div className="relative w-full pb-10 md:pb-32 flex flex-col items-center space-y-4 md:space-y-6 px-6">
-                  <h4 className="text-white text-base md:text-5xl font-black uppercase tracking-[0.6em] drop-shadow-md text-center">Footwear</h4>
+               <div className="relative w-full pb-8 md:pb-24 flex flex-col items-center space-y-3 px-6">
+                  <h4 className="text-black text-[12px] md:text-2xl font-black uppercase tracking-[0.5em] text-center">Footwear</h4>
                   <Link to="/products?category=footwear">
-                     <button className="px-8 md:px-16 py-2 md:py-4 bg-white text-black text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-xl">
+                     <button className="px-10 md:px-16 py-2 border border-black text-black text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all">
                         Shop Archive
                      </button>
                   </Link>

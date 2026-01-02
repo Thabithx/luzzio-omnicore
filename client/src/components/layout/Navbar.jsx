@@ -197,34 +197,80 @@ export function Navbar() {
             </div>
          )}
 
-         {/* Full Screen Mobile Menu Overlay */}
+         {/* Balenciaga-Style Mobile Menu Overlay */}
          {isMenuOpen && (
-            <div className="fixed inset-0 bg-white z-[110] flex flex-col p-10 animate-in fade-in slide-in-from-left duration-300">
-               <div className="flex justify-between items-center mb-20">
+            <div className="fixed inset-0 bg-white z-[200] flex flex-col animate-in fade-in slide-in-from-left duration-500 overflow-y-auto">
+               {/* Menu Header */}
+               <div className="flex justify-between items-center px-6 h-14 border-b border-black">
                   <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-xl font-black uppercase tracking-[0.4em]">Luzzio</Link>
                   <button onClick={() => setIsMenuOpen(false)}>
-                     <X size={24} />
+                     <X size={24} strokeWidth={1} />
                   </button>
                </div>
 
-               <div className="flex flex-col space-y-8">
-                  <Link to="/contact" className="text-2xl font-black uppercase tracking-widest" onClick={() => setIsMenuOpen(false)}>Contact</Link>
-                  <Link to="/faq" className="text-2xl font-black uppercase tracking-widest" onClick={() => setIsMenuOpen(false)}>FAQ</Link>
-                  <Link to="/shipping-policy" className="text-2xl font-black uppercase tracking-widest" onClick={() => setIsMenuOpen(false)}>Shipping</Link>
-                  <Link to="/return-policy" className="text-2xl font-black uppercase tracking-widest" onClick={() => setIsMenuOpen(false)}>Returns</Link>
-                  <Link to="/privacy-policy" className="text-2xl font-black uppercase tracking-widest" onClick={() => setIsMenuOpen(false)}>Privacy</Link>
+               {/* Menu Search */}
+               <div className="px-6 py-4 border-b border-black">
+                  <div className="flex items-center gap-4 bg-brand-grey/30 border border-black/10 px-4 py-3">
+                     <Search size={16} className="text-black/30" />
+                     <form onSubmit={handleSearch} className="flex-1">
+                        <input
+                           type="text"
+                           placeholder="WHAT ARE YOU LOOKING FOR?"
+                           className="w-full bg-transparent border-none focus:ring-0 text-[10px] font-black uppercase tracking-widest outline-none placeholder:text-black/30"
+                           value={searchQuery}
+                           onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                     </form>
+                  </div>
                </div>
 
-               <div className="mt-auto space-y-6 border-t border-black pt-10">
-                  {!user ? (
-                     <Link to="/login" className="text-[10px] font-black uppercase tracking-[0.2em]" onClick={() => setIsMenuOpen(false)}>Login</Link>
-                  ) : (
-                     <>
-                        <Link to={user.role === 'admin' ? '/admin' : '/profile'} className="text-[10px] font-black uppercase tracking-[0.2em] block" onClick={() => setIsMenuOpen(false)}>Account</Link>
-                        <button onClick={handleLogout} className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600 block">Logout Session</button>
-                     </>
-                  )}
-                  <Link to="/cart" className="text-[10px] font-black uppercase tracking-[0.2em] block" onClick={() => setIsMenuOpen(false)}>Shopping Bag ({cartCount})</Link>
+               {/* Navigation Links */}
+               <div className="flex flex-col border-b border-black">
+                  {[
+                     { name: 'Spring 26', link: '/products?collection=spring-26' },
+                     { name: 'Gifts', link: '/products?category=gifts', hasArrow: true },
+                     { name: 'Fragrances', link: '/products?category=fragrances' },
+                     { name: 'Bags', link: '/products?category=bags', hasArrow: true },
+                     { name: 'Women', link: '/products?category=women', hasArrow: true },
+                     { name: 'Men', link: '/products?category=men', hasArrow: true },
+                     { name: 'Couture', link: '/products?category=couture' },
+                     { name: 'Explore', link: '/explore', hasArrow: true }
+                  ].map((item, idx) => (
+                     <Link
+                        key={idx}
+                        to={item.link}
+                        className="flex justify-between items-center px-6 py-5 border-b border-black/5 last:border-b-0 group"
+                        onClick={() => setIsMenuOpen(false)}
+                     >
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] group-hover:opacity-50">{item.name}</span>
+                        {item.hasArrow && <ArrowRight size={14} className="text-black/30" />}
+                     </Link>
+                  ))}
+               </div>
+
+               {/* Utility Links */}
+               <div className="mt-8 px-6 pb-20 flex flex-col space-y-5">
+                  <div className="flex flex-col space-y-4">
+                     {!user ? (
+                        <Link to="/login" className="text-[9px] font-black uppercase tracking-widest hover:opacity-50" onClick={() => setIsMenuOpen(false)}>Login</Link>
+                     ) : (
+                        <>
+                           <Link to="/profile" className="text-[9px] font-black uppercase tracking-widest hover:opacity-50" onClick={() => setIsMenuOpen(false)}>Account</Link>
+                           <button onClick={handleLogout} className="text-start text-[9px] font-black uppercase tracking-widest hover:opacity-50">Logout Session</button>
+                        </>
+                     )}
+                     <Link to="/saved" className="text-[9px] font-black uppercase tracking-widest hover:opacity-50" onClick={() => setIsMenuOpen(false)}>Saved Items</Link>
+                  </div>
+
+                  <div className="flex flex-col space-y-4 pt-6 border-t border-black/5">
+                     <span className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Country / Region: International Version</span>
+                     <span className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Language: English</span>
+                     <Link to="/contact" className="text-[8px] font-bold text-black/40 uppercase tracking-widest hover:text-black" onClick={() => setIsMenuOpen(false)}>Client Services</Link>
+                     <Link to="/faq" className="text-[8px] font-bold text-black/40 uppercase tracking-widest hover:text-black" onClick={() => setIsMenuOpen(false)}>Book an Appointment</Link>
+                     <div className="flex space-x-4 pt-2">
+                        <span className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Follow Us</span>
+                     </div>
+                  </div>
                </div>
             </div>
          )}
