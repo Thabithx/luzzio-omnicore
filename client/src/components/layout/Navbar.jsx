@@ -115,14 +115,14 @@ export function Navbar() {
 
          {/* SEARCH OVERLAY */}
          {isSearchOpen && (
-            <div className="absolute inset-x-0 top-0 h-12 bg-white flex items-center px-10 z-[120] border-b border-black animate-in fade-in slide-in-from-top duration-300">
+            <div className="absolute inset-x-0 top-0 h-14 md:h-12 bg-white flex items-center px-6 md:px-10 z-[120] border-b border-black animate-in fade-in slide-in-from-top duration-300">
                <form onSubmit={handleSearch} className="flex-1 flex items-center gap-4">
                   <Search size={18} className="text-black/30" />
                   <input
                      autoFocus
                      type="text"
                      placeholder="SEARCH THE ARCHIVE..."
-                     className="flex-1 bg-transparent border-none focus:ring-0 text-[10px] font-black uppercase tracking-widest outline-none"
+                     className="flex-1 bg-transparent border-none focus:ring-0 text-base md:text-[10px] font-black uppercase tracking-widest outline-none placeholder:text-black/20"
                      value={searchQuery}
                      onChange={(e) => setSearchQuery(e.target.value)}
                   />

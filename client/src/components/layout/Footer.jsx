@@ -58,52 +58,10 @@ export function Footer() {
    return (
       <footer className="bg-brand-grey text-black border-t border-black selection:bg-black selection:text-white">
          <div className="max-w-[1920px] mx-auto">
-            {/* 6-COLUMN GRID WITH VERTICAL DIVIDERS */}
-            <div className="grid grid-cols-1 lg:grid-cols-6">
+            {/* 5-COLUMN GRID WITH VERTICAL DIVIDERS */}
+            <div className="grid grid-cols-1 lg:grid-cols-5">
 
-               {/* COLUMN 1: NEWSLETTER */}
-               <FooterSection
-                  title="Newsletter"
-                  id="newsletter"
-                  activeSection={activeSection}
-                  toggleSection={toggleSection}
-               >
-                  <form onSubmit={handleNewsletterSubmit} className="space-y-4">
-                     <p className="text-[10px] font-bold uppercase tracking-widest text-black/60">
-                        Subscribe to our emails
-                     </p>
-                     <div className="relative">
-                        <input
-                           type="email"
-                           value={email}
-                           onChange={(e) => setEmail(e.target.value)}
-                           placeholder="ENTER YOUR EMAIL"
-                           required
-                           disabled={isSubmitting}
-                           className="w-full border border-black px-4 py-3 text-[10px] font-black uppercase tracking-widest bg-white focus:outline-none focus:ring-2 focus:ring-black disabled:opacity-50"
-                        />
-                        <button
-                           type="submit"
-                           disabled={isSubmitting || !email}
-                           className="absolute right-0 top-0 bottom-0 px-6 bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black border-l border-black transition-colors disabled:opacity-50"
-                        >
-                           {isSubmitting ? '...' : '→'}
-                        </button>
-                     </div>
-                     {newsletterStatus === 'success' && (
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-green-700">
-                           ✓ Subscribed successfully
-                        </p>
-                     )}
-                     {newsletterStatus === 'error' && (
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-red-700">
-                           ✗ Subscription failed
-                        </p>
-                     )}
-                  </form>
-               </FooterSection>
-
-               {/* COLUMN 2: CLIENT SERVICES */}
+               {/* COLUMN 1: CLIENT SERVICES */}
                <FooterSection
                   title="Client Services"
                   id="services"
@@ -119,7 +77,7 @@ export function Footer() {
                   </ul>
                </FooterSection>
 
-               {/* COLUMN 3: THE COMPANY */}
+               {/* COLUMN 2: THE COMPANY */}
                <FooterSection
                   title="The Company"
                   id="company"
@@ -135,7 +93,7 @@ export function Footer() {
                   </ul>
                </FooterSection>
 
-               {/* COLUMN 4: FOLLOW US */}
+               {/* COLUMN 3: FOLLOW US */}
                <FooterSection
                   title="Follow Us"
                   id="follow"
@@ -143,40 +101,61 @@ export function Footer() {
                   toggleSection={toggleSection}
                >
                   <ul className="space-y-3 text-[10px] font-bold uppercase tracking-widest">
-                     <li><a href="#" className="hover:opacity-50">Facebook</a></li>
-                     <li><a href="#" className="hover:opacity-50">Instagram</a></li>
-                     <li><a href="#" className="hover:opacity-50">Tiktok</a></li>
-                     <li><a href="#" className="hover:opacity-50">Pinterest</a></li>
+                     <li><a href="#" className="hover:opacity-50 transition-opacity">Facebook</a></li>
+                     <li><a href="#" className="hover:opacity-50 transition-opacity">Instagram</a></li>
+                     <li><a href="#" className="hover:opacity-50 transition-opacity">Tiktok</a></li>
+                     <li><a href="#" className="hover:opacity-50 transition-opacity">Pinterest</a></li>
                   </ul>
                </FooterSection>
 
-               {/* COLUMN 5: BOUTIQUES */}
+               {/* COLUMN 4: NEWSLETTER */}
                <FooterSection
-                  title="Boutiques"
-                  id="boutiques"
+                  title="Newsletter"
+                  id="newsletter"
                   activeSection={activeSection}
                   toggleSection={toggleSection}
                >
-                  <ul className="space-y-3 text-[10px] font-bold uppercase tracking-widest">
-                     <li><a href="#" className="hover:opacity-50">Find a store nearby</a></li>
-                     <li><a href="#" className="hover:opacity-50">Region: Global</a></li>
-                     <li><a href="#" className="hover:opacity-50">Language: English</a></li>
-                  </ul>
+                  <form onSubmit={handleNewsletterSubmit} className="space-y-4">
+                     <p className="text-[10px] font-bold uppercase tracking-widest text-black/40">
+                        Join the Luzzio Archive
+                     </p>
+                     <div className="relative">
+                        <input
+                           type="email"
+                           value={email}
+                           onChange={(e) => setEmail(e.target.value)}
+                           placeholder="EMAIL ADDRESS"
+                           required
+                           disabled={isSubmitting}
+                           className="w-full border border-black px-4 py-3 text-[10px] font-black uppercase tracking-widest bg-white focus:outline-none disabled:opacity-50"
+                        />
+                        <button
+                           type="submit"
+                           disabled={isSubmitting || !email}
+                           className="absolute right-0 top-0 bottom-0 px-6 bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black border-l border-black transition-colors disabled:opacity-50"
+                        >
+                           {isSubmitting ? '...' : '→'}
+                        </button>
+                     </div>
+                  </form>
                </FooterSection>
 
-               {/* COLUMN 6: CONTACT US */}
+               {/* COLUMN 5: CONTACT US */}
                <FooterSection
                   title="Contact Us"
                   id="contact"
                   activeSection={activeSection}
                   toggleSection={toggleSection}
                >
-                  <div className="space-y-4 text-[10px] font-bold uppercase tracking-widest">
+                  <div className="space-y-6 text-[10px] font-bold uppercase tracking-widest">
                      <div className="space-y-1">
-                        <p className="text-black/50">Call us at</p>
-                        <a href="tel:+442033186032" className="underline underline-offset-4 decoration-1 hover:opacity-50">+44 20 33 18 60 32</a>
+                        <p className="text-black/50">Call us</p>
+                        <a href="tel:+442033186032" className="underline underline-offset-4 decoration-1 hover:opacity-50 transition-opacity">+44 20 33 18 60 32</a>
                      </div>
-                     <a href="/contact" className="block underline underline-offset-4 decoration-1 hover:opacity-50">Send us a message</a>
+                     <div className="space-y-1">
+                        <p className="text-black/50">Support</p>
+                        <a href="/contact" className="block underline underline-offset-4 decoration-1 hover:opacity-50 transition-opacity">Direct Message</a>
+                     </div>
                   </div>
                </FooterSection>
             </div>
