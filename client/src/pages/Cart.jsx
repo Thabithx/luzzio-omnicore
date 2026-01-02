@@ -30,7 +30,7 @@ export function Cart() {
    }
 
    return (
-      <div className="min-h-screen bg-white pt-24 pb-40 px-10">
+      <div className="min-h-screen bg-white pt-24 pb-40 px-4 md:px-10">
          <Meta title="Shopping Bag | Luzzio" />
 
          <div className="max-w-[1920px] mx-auto">

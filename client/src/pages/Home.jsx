@@ -114,7 +114,7 @@ export function Home() {
                   alt="Ready to Wear"
                   className="absolute inset-0 w-full h-full object-cover"
                />
-               <div className="relative w-full pb-4 md:pb-12 flex flex-col items-center space-y-2 px-6">
+               <div className="relative w-full pb-4 md:pb-12 flex flex-col items-center space-y-2 md:px-6">
                   <h4 className="text-black text-[9px] md:text-[11px] font-black uppercase tracking-[0.5em] text-center">Ready-to-Wear</h4>
                   <Link to="/products?category=ready-to-wear">
                      <button className="px-8 md:px-12 py-1.5 border border-black text-black text-[7px] md:text-[8px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all">
@@ -131,7 +131,7 @@ export function Home() {
                   alt="Leather Archive"
                   className="absolute inset-0 w-full h-full object-cover"
                />
-               <div className="relative w-full pb-4 md:pb-12 flex flex-col items-center space-y-2 px-6">
+               <div className="relative w-full pb-4 md:pb-12 flex flex-col items-center space-y-2 md:px-6">
                   <h4 className="text-white text-[9px] md:text-[11px] font-black uppercase tracking-[0.5em] drop-shadow-md text-center">Bags & Archive</h4>
                   <Link to="/products?category=accessories">
                      <button className="px-8 md:px-12 py-1.5 bg-white/90 backdrop-blur-sm border border-black text-black text-[7px] md:text-[8px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all">
@@ -148,7 +148,7 @@ export function Home() {
                   alt="Footwear Collection"
                   className="absolute inset-0 w-full h-full object-cover"
                />
-               <div className="relative w-full pb-4 md:pb-12 flex flex-col items-center space-y-2 px-6">
+               <div className="relative w-full pb-4 md:pb-12 flex flex-col items-center space-y-2 md:px-6">
                   <h4 className="text-black text-[9px] md:text-[11px] font-black uppercase tracking-[0.5em] text-center">Footwear</h4>
                   <Link to="/products?category=footwear">
                      <button className="px-8 md:px-12 py-1.5 border border-black text-black text-[7px] md:text-[8px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all">

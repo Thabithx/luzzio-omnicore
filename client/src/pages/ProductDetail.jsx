@@ -111,7 +111,7 @@ export function ProductDetail() {
                            key={index}
                            className={cn(
                               "w-2 h-2 rounded-full transition-all duration-300 drop-shadow-md",
-                              activeImageIndex === index ? "bg-white scale-110" : "bg-white/40"
+                              activeImageIndex === index ? "bg-black scale-110" : "bg-black/20"
                            )}
                         />
                      ))}
