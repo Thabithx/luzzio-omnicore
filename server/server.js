@@ -51,6 +51,7 @@ app.use('/api', limiter);
 // Stripe webhook needs raw body for signature verification
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10kb' })); // Body limit
+app.use(express.urlencoded({ extended: true })); // Parse application/x-www-form-urlencoded for PayHere
 
 // CORS Configuration
 const allowedOrigins = [
