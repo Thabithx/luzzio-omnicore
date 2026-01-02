@@ -231,7 +231,7 @@ export function Checkout() {
                {/* LEFT: CHECKOUT SECTIONS */}
                <div className="flex-1 space-y-20 md:space-y-24">
                   <section className="space-y-8 md:space-y-10">
-                     <p className="text-small-brand font-black pb-4 border-b border-black">01 Client Information</p>
+                     <p className="text-small-brand font-black pb-4 border-b border-black">Client Information</p>
                      <div className="grid grid-cols-1 gap-6">
                         <Input
                            name="email"
@@ -245,7 +245,7 @@ export function Checkout() {
                   </section>
 
                   <section className="space-y-8 md:space-y-10">
-                     <p className="text-small-brand font-black pb-4 border-b border-black">02 Shipping Logistics</p>
+                     <p className="text-small-brand font-black pb-4 border-b border-black">Shipping Logistics</p>
                      <div className="grid grid-cols-2 gap-6">
                         <Input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleInputChange} required />
                         <Input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleInputChange} required />
@@ -256,7 +256,7 @@ export function Checkout() {
                   </section>
 
                   <section className="space-y-8 md:space-y-10">
-                     <p className="text-small-brand font-black pb-4 border-b border-black">03 Payment Protocol</p>
+                     <p className="text-small-brand font-black pb-4 border-b border-black">Payment Protocol</p>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <PaymentMethodCard
                            id="PayHere"
