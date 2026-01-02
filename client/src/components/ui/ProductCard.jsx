@@ -15,7 +15,8 @@ export function ProductCard({ product }) {
       e.stopPropagation();
 
       const defaultSize = product.sizes?.[0] || 'OS';
-      addToCart(product, 1, defaultSize);
+      const defaultColor = product.colors?.[0] || 'Noir';
+      addToCart(product, 1, defaultSize, defaultColor);
 
       setAdded(true);
       setTimeout(() => setAdded(false), 2000);

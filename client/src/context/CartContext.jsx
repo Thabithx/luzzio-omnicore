@@ -127,7 +127,8 @@ export const CartProvider = ({ children }) => {
    const clearCart = async () => {
       if (token) {
          try {
-            await api.delete('/cart');
+            const res = await api.delete('/cart');
+            setCart(res.data.data.items);
          } catch (err) {
             console.error('Error clearing database cart:', err);
          }

@@ -27,6 +27,7 @@ exports.getCart = async (req, res) => {
 exports.addItemToCart = async (req, res) => {
    try {
       const { productId, quantity, size, color } = req.body;
+      console.log('ADDING TO CART - REQ BODY:', req.body);
 
       let cart = await Cart.findOne({ user: req.user.id });
 
@@ -34,15 +35,17 @@ exports.addItemToCart = async (req, res) => {
          cart = new Cart({ user: req.user.id, items: [] });
       }
 
+      const colorToSave = color || 'Noir';
+
       // Check if product already in cart with same size and color
       const itemIndex = cart.items.findIndex(
-         item => item.product.toString() === productId && item.size === size && item.color === color
+         item => item.product.toString() === productId && item.size === size && (item.color || 'Noir') === colorToSave
       );
 
       if (itemIndex > -1) {
          cart.items[itemIndex].quantity += quantity || 1;
       } else {
-         cart.items.push({ product: productId, quantity: quantity || 1, size, color });
+         cart.items.push({ product: productId, quantity: quantity || 1, size, color: colorToSave });
       }
 
       cart.updatedAt = Date.now();
@@ -65,6 +68,7 @@ exports.addItemToCart = async (req, res) => {
 exports.updateCartItem = async (req, res) => {
    try {
       const { productId, size, color, quantity } = req.body;
+      const colorToMatch = color || 'Noir';
       const cart = await Cart.findOne({ user: req.user.id });
 
       if (!cart) {
@@ -72,7 +76,7 @@ exports.updateCartItem = async (req, res) => {
       }
 
       const itemIndex = cart.items.findIndex(
-         item => item.product.toString() === productId && item.size === size && item.color === color
+         item => item.product.toString() === productId && item.size === size && (item.color || 'Noir') === colorToMatch
       );
 
       if (itemIndex === -1) {
@@ -100,6 +104,7 @@ exports.updateCartItem = async (req, res) => {
 exports.removeItemFromCart = async (req, res) => {
    try {
       const { productId, size, color } = req.params;
+      const colorToMatch = color || 'Noir';
       const cart = await Cart.findOne({ user: req.user.id });
 
       if (!cart) {
@@ -107,7 +112,7 @@ exports.removeItemFromCart = async (req, res) => {
       }
 
       cart.items = cart.items.filter(
-         item => !(item.product.toString() === productId && item.size === size && item.color === color)
+         item => !(item.product.toString() === productId && item.size === size && (item.color || 'Noir') === colorToMatch)
       );
 
       cart.updatedAt = Date.now();
@@ -129,10 +134,10 @@ exports.removeItemFromCart = async (req, res) => {
 // @access  Private
 exports.clearCart = async (req, res) => {
    try {
-      await Cart.findOneAndUpdate({ user: req.user.id }, { items: [] });
+      const updatedCart = await Cart.findOneAndUpdate({ user: req.user.id }, { items: [] }, { new: true }).populate('items.product');
       res.status(200).json({
          success: true,
-         message: 'Cart cleared'
+         data: updatedCart
       });
    } catch (err) {
       res.status(500).json({ success: false, message: err.message });

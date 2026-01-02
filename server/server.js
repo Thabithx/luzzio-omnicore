@@ -1,4 +1,4 @@
-const express = require('express'); // server init
+const express = require('express'); // restart trigger
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
