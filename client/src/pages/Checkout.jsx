@@ -41,7 +41,10 @@ export function Checkout() {
    const [loading, setLoading] = useState(false);
    const { updateUser } = useAuth();
 
-   const subtotal = cart.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+   const subtotal = cart.reduce((acc, item) => {
+      const price = (item.product.salePrice > 0) ? item.product.salePrice : item.product.price;
+      return acc + (price * item.quantity);
+   }, 0);
 
    const handleInputChange = (e) => {
       setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -58,7 +61,7 @@ export function Checkout() {
             name: item.product.name,
             qty: item.quantity,
             image: item.product.images[0],
-            price: item.product.price,
+            price: (item.product.salePrice > 0) ? item.product.salePrice : item.product.price,
             product: item.product._id,
             size: item.size
          }));
@@ -129,6 +132,9 @@ export function Checkout() {
 
                      // Start Payment
                      window.payhere.startPayment(payment);
+                  } else {
+                     alert('Failed to initiate PayHere payment: ' + (payHereRes.data.message || 'Unknown error'));
+                     setLoading(false);
                   }
                } catch (payErr) {
                   console.error('PayHere Init Failed:', payErr);
@@ -139,8 +145,12 @@ export function Checkout() {
                // Other methods (e.g. Stripe or Cocopay if impl)
                // For now, default to success for non-integrated
                clearCart();
+               setLoading(false);
                navigate('/payment-success');
             }
+         } else {
+            alert('Order creation failed: ' + (res.data.message || 'Unknown error'));
+            setLoading(false);
          }
       } catch (err) {
          console.error('Checkout protocol failure:', err);
@@ -288,7 +298,9 @@ export function Checkout() {
                                     <p>Size: {item.size}</p>
                                     <p>Qty: {item.quantity}</p>
                                  </div>
-                                 <p className="border-t border-black pt-2 mt-2 text-[11px] font-black">LKR {(item.product.price * item.quantity).toLocaleString()}.00</p>
+                                 <p className="border-t border-black pt-2 mt-2 text-[11px] font-black">
+                                    LKR {((item.product.salePrice > 0 ? item.product.salePrice : item.product.price) * item.quantity).toLocaleString()}.00
+                                 </p>
                               </div>
                            </div>
                         ))}

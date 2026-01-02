@@ -155,7 +155,7 @@ exports.initiatePayHerePayment = async (req, res) => {
       const hashSource = merchantId + orderId + amountFormatted + currency + hashedSecret;
       const hash = crypto.createHash('md5').update(hashSource).digest('hex').toUpperCase();
 
-      const isSandbox = process.env.PAYHERE_MODE !== 'live';
+      const isSandbox = process.env.PAYHERE_MODE === 'sandbox' || (process.env.NODE_ENV !== 'production' && process.env.PAYHERE_MODE !== 'live');
 
       const payHereParams = {
          sandbox: isSandbox,

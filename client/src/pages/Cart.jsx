@@ -48,21 +48,23 @@ export function Cart() {
                <div className="flex-1 space-y-1">
                   {cart.map((item, index) => (
                      <div key={`${item.product._id}-${item.size}-${index}`} className="flex gap-4 md:gap-10 py-6 md:py-10 border-t border-black last:border-b">
-                        <div className="w-24 md:w-32 aspect-[3/4] bg-brand-grey shrink-0 overflow-hidden">
+                        <Link to={`/products/${item.product._id}`} className="w-24 md:w-32 aspect-[3/4] bg-brand-grey shrink-0 overflow-hidden hover:opacity-80 transition-opacity">
                            <img
                               src={item.product?.images?.[0] || 'https://placehold.co/300x400/F6F6F6/000000'}
                               alt={item.product?.name}
                               className="w-full h-full object-cover grayscale-[20%]"
                            />
-                        </div>
+                        </Link>
 
                         <div className="flex-1 flex flex-col justify-between py-2">
                            <div className="flex justify-between items-start">
                               <div className="space-y-2 md:space-y-4">
-                                 <h3 className="text-sm md:text-xl font-black uppercase tracking-tight leading-tight">{item.product?.name}</h3>
+                                 <Link to={`/products/${item.product._id}`}>
+                                    <h3 className="text-sm md:text-xl font-black uppercase tracking-tight leading-tight hover:underline">{item.product?.name}</h3>
+                                 </Link>
                                  <div className="flex flex-col md:flex-row gap-2 md:gap-8 text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gray-400">
                                     <p>Size: <span className="text-black">{item.size}</span></p>
-                                    <p>Color: <span className="text-black">Noir</span></p>
+                                    <p>Color: <span className="text-black capitalize">{item.color || 'Noir'}</span></p>
                                  </div>
                               </div>
                               <button

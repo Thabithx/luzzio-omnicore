@@ -92,6 +92,19 @@ export const CartProvider = ({ children }) => {
    };
 
    const updateQuantity = async (productId, size, quantity) => {
+      // Optimistic Update
+      const previousCart = [...cart];
+      const updatedCart = cart.map(item =>
+         (item.product._id === productId && item.size === size)
+            ? { ...item, quantity }
+            : item
+      );
+
+      setCart(updatedCart);
+      if (!token) {
+         localStorage.setItem('cart', JSON.stringify(updatedCart));
+      }
+
       if (token) {
          try {
             const res = await api.put('/cart', {
@@ -102,14 +115,8 @@ export const CartProvider = ({ children }) => {
             setCart(res.data.data.items);
          } catch (err) {
             console.error('Error updating cart:', err);
-         }
-      } else {
-         const localCart = JSON.parse(localStorage.getItem('cart')) || [];
-         const index = localCart.findIndex(item => item.product._id === productId && item.size === size);
-         if (index > -1) {
-            localCart[index].quantity = quantity;
-            setCart([...localCart]);
-            localStorage.setItem('cart', JSON.stringify(localCart));
+            // Rollback on failure
+            setCart(previousCart);
          }
       }
    };

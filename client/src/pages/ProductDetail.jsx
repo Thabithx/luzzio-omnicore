@@ -17,6 +17,7 @@ export function ProductDetail() {
    const [selectedSize, setSelectedSize] = useState('');
    const [selectedColor, setSelectedColor] = useState('');
    const [adding, setAdding] = useState(false);
+   const [added, setAdded] = useState(false);
    const [showSizeGuide, setShowSizeGuide] = useState(false);
 
    const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -35,6 +36,8 @@ export function ProductDetail() {
       setAdding(true);
       await addToCart(product, 1, selectedSize, selectedColor);
       setAdding(false);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
       // Feedback is handled by cart context or UI, but we stay on page
    };
 
@@ -210,7 +213,7 @@ export function ProductDetail() {
                                  : "bg-gray-50 text-stone-300 cursor-not-allowed border border-gray-100"
                            )}
                         >
-                           {adding ? "..." : "Add to Bag"}
+                           {adding ? "..." : added ? "ADDED" : "Add to Bag"}
                         </button>
                         <button
                            disabled={!selectedSize || (product.colors?.length > 0 && !selectedColor) || adding}
