@@ -8,7 +8,6 @@ import Meta from '../components/ui/Meta';
 export function Login() {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
-   const [securityKey, setSecurityKey] = useState('');
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
    const navigate = useNavigate();
@@ -19,7 +18,7 @@ export function Login() {
       setLoading(true);
       setError('');
 
-      const result = await login(email, password, securityKey);
+      const result = await login(email, password);
 
       if (result.success) {
          const user = JSON.parse(localStorage.getItem('user'));
@@ -90,19 +89,6 @@ export function Login() {
                         className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4"
                      />
                   </div>
-
-                  {email.toLowerCase().includes('admin') || email.toLowerCase().endsWith('@luzzio.com') ? (
-                     <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-500">
-                        <p className="text-small-brand text-gray-400 pl-1">Security Key (Admin Only)</p>
-                        <Input
-                           type="password"
-                           placeholder="Security Key"
-                           value={securityKey}
-                           onChange={(e) => setSecurityKey(e.target.value)}
-                           className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4"
-                        />
-                     </div>
-                  ) : null}
 
                   <div className="flex items-center justify-between">
                      <Link to="/forgot-password" size="sm" className="text-[10px] uppercase font-bold text-gray-400 hover:text-black transition-colors">Forgot Credentials?</Link>

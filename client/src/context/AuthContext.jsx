@@ -25,9 +25,9 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
    }, []);
 
-   const login = async (email, password, adminSecret = '') => {
+   const login = async (email, password) => {
       try {
-         const res = await api.post('/auth/login', { email, password, adminSecret });
+         const res = await api.post('/auth/login', { email, password });
          if (res.data.success) {
             const userData = {
                name: res.data.name,
