@@ -334,17 +334,20 @@ const AdminOrders = () => {
             <style>
                {`
                @media print {
+                  * {
+                     print-color-adjust: exact;
+                     -webkit-print-color-adjust: exact;
+                  }
                   @page {
                      size: A4;
-                     margin: 10mm;
+                     margin: 15mm;
                   }
-                  /* Global print reset to bypass dashboard constraints */
                   html, body {
                      margin: 0 !important;
                      padding: 0 !important;
                      width: 100% !important;
-                     height: auto !important;
-                     overflow: visible !important;
+                     height: 100% !important;
+                     overflow: hidden !important;
                      background: white !important;
                   }
                   body * {
@@ -358,84 +361,102 @@ const AdminOrders = () => {
                      left: 0 !important;
                      top: 0 !important;
                      width: 100% !important;
-                     height: auto !important;
                      margin: 0 !important;
                      padding: 0 !important;
                      background: white !important;
-                     z-index: 9999999 !important;
-                     box-sizing: border-box !important;
                   }
                   .print-page-break {
                      page-break-after: always;
                      break-after: page;
-                     display: block;
                   }
                   .label-body {
                      width: 100%;
-                     height: auto;
+                     page-break-after: always;
                      page-break-inside: avoid;
                      font-family: 'Helvetica', sans-serif !important;
-                     font-size: 13.5px;
-                     line-height: 1.4;
+                     font-size: 12px;
+                     line-height: 1.3;
                      font-weight: 700;
                      color: #000;
-                     display: flex;
-                     flex-direction: column;
-                     padding: 10mm;
+                     padding: 0;
+                     margin: 0;
+                  }
+                  .label-body:last-child {
+                     page-break-after: avoid;
+                  }
+                  .print-header {
+                     text-align: right;
+                     margin-bottom: 20px;
+                  }
+                  .print-order-id {
+                     font-size: 18px;
+                     font-weight: 900;
+                     margin-bottom: 5px;
+                  }
+                  .print-date {
+                     font-size: 14px;
+                     font-weight: 900;
                   }
                   .label-h2 {
-                     font-size: 18px;
-                     margin: 15px 0 8px 0;
+                     font-size: 16px;
+                     margin: 12px 0 8px 0;
                      text-transform: capitalize;
                      font-weight: 900;
                   }
                   .columns {
                      display: grid;
                      grid-template-columns: 1fr 1fr;
-                     gap: 15px;
+                     gap: 20px;
                      width: 100%;
+                     margin-bottom: 15px;
                   }
                   .address {
-                     font-size: 12px;
+                     font-size: 11px;
                      font-weight: 700;
+                     line-height: 1.4;
+                  }
+                  .address-label {
+                     font-weight: 900;
+                     margin-bottom: 5px;
+                     font-size: 10px;
+                     text-transform: uppercase;
+                     letter-spacing: 0.5px;
                   }
                   table {
                      width: 100%;
                      border-collapse: collapse;
-                     margin-top: 5px;
+                     margin: 10px 0;
                      border: 1.5px solid #000;
-                     page-break-inside: auto;
-                  }
-                  tr {
-                     page-break-inside: avoid;
-                     page-break-after: auto;
                   }
                   thead {
                      display: table-header-group;
                   }
                   th, td {
-                     padding: 8px 10px;
+                     padding: 8px;
                      text-align: left;
                      font-weight: 700 !important;
                      border: 1.5px solid #000;
+                     font-size: 11px;
                   }
                   th {
-                     font-size: 12px;
-                     text-transform: capitalize;
+                     background-color: #f5f5f5;
+                     text-transform: uppercase;
+                     font-size: 10px;
+                     letter-spacing: 0.5px;
                   }
                   hr {
-                     margin: 15px 0 10px 0;
+                     margin: 15px 0;
                      border: 0;
                      border-top: 1.5px solid #000;
                   }
                   .footer-note {
-                     margin-top: auto;
-                     padding-top: 20px;
-                     padding-bottom: 20px;
-                     font-size: 11px;
+                     margin-top: 20px;
+                     padding-top: 15px;
+                     border-top: 1px solid #ddd;
+                     font-size: 10px;
                      text-align: center;
-                     line-height: 1.5;
-                     font-weight: 900;
+                     line-height: 1.6;
+                     font-weight: 700;
                   }
                }
                `}
@@ -444,32 +465,32 @@ const AdminOrders = () => {
                {orders.filter(o => selectedIds.includes(o._id)).map((order, idx) => (
                   <div key={order._id} className={cn("label-body", idx < selectedIds.length - 1 && "print-page-break")}>
                      {/* Header Block */}
-                     <div style={{ textAlign: 'right', marginBottom: '30px' }}>
-                        <div style={{ fontSize: '20px', fontWeight: '900' }}>Order #{order._id.slice(-6).toUpperCase()}</div>
-                        <div style={{ fontSize: '15.5px', fontWeight: '900' }}>{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                     <div className="print-header">
+                        <div className="print-order-id">Order #{order._id.slice(-6).toUpperCase()}</div>
+                        <div className="print-date">{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                      </div>
 
                      {/* Address Block */}
                      <div className="columns">
                         <div className="address">
-                           <div style={{ marginBottom: '4px' }}>From</div>
+                           <div className="address-label">From</div>
                            <div>LUZZIO</div>
                            <div>Anuradhapura</div>
                            <div>NEW BUS STAND LATEST</div>
                            <div>SMART NEAR TO BOC BANK</div>
                            <div>Anuradhapura, 50000</div>
                            <div>Sri Lanka</div>
-                           <div style={{ marginTop: '4px' }}>Phone: 0764800541</div>
+                           <div style={{ marginTop: '8px' }}>Phone: 0764800541</div>
                         </div>
 
                         <div className="address">
-                           <div style={{ marginBottom: '4px' }}>Ship to</div>
+                           <div className="address-label">Ship to</div>
                            <div>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</div>
                            <div>{order.shippingAddress.address}</div>
                            <div>{order.shippingAddress.city}</div>
                            <div>{order.shippingAddress.postalCode}</div>
                            <div>Sri Lanka</div>
-                           <div style={{ marginTop: '4px' }}>Phone: {order.shippingAddress.phone || (order.user && order.user.phone) || order.email || ''}</div>
+                           <div style={{ marginTop: '8px' }}>Phone: {order.shippingAddress.phone || (order.user && order.user.phone) || order.email || ''}</div>
                         </div>
                      </div>
 
