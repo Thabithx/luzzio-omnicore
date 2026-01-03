@@ -305,7 +305,7 @@ export function Profile() {
                                     type="text"
                                     value={editData.name}
                                     onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                    className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none"
+                                    className="w-full bg-transparent border-b border-black py-4 font-black focus:outline-none"
                                     required
                                  />
                               </div>
@@ -329,7 +329,7 @@ export function Profile() {
                                           type="text"
                                           value={editData.shippingAddress.address}
                                           onChange={(e) => setEditData({ ...editData, shippingAddress: { ...editData.shippingAddress, address: e.target.value } })}
-                                          className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none"
+                                          className="w-full bg-transparent border-b border-black py-4 font-black focus:outline-none"
                                           placeholder="Street archive..."
                                        />
                                     </div>
@@ -340,7 +340,7 @@ export function Profile() {
                                              type="text"
                                              value={editData.shippingAddress.city}
                                              onChange={(e) => setEditData({ ...editData, shippingAddress: { ...editData.shippingAddress, city: e.target.value } })}
-                                             className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none"
+                                             className="w-full bg-transparent border-b border-black py-4 font-black focus:outline-none"
                                              placeholder="City code..."
                                           />
                                        </div>
@@ -350,7 +350,7 @@ export function Profile() {
                                              type="text"
                                              value={editData.shippingAddress.postalCode}
                                              onChange={(e) => setEditData({ ...editData, shippingAddress: { ...editData.shippingAddress, postalCode: e.target.value } })}
-                                             className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none"
+                                             className="w-full bg-transparent border-b border-black py-4 font-black focus:outline-none"
                                              placeholder="Zip archive..."
                                           />
                                        </div>
@@ -361,7 +361,7 @@ export function Profile() {
                                           type="text"
                                           value={editData.shippingAddress.phone}
                                           onChange={(e) => setEditData({ ...editData, shippingAddress: { ...editData.shippingAddress, phone: e.target.value } })}
-                                          className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none"
+                                          className="w-full bg-transparent border-b border-black py-4 font-black focus:outline-none"
                                           placeholder="Mobile sequence..."
                                        />
                                     </div>

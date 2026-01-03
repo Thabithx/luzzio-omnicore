@@ -60,21 +60,21 @@ export default function ForgotPassword() {
                   />
                </div>
 
-               {error && <p className="text-[10px] font-black uppercase tracking-widest text-red-500">{error}</p>}
+               {error && <p className="text-[10px] font-black tracking-widest text-red-500">{error}</p>}
                {message && (
                   <div className="p-6 border border-black bg-brand-grey space-y-4">
                      <div className="flex items-center gap-3 text-black">
                         <ShieldCheck size={16} />
                         <p className="text-small-brand font-black">Protocol Initiated</p>
                      </div>
-                     <p className="text-[10px] uppercase font-medium leading-relaxed text-gray-500 tracking-widest">
+                     <p className="text-[10px] font-medium leading-relaxed text-gray-500 tracking-widest">
                         {message}
                      </p>
                      <Link
                         to="/reset-password"
-                        className="block text-[10px] font-black uppercase tracking-widest underline underline-offset-4"
+                        className="block text-[10px] font-black tracking-widest underline underline-offset-4"
                      >
-                        Proceed to Reset Screen
+                        Proceed to reset screen
                      </Link>
                   </div>
                )}

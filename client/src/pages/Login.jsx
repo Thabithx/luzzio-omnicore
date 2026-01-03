@@ -58,7 +58,7 @@ export function Login() {
                <div className="space-y-4">
                   <p className="text-small-brand text-gray-400">Security Protocol</p>
                   <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">Archive Access</h1>
-                  <p className="text-[11px] text-gray-500 uppercase tracking-widest font-medium">Digital credentials required for order synchronization.</p>
+                  <p className="text-[11px] text-gray-500 tracking-widest font-medium">Digital credentials required for order synchronization.</p>
                </div>
 
                {error && (
@@ -76,7 +76,7 @@ export function Login() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4 text-small-brand"
+                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4"
                      />
                   </div>
                   <div className="space-y-2">
@@ -87,7 +87,7 @@ export function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4 text-small-brand"
+                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4"
                      />
                   </div>
 
@@ -98,7 +98,7 @@ export function Login() {
                         placeholder="Security Key"
                         value={securityKey}
                         onChange={(e) => setSecurityKey(e.target.value)}
-                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4 text-small-brand"
+                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4"
                      />
                   </div>
 

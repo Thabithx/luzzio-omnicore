@@ -80,14 +80,14 @@ export default function ResetPassword() {
                   />
                </div>
 
-               {error && <p className="text-[10px] font-black uppercase tracking-widest text-red-500">{error}</p>}
+               {error && <p className="text-[10px] font-black tracking-widest text-red-500">{error}</p>}
 
                <div className="p-6 border border-black bg-brand-grey space-y-4">
                   <div className="flex items-center gap-3 text-black">
                      <Lock size={16} />
                      <p className="text-small-brand font-black">Cryptographic Standard</p>
                   </div>
-                  <p className="text-[10px] uppercase font-medium leading-relaxed text-gray-500 tracking-widest">
+                  <p className="text-[10px] font-medium leading-relaxed text-gray-500 tracking-widest">
                      Your new password will be encrypted using industry-standard protocols.
                   </p>
                </div>

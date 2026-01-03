@@ -55,7 +55,7 @@ export function Register() {
                <div className="space-y-4">
                   <p className="text-small-brand text-gray-400">Client Onboarding</p>
                   <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">Registration</h1>
-                  <p className="text-[11px] text-gray-500 uppercase tracking-widest font-medium">Create a digital profile for exclusive archive access.</p>
+                  <p className="text-[11px] text-gray-500 tracking-widest font-medium">Create a digital profile for exclusive archive access.</p>
                </div>
 
                {error && (
@@ -72,7 +72,7 @@ export function Register() {
                         value={formData.firstName}
                         onChange={handleChange}
                         required
-                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4 text-small-brand"
+                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4"
                      />
                      <Input
                         name="lastName"
@@ -80,7 +80,7 @@ export function Register() {
                         value={formData.lastName}
                         onChange={handleChange}
                         required
-                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4 text-small-brand"
+                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4"
                      />
                   </div>
                   <Input
@@ -90,7 +90,7 @@ export function Register() {
                      value={formData.email}
                      onChange={handleChange}
                      required
-                     className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4 text-small-brand"
+                     className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4"
                   />
                   <Input
                      name="password"
@@ -99,7 +99,7 @@ export function Register() {
                      value={formData.password}
                      onChange={handleChange}
                      required
-                     className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4 text-small-brand"
+                     className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4"
                   />
                   <Input
                      name="confirmPassword"
@@ -108,10 +108,10 @@ export function Register() {
                      value={formData.confirmPassword}
                      onChange={handleChange}
                      required
-                     className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4 text-small-brand"
+                     className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4"
                   />
 
-                  <div className="text-[9px] text-gray-400 leading-relaxed uppercase tracking-widest font-medium">
+                  <div className="text-[9px] text-gray-400 leading-relaxed tracking-widest font-medium">
                      By initiating registration, you accept our <button className="text-black border-b border-black/20">Protocols</button> and <button className="text-black border-b border-black/20">Privacy Standards</button>.
                   </div>
 
