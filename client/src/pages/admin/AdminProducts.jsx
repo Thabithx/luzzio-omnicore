@@ -133,7 +133,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                   <div className="space-y-2">
                      <label className="text-small-brand text-gray-400">Category Tag</label>
                      <select
-                        className="w-full border-black focus:border-black focus:ring-0 text-[11px] h-10 px-3 uppercase tracking-widest font-black appearance-none bg-white rounded-none border"
+                        className="w-full border-black focus:border-black focus:ring-0 text-[11px] h-10 px-3 font-black appearance-none bg-white rounded-none border"
                         value={formData.category}
                         onChange={e => setFormData({ ...formData, category: e.target.value })}
                         required
@@ -159,7 +159,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                      <Input
                         value={formData.material}
                         onChange={e => setFormData({ ...formData, material: e.target.value })}
-                        placeholder="E.G. 100% ORGANIC COTTON"
+                        placeholder="e.g. 100% Organic Cotton"
                         className="rounded-none border-black focus:border-black"
                      />
                   </div>
@@ -169,7 +169,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                         type="number"
                         value={formData.salePrice}
                         onChange={e => setFormData({ ...formData, salePrice: e.target.value })}
-                        placeholder="LEAVE EMPTY FOR NO DISCOUNT"
+                        placeholder="Leave empty for no discount"
                         className="rounded-none border-black focus:border-black"
                      />
                   </div>
@@ -178,11 +178,11 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                <div className="space-y-2">
                   <label className="text-small-brand text-gray-400">Technical Description</label>
                   <textarea
-                     className="w-full border-black focus:border-black focus:ring-0 text-[11px] p-4 min-h-[120px] uppercase tracking-widest font-medium leading-relaxed bg-white border"
+                     className="w-full border-black focus:border-black focus:ring-0 text-[11px] p-4 min-h-[120px] font-medium leading-relaxed bg-white border"
                      value={formData.description}
                      onChange={e => setFormData({ ...formData, description: e.target.value })}
                      required
-                     placeholder="ENTER PRODUCT SPECIFICATIONS..."
+                     placeholder="Enter product specifications..."
                   />
                </div>
 
@@ -211,8 +211,8 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                   </div>
                   <div className="flex gap-2">
                      <Input
-                        placeholder="ADD SIZE (E.G. UK 6, 42, OS)..."
-                        className="flex-1 rounded-none border-black focus:border-black text-[10px] tracking-widest uppercase font-bold"
+                        placeholder="Add size (e.g. UK 6, 42, OS)..."
+                        className="flex-1 rounded-none border-black focus:border-black text-[10px] font-bold"
                         onKeyDown={(e) => {
                            if (e.key === 'Enter') {
                               e.preventDefault();
@@ -315,8 +315,8 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                   </div>
                   <div className="flex gap-2">
                      <Input
-                        placeholder="ADD COLOR (E.G. MIDNIGHT BLACK)..."
-                        className="flex-1 rounded-none border-black focus:border-black text-[10px] tracking-widest uppercase font-bold"
+                        placeholder="Add color (e.g. Midnight Black)..."
+                        className="flex-1 rounded-none border-black focus:border-black text-[10px] font-bold"
                         onKeyDown={(e) => {
                            if (e.key === 'Enter') {
                               e.preventDefault();
@@ -494,8 +494,8 @@ const AdminProducts = () => {
          {/* Search Bar */}
          <div className="w-full max-w-xl relative">
             <Input
-               placeholder="IDENTIFY ENTRY (SEARCH)..."
-               className="pl-14 py-6 border-black focus:border-black rounded-none text-small-brand bg-brand-grey/50"
+               placeholder="Identify entry (search)..."
+               className="pl-14 py-6 border-black focus:border-black rounded-none bg-brand-grey/50"
                value={searchTerm}
                onChange={(e) => setSearchTerm(e.target.value)}
             />

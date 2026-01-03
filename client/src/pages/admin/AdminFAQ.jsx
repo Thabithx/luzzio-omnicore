@@ -160,7 +160,7 @@ export default function AdminFAQ() {
                      placeholder="Question"
                      value={formData.question}
                      onChange={handleInputChange}
-                     className="w-full border border-black px-4 py-3 text-[11px] font-medium uppercase tracking-widest"
+                     className="w-full border border-black px-4 py-3 text-[11px] font-medium"
                   />
                   <textarea
                      name="answer"
@@ -228,7 +228,7 @@ export default function AdminFAQ() {
                               name="question"
                               value={formData.question}
                               onChange={handleInputChange}
-                              className="w-full border border-black px-4 py-3 text-[11px] font-medium uppercase tracking-widest"
+                              className="w-full border border-black px-4 py-3 text-[11px] font-medium"
                            />
                            <textarea
                               name="answer"

@@ -124,8 +124,8 @@ export function Navbar() {
                   <input
                      autoFocus
                      type="text"
-                     placeholder="SEARCH THE ARCHIVE..."
-                     className="flex-1 bg-transparent border-none focus:ring-0 text-base md:text-[10px] font-black uppercase tracking-widest outline-none placeholder:text-black/20"
+                     placeholder="Search the archive..."
+                     className="flex-1 bg-transparent border-none focus:ring-0 text-base md:text-[10px] font-black outline-none placeholder:text-black/20"
                      value={searchQuery}
                      onChange={(e) => setSearchQuery(e.target.value)}
                   />

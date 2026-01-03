@@ -305,7 +305,7 @@ export function Profile() {
                                     type="text"
                                     value={editData.name}
                                     onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                    className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black uppercase focus:outline-none"
+                                    className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none"
                                     required
                                  />
                               </div>
@@ -315,8 +315,8 @@ export function Profile() {
                                     type="email"
                                     value={editData.email}
                                     readOnly
-                                    className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black uppercase focus:outline-none opacity-50 cursor-not-allowed"
-                                    placeholder="EMAIL ARCHIVE (IMMUTABLE)"
+                                    className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none opacity-50 cursor-not-allowed"
+                                    placeholder="Email archive (immutable)"
                                  />
                               </div>
 
@@ -329,8 +329,8 @@ export function Profile() {
                                           type="text"
                                           value={editData.shippingAddress.address}
                                           onChange={(e) => setEditData({ ...editData, shippingAddress: { ...editData.shippingAddress, address: e.target.value } })}
-                                          className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black uppercase focus:outline-none"
-                                          placeholder="STREET ARCHIVE..."
+                                          className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none"
+                                          placeholder="Street archive..."
                                        />
                                     </div>
                                     <div className="grid grid-cols-2 gap-6">
@@ -340,8 +340,8 @@ export function Profile() {
                                              type="text"
                                              value={editData.shippingAddress.city}
                                              onChange={(e) => setEditData({ ...editData, shippingAddress: { ...editData.shippingAddress, city: e.target.value } })}
-                                             className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black uppercase focus:outline-none"
-                                             placeholder="CITY CODE..."
+                                             className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none"
+                                             placeholder="City code..."
                                           />
                                        </div>
                                        <div className="space-y-2">
@@ -350,8 +350,8 @@ export function Profile() {
                                              type="text"
                                              value={editData.shippingAddress.postalCode}
                                              onChange={(e) => setEditData({ ...editData, shippingAddress: { ...editData.shippingAddress, postalCode: e.target.value } })}
-                                             className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black uppercase focus:outline-none"
-                                             placeholder="ZIP ARCHIVE..."
+                                             className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none"
+                                             placeholder="Zip archive..."
                                           />
                                        </div>
                                     </div>
@@ -361,8 +361,8 @@ export function Profile() {
                                           type="text"
                                           value={editData.shippingAddress.phone}
                                           onChange={(e) => setEditData({ ...editData, shippingAddress: { ...editData.shippingAddress, phone: e.target.value } })}
-                                          className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black uppercase focus:outline-none"
-                                          placeholder="MOBILE SEQUENCE..."
+                                          className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none"
+                                          placeholder="Mobile sequence..."
                                        />
                                     </div>
                                  </div>

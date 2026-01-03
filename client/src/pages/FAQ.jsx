@@ -58,7 +58,7 @@ export function FAQ() {
                      placeholder="Search FAQs..."
                      value={searchQuery}
                      onChange={(e) => setSearchQuery(e.target.value)}
-                     className="w-full border border-black px-4 py-4 pl-12 text-[11px] font-medium uppercase tracking-widest bg-white focus:outline-none focus:ring-2 focus:ring-black"
+                     className="w-full border border-black px-4 py-4 pl-12 text-[11px] font-medium bg-white focus:outline-none focus:ring-2 focus:ring-black"
                   />
                   <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                </div>

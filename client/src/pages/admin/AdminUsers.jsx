@@ -62,7 +62,7 @@ const AdminUsers = () => {
          {/* Search bar */}
          <div className="w-full max-w-xl relative">
             <Input
-               placeholder="IDENTIFY PROFILE (SEARCH)..."
+               placeholder="Identify profile (search)..."
                className="pl-14 py-6 border-black focus:border-black rounded-none text-small-brand bg-brand-grey/50"
                value={searchTerm}
                onChange={(e) => setSearchTerm(e.target.value)}

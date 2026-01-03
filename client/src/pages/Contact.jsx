@@ -109,16 +109,16 @@ export function Contact() {
                            required
                            maxLength={2000}
                            rows={8}
-                           className="w-full border border-black px-4 py-3 text-[11px] font-medium tracking-widest bg-white focus:outline-none focus:ring-2 focus:ring-black resize-none"
+                           className="w-full border border-black px-4 py-3 text-[11px] font-medium bg-white focus:outline-none focus:ring-2 focus:ring-black resize-none"
                         />
-                        <p className="text-[9px] text-gray-500 mt-2 uppercase tracking-widest">
+                        <p className="text-[9px] text-gray-500 mt-2 tracking-widest">
                            {formData.message.length}/2000 characters
                         </p>
                      </div>
 
                      {status.message && (
                         <div className={`p-4 border ${status.type === 'success' ? 'border-green-700 bg-green-50' : 'border-red-700 bg-red-50'}`}>
-                           <p className={`text-[10px] font-bold uppercase tracking-widest ${status.type === 'success' ? 'text-green-700' : 'text-red-700'}`}>
+                           <p className={`text-[10px] font-bold tracking-widest ${status.type === 'success' ? 'text-green-700' : 'text-red-700'}`}>
                               {status.message}
                            </p>
                         </div>

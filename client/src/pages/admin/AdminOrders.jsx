@@ -90,10 +90,10 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                               <div className="mt-4 flex gap-2">
                                  <input
                                     type="text"
-                                    placeholder="TRACKING #"
+                                    placeholder="Tracking #"
                                     value={trackingNums[item._id] || ''}
-                                    onChange={(e) => setTrackingNums({ ...trackingNums, [item._id]: e.target.value.toUpperCase() })}
-                                    className="text-[9px] font-black uppercase tracking-widest bg-brand-grey border border-black px-3 py-1.5 w-full max-w-[200px] focus:outline-none"
+                                    onChange={(e) => setTrackingNums({ ...trackingNums, [item._id]: e.target.value })}
+                                    className="text-[9px] font-black tracking-widest bg-brand-grey border border-black px-3 py-1.5 w-full max-w-[200px] focus:outline-none"
                                  />
                                  <button
                                     onClick={() => onTrackingUpdate(order._id, item._id, trackingNums[item._id])}
@@ -229,7 +229,7 @@ const AdminOrders = () => {
          {/* Search bar */}
          <div className="w-full max-w-xl relative">
             <Input
-               placeholder="IDENTIFY SEQUENCE (ID, CLIENT, EMAIL)..."
+               placeholder="Identify sequence (ID, Client, Email)..."
                className="pl-14 py-6 border-black focus:border-black rounded-none text-small-brand bg-brand-grey/50"
                value={searchTerm}
                onChange={(e) => setSearchTerm(e.target.value)}

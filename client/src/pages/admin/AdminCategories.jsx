@@ -54,16 +54,16 @@ const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
                      value={formData.name}
                      onChange={e => setFormData({ ...formData, name: e.target.value })}
                      required
-                     className="rounded-none border-black focus:border-black uppercase text-small-brand"
+                     className="rounded-none border-black focus:border-black text-small-brand"
                   />
                </div>
                <div className="space-y-2">
                   <label className="text-small-brand text-gray-400">Tactical Description</label>
                   <textarea
-                     className="w-full border-black focus:border-black focus:ring-0 text-[11px] p-4 min-h-[120px] uppercase tracking-widest font-medium leading-relaxed bg-white border"
+                     className="w-full border-black focus:border-black focus:ring-0 text-[11px] p-4 min-h-[120px] font-medium leading-relaxed bg-white border"
                      value={formData.description}
                      onChange={e => setFormData({ ...formData, description: e.target.value })}
-                     placeholder="ENTER CLASSIFICATION DETAILS..."
+                     placeholder="Enter classification details..."
                   />
                </div>
 
@@ -156,7 +156,7 @@ const AdminCategories = () => {
          {/* Search Bar */}
          <div className="w-full max-w-xl relative">
             <Input
-               placeholder="IDENTIFY CLASSIFICATION..."
+               placeholder="Identify classification..."
                className="pl-14 py-6 border-black focus:border-black rounded-none text-small-brand bg-brand-grey/50"
                value={searchTerm}
                onChange={(e) => setSearchTerm(e.target.value)}
