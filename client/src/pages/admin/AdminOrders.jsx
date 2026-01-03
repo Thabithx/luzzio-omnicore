@@ -340,7 +340,7 @@ const AdminOrders = () => {
                   }
                   @page {
                      size: A4;
-                     margin: 20mm 15mm;
+                     margin: 15mm;
                   }
                   html, body {
                      margin: 0 !important;
@@ -365,14 +365,12 @@ const AdminOrders = () => {
                      padding: 0 !important;
                      background: white !important;
                   }
-.print-page-break {
+                  .print-page-break {
                      page-break-after: always;
                      break-after: page;
                   }
                   .label-body {
                      width: 100%;
-                     max-width: 800px;
-                     margin: 0 auto;
                      page-break-after: always;
                      page-break-inside: avoid;
                      font-family: 'Helvetica', 'Arial', sans-serif !important;
@@ -380,22 +378,22 @@ const AdminOrders = () => {
                      line-height: 1.4;
                      font-weight: 600;
                      color: #000;
-                     padding: 20px 30px;
-                     box-sizing: border-box;
+                     padding: 0;
+                     margin: 0;
                   }
                   .label-body:last-child {
                      page-break-after: avoid;
                   }
                   .print-header {
                      text-align: right;
-                     margin-bottom: 30px;
-                     padding-bottom: 15px;
+                     margin-bottom: 25px;
+                     padding-bottom: 12px;
                      border-bottom: 2px solid #000;
                   }
                   .print-order-id {
-                     font-size: 20pt;
+                     font-size: 18pt;
                      font-weight: 900;
-                     margin-bottom: 8px;
+                     margin-bottom: 6px;
                      color: #000;
                   }
                   .print-date {
@@ -404,8 +402,8 @@ const AdminOrders = () => {
                      color: #333;
                   }
                   .label-h2 {
-                     font-size: 14pt;
-                     margin: 20px 0 12px 0;
+                     font-size: 13pt;
+                     margin: 18px 0 10px 0;
                      text-transform: uppercase;
                      font-weight: 900;
                      letter-spacing: 0.5px;
@@ -413,24 +411,24 @@ const AdminOrders = () => {
                   .columns {
                      display: grid;
                      grid-template-columns: 1fr 1fr;
-                     gap: 30px;
+                     gap: 25px;
                      width: 100%;
-                     margin: 20px 0;
+                     margin: 18px 0;
                   }
                   .address {
                      font-size: 10pt;
                      font-weight: 600;
-                     line-height: 1.6;
+                     line-height: 1.5;
                   }
                   .address div {
-                     margin-bottom: 3px;
+                     margin-bottom: 2px;
                   }
                   .address-label {
                      font-weight: 900;
-                     margin-bottom: 10px !important;
+                     margin-bottom: 8px !important;
                      font-size: 9pt;
                      text-transform: uppercase;
-                     letter-spacing: 1px;
+                     letter-spacing: 0.8px;
                      color: #666;
                   }
                   table {
@@ -443,7 +441,7 @@ const AdminOrders = () => {
                      display: table-header-group;
                   }
                   th, td {
-                     padding: 12px 15px;
+                     padding: 10px 12px;
                      text-align: left;
                      border: 1.5px solid #000;
                   }
@@ -459,17 +457,17 @@ const AdminOrders = () => {
                      font-weight: 600;
                   }
                   hr {
-                     margin: 25px 0;
+                     margin: 20px 0;
                      border: 0;
                      border-top: 2px solid #000;
                   }
                   .footer-note {
-                     margin-top: 30px;
-                     padding-top: 20px;
+                     margin-top: 25px;
+                     padding-top: 18px;
                      border-top: 1.5px solid #ddd;
                      font-size: 9pt;
                      text-align: center;
-                     line-height: 1.8;
+                     line-height: 1.7;
                      font-weight: 600;
                      color: #666;
                   }
