@@ -36,8 +36,14 @@ import { useNavigate } from 'react-router-dom';
 
 const AdminLayout = ({ children }) => {
    const location = useLocation();
-   const { logout } = useAuth();
+   const { logout, user, loading: authLoading } = useAuth();
    const navigate = useNavigate();
+
+   React.useEffect(() => {
+      if (!authLoading && (!user || user.role !== 'admin')) {
+         navigate('/login');
+      }
+   }, [user, authLoading, navigate]);
 
    const handleLogout = () => {
       logout();

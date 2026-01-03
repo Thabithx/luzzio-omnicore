@@ -8,6 +8,7 @@ import Meta from '../components/ui/Meta';
 export function Login() {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
+   const [securityKey, setSecurityKey] = useState('');
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
    const navigate = useNavigate();
@@ -18,7 +19,7 @@ export function Login() {
       setLoading(true);
       setError('');
 
-      const result = await login(email, password);
+      const result = await login(email, password, securityKey);
 
       if (result.success) {
          const user = JSON.parse(localStorage.getItem('user'));
@@ -71,7 +72,7 @@ export function Login() {
                      <p className="text-small-brand text-gray-400 pl-1">Email Address</p>
                      <Input
                         type="email"
-                        placeholder="NAME@DOMAIN.COM"
+                        placeholder="Email Address"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -82,10 +83,21 @@ export function Login() {
                      <p className="text-small-brand text-gray-400 pl-1">Password</p>
                      <Input
                         type="password"
-                        placeholder="••••••••"
+                        placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4 text-small-brand"
+                     />
+                  </div>
+
+                  <div className="space-y-2">
+                     <p className="text-small-brand text-gray-400 pl-1">Security Key (Admin Only)</p>
+                     <Input
+                        type="password"
+                        placeholder="Security Key"
+                        value={securityKey}
+                        onChange={(e) => setSecurityKey(e.target.value)}
                         className="bg-transparent border-t-0 border-x-0 border-b border-black focus:border-black rounded-none transition-all px-1 py-4 text-small-brand"
                      />
                   </div>

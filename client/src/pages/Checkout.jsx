@@ -236,7 +236,7 @@ export function Checkout() {
                         <Input
                            name="email"
                            type="email"
-                           placeholder="Digital Address (Email)"
+                           placeholder="Email Address"
                            value={formData.email}
                            onChange={handleInputChange}
                            required

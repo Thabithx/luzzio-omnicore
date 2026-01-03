@@ -109,7 +109,7 @@ export function Contact() {
                            required
                            maxLength={2000}
                            rows={8}
-                           className="w-full border border-black px-4 py-3 text-[11px] font-medium uppercase tracking-widest bg-white focus:outline-none focus:ring-2 focus:ring-black resize-none"
+                           className="w-full border border-black px-4 py-3 text-[11px] font-medium tracking-widest bg-white focus:outline-none focus:ring-2 focus:ring-black resize-none"
                         />
                         <p className="text-[9px] text-gray-500 mt-2 uppercase tracking-widest">
                            {formData.message.length}/2000 characters

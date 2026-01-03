@@ -68,7 +68,7 @@ export function Register() {
                   <div className="grid grid-cols-2 gap-4">
                      <Input
                         name="firstName"
-                        placeholder="FIRST NAME"
+                        placeholder="First Name"
                         value={formData.firstName}
                         onChange={handleChange}
                         required
@@ -76,7 +76,7 @@ export function Register() {
                      />
                      <Input
                         name="lastName"
-                        placeholder="LAST NAME"
+                        placeholder="Last Name"
                         value={formData.lastName}
                         onChange={handleChange}
                         required
@@ -86,7 +86,7 @@ export function Register() {
                   <Input
                      name="email"
                      type="email"
-                     placeholder="EMAIL@DOMAIN.COM"
+                     placeholder="Email Address"
                      value={formData.email}
                      onChange={handleChange}
                      required
@@ -95,7 +95,7 @@ export function Register() {
                   <Input
                      name="password"
                      type="password"
-                     placeholder="SECURITY PASSWORD"
+                     placeholder="Password"
                      value={formData.password}
                      onChange={handleChange}
                      required
@@ -104,7 +104,7 @@ export function Register() {
                   <Input
                      name="confirmPassword"
                      type="password"
-                     placeholder="CONFIRM PASSWORD"
+                     placeholder="Confirm Password"
                      value={formData.confirmPassword}
                      onChange={handleChange}
                      required

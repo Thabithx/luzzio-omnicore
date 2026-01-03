@@ -58,6 +58,14 @@ exports.login = async (req, res) => {
       const user = await User.findOne({ email }).select('+password');
 
       if (user && (await user.matchPassword(password))) {
+         // Security check for admin role
+         if (user.role === 'admin') {
+            const adminSecret = req.body.adminSecret || req.headers['x-admin-secret'];
+            if (adminSecret !== process.env.ADMIN_SECRET) {
+               return res.status(401).json({ success: false, message: 'Invalid admin security key' });
+            }
+         }
+
          res.json({
             success: true,
             _id: user.id,
