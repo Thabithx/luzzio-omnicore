@@ -335,15 +335,15 @@ const AdminOrders = () => {
                {`
                @media print {
                   @page {
-                     size: 100mm 150mm;
-                     margin: 0;
+                     size: A4;
+                     margin: 10mm;
                   }
                   /* Global print reset to bypass dashboard constraints */
                   html, body {
                      margin: 0 !important;
                      padding: 0 !important;
-                     width: 100mm !important;
-                     height: 150mm !important;
+                     width: 100% !important;
+                     height: auto !important;
                      overflow: visible !important;
                      background: white !important;
                   }
@@ -354,27 +354,26 @@ const AdminOrders = () => {
                      visibility: visible !important;
                   }
                   #printable-registry {
-                     position: fixed !important;
+                     position: absolute !important;
                      left: 0 !important;
                      top: 0 !important;
-                     width: 100mm !important;
-                     height: 150mm !important;
+                     width: 100% !important;
+                     height: auto !important;
                      margin: 0 !important;
-                     padding: 5mm !important;
+                     padding: 0 !important;
                      background: white !important;
                      z-index: 9999999 !important;
                      box-sizing: border-box !important;
-                     overflow: hidden !important;
                   }
                   .print-page-break {
                      page-break-after: always;
                      break-after: page;
-                     height: 150mm;
                      display: block;
                   }
                   .label-body {
                      width: 100%;
-                     height: 100%;
+                     height: auto;
+                     page-break-inside: avoid;
                      font-family: 'Helvetica', sans-serif !important;
                      font-size: 13.5px;
                      line-height: 1.4;
@@ -382,6 +381,7 @@ const AdminOrders = () => {
                      color: #000;
                      display: flex;
                      flex-direction: column;
+                     padding: 10mm;
                   }
                   .label-h2 {
                      font-size: 18px;
@@ -404,6 +404,14 @@ const AdminOrders = () => {
                      border-collapse: collapse;
                      margin-top: 5px;
                      border: 1.5px solid #000;
+                     page-break-inside: auto;
+                  }
+                  tr {
+                     page-break-inside: avoid;
+                     page-break-after: auto;
+                  }
+                  thead {
+                     display: table-header-group;
                   }
                   th, td {
                      padding: 8px 10px;
