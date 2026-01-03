@@ -64,8 +64,8 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                   <p className="text-small-brand text-gray-400 mb-4">Client Registry Reference</p>
                   <div className="flex flex-col md:flex-row md:items-center gap-10">
                      <div>
-                        <p className="text-sm font-black uppercase tracking-tighter">{order.user?.name || 'GUEST CLIENT'}</p>
-                        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest mt-1">{order.user?.email || 'UNIDENTIFIED'}</p>
+                        <p className="text-sm font-black uppercase tracking-tighter">{order.shippingAddress?.firstName && order.shippingAddress?.lastName ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 'GUEST CLIENT'}</p>
+                        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest mt-1">{order.email || 'UNIDENTIFIED'}</p>
                      </div>
                      <div className="md:border-l border-black md:pl-10">
                         <p className="text-[11px] text-gray-400 font-medium uppercase tracking-widest leading-relaxed">
@@ -276,7 +276,7 @@ const AdminOrders = () => {
                               <div className="text-[11px] font-black uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors">LU-{order._id.slice(-8).toUpperCase()}</div>
                            </td>
                            <td className="px-8 py-8">
-                              <div className="text-[11px] font-black uppercase tracking-tight">{order.user?.name || 'GUEST CLIENT'}</div>
+                              <div className="text-[11px] font-black uppercase tracking-tight">{order.shippingAddress?.firstName && order.shippingAddress?.lastName ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 'GUEST CLIENT'}</div>
                               <div className="text-[9px] text-gray-400 uppercase tracking-widest mt-1 font-bold">{order.email || 'N/A'}</div>
                            </td>
                            <td className="px-8 py-8">
