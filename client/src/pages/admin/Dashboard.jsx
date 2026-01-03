@@ -51,8 +51,8 @@ const OrderDetailsModal = ({ isOpen, onClose, order }) => {
                   </div>
                   <div className="space-y-3">
                      <p className="text-small-brand text-gray-400">Client Entry</p>
-                     <p className="text-sm font-black uppercase">{order.user?.name || 'Guest'}</p>
-                     <p className="text-[10px] text-gray-400 font-bold uppercase">{order.user?.email}</p>
+                     <p className="text-sm font-black uppercase">{order.shippingAddress?.firstName && order.shippingAddress?.lastName ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 'Guest'}</p>
+                     <p className="text-[10px] text-gray-400 font-bold uppercase">{order.email}</p>
                   </div>
                </div>
 
@@ -171,7 +171,7 @@ const Dashboard = () => {
                               LU-{order._id.slice(-8).toUpperCase()}
                            </td>
                            <td className="px-8 py-6 text-[11px] font-black uppercase tracking-tight">
-                              {order.user?.name || 'Inconnu'}
+                              {order.shippingAddress?.firstName && order.shippingAddress?.lastName ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 'Inconnu'}
                            </td>
                            <td className="px-8 py-6 text-[11px] font-bold text-gray-400 uppercase">
                               {new Date(order.createdAt).toLocaleDateString()}
