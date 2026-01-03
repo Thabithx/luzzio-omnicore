@@ -377,7 +377,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                               <img
                                  src={img}
                                  alt={`Asset ${index + 1}`}
-                                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                                 className="w-full h-full object-cover transition-all duration-500"
                               />
                               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-4">
                                  <p className="text-[7px] text-white/60 font-black uppercase tracking-widest">Asset {index + 1}</p>
@@ -521,7 +521,7 @@ const AdminProducts = () => {
                         <tr key={product._id} className="hover:bg-brand-grey transition-all group">
                            <td className="px-8 py-6">
                               <div className="w-16 aspect-[3/4] bg-white border border-black overflow-hidden shadow-sm group-hover:bg-white transition-all">
-                                 <img src={product.images[0]} alt="" className="w-full h-full object-cover grayscale" />
+                                 <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
                               </div>
                            </td>
                            <td className="px-8 py-6">

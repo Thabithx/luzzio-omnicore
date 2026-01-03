@@ -62,7 +62,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order }) => {
                      {order.orderItems.map((item, i) => (
                         <div key={i} className="flex p-6 gap-6 items-center">
                            <div className="w-16 aspect-[3/4] bg-white border border-black overflow-hidden shrink-0 shadow-sm">
-                              <img src={item.image} alt="" className="w-full h-full object-cover grayscale" />
+                              <img src={item.image} alt="" className="w-full h-full object-cover" />
                            </div>
                            <div className="flex-1 min-w-0">
                               <p className="text-sm font-black uppercase tracking-tight truncate">{item.name}</p>
