@@ -340,7 +340,7 @@ const AdminOrders = () => {
                   }
                   @page {
                      size: A4;
-                     margin: 15mm;
+                     margin: 20mm 15mm;
                   }
                   html, body {
                      margin: 0 !important;
@@ -365,98 +365,113 @@ const AdminOrders = () => {
                      padding: 0 !important;
                      background: white !important;
                   }
-                  .print-page-break {
+.print-page-break {
                      page-break-after: always;
                      break-after: page;
                   }
                   .label-body {
                      width: 100%;
+                     max-width: 800px;
+                     margin: 0 auto;
                      page-break-after: always;
                      page-break-inside: avoid;
-                     font-family: 'Helvetica', sans-serif !important;
-                     font-size: 12px;
-                     line-height: 1.3;
-                     font-weight: 700;
+                     font-family: 'Helvetica', 'Arial', sans-serif !important;
+                     font-size: 11pt;
+                     line-height: 1.4;
+                     font-weight: 600;
                      color: #000;
-                     padding: 0;
-                     margin: 0;
+                     padding: 20px 30px;
+                     box-sizing: border-box;
                   }
                   .label-body:last-child {
                      page-break-after: avoid;
                   }
                   .print-header {
                      text-align: right;
-                     margin-bottom: 20px;
+                     margin-bottom: 30px;
+                     padding-bottom: 15px;
+                     border-bottom: 2px solid #000;
                   }
                   .print-order-id {
-                     font-size: 18px;
+                     font-size: 20pt;
                      font-weight: 900;
-                     margin-bottom: 5px;
+                     margin-bottom: 8px;
+                     color: #000;
                   }
                   .print-date {
-                     font-size: 14px;
-                     font-weight: 900;
+                     font-size: 12pt;
+                     font-weight: 700;
+                     color: #333;
                   }
                   .label-h2 {
-                     font-size: 16px;
-                     margin: 12px 0 8px 0;
-                     text-transform: capitalize;
+                     font-size: 14pt;
+                     margin: 20px 0 12px 0;
+                     text-transform: uppercase;
                      font-weight: 900;
+                     letter-spacing: 0.5px;
                   }
                   .columns {
                      display: grid;
                      grid-template-columns: 1fr 1fr;
-                     gap: 20px;
+                     gap: 30px;
                      width: 100%;
-                     margin-bottom: 15px;
+                     margin: 20px 0;
                   }
                   .address {
-                     font-size: 11px;
-                     font-weight: 700;
-                     line-height: 1.4;
+                     font-size: 10pt;
+                     font-weight: 600;
+                     line-height: 1.6;
+                  }
+                  .address div {
+                     margin-bottom: 3px;
                   }
                   .address-label {
                      font-weight: 900;
-                     margin-bottom: 5px;
-                     font-size: 10px;
+                     margin-bottom: 10px !important;
+                     font-size: 9pt;
                      text-transform: uppercase;
-                     letter-spacing: 0.5px;
+                     letter-spacing: 1px;
+                     color: #666;
                   }
                   table {
                      width: 100%;
                      border-collapse: collapse;
-                     margin: 10px 0;
-                     border: 1.5px solid #000;
+                     margin: 15px 0;
+                     border: 2px solid #000;
                   }
                   thead {
                      display: table-header-group;
                   }
                   th, td {
-                     padding: 8px;
+                     padding: 12px 15px;
                      text-align: left;
-                     font-weight: 700 !important;
                      border: 1.5px solid #000;
-                     font-size: 11px;
                   }
                   th {
-                     background-color: #f5f5f5;
+                     background-color: #f0f0f0;
                      text-transform: uppercase;
-                     font-size: 10px;
+                     font-size: 9pt;
+                     font-weight: 900;
                      letter-spacing: 0.5px;
                   }
+                  td {
+                     font-size: 10pt;
+                     font-weight: 600;
+                  }
                   hr {
-                     margin: 15px 0;
+                     margin: 25px 0;
                      border: 0;
-                     border-top: 1.5px solid #000;
+                     border-top: 2px solid #000;
                   }
                   .footer-note {
-                     margin-top: 20px;
-                     padding-top: 15px;
-                     border-top: 1px solid #ddd;
-                     font-size: 10px;
+                     margin-top: 30px;
+                     padding-top: 20px;
+                     border-top: 1.5px solid #ddd;
+                     font-size: 9pt;
                      text-align: center;
-                     line-height: 1.6;
-                     font-weight: 700;
+                     line-height: 1.8;
+                     font-weight: 600;
+                     color: #666;
                   }
                }
                `}
