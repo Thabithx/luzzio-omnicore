@@ -16,7 +16,7 @@ const FooterSection = ({ title, children, id, activeSection, toggleSection }) =>
          </button>
 
          <div className={`overflow-hidden transition-all duration-500 lg:max-h-none ${isOpen ? 'max-h-[500px]' : 'max-h-0 lg:max-h-none'}`}>
-            <div className="p-8 space-y-6 lg:pt-0">
+            <div className="p-8 space-y-6 lg:pt-8 lg:pb-12">
                <h3 className="hidden lg:block text-[10px] font-black uppercase tracking-[0.3em] mb-6">{title}</h3>
                {children}
             </div>
@@ -161,7 +161,7 @@ export function Footer() {
             </div>
 
             {/* COPYRIGHT SECTION */}
-            <div className="py-6 text-center border-t border-black lg:border-t-0">
+            <div className="py-8 lg:py-10 text-center border-t border-black">
                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-black/40">
                   © 2025 Luzzio
                </p>

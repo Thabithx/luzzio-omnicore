@@ -25,11 +25,11 @@ export function ProductCard({ product }) {
    return (
       <div className="group relative cursor-pointer transition-all duration-500 hover:bg-brand-grey/50 p-6 h-full">
          <Link to={`/products/${product._id}`} className="flex flex-col h-full">
-            <div className="aspect-[3/4] bg-white relative overflow-hidden shrink-0">
+            <div className="aspect-[3/4] bg-white relative overflow-hidden shrink-0 p-4">
                <img
                   src={imageUrl}
                   alt={product.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-all duration-700 bg-white"
+                  className="w-full h-full object-contain transition-all duration-700"
                />
             </div>
 
