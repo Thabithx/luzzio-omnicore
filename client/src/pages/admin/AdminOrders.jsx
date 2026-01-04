@@ -357,17 +357,15 @@ const AdminOrders = () => {
                      visibility: visible !important;
                   }
                   #printable-registry {
-                     position: relative !important; /* Relative is more stable for page flow */
-                     left: 0 !important;
-                     top: 0 !important;
+                     position: relative !important;
                      width: 100% !important;
                      margin: 0 !important;
-                     /* Significant padding for balanced positioning (Top, Right, Bottom, Left) */
-                     padding: 4cm 2cm 2cm 4cm !important; 
+                     padding: 1.5cm !important; /* Balanced standard padding */
                      background: white !important;
                      color: #000;
                      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
                      box-sizing: border-box !important;
+                     min-height: 100%;
                   }
                   .print-page-break {
                      page-break-after: always !important;
@@ -375,7 +373,6 @@ const AdminOrders = () => {
                   }
                   .label-body {
                      width: 100%;
-                     /* Only break via the explicit print-page-break class */
                      padding-bottom: 2rem;
                      position: relative;
                      box-sizing: border-box;
