@@ -476,46 +476,51 @@ const AdminOrders = () => {
             </style>
             <div id="printable-registry">
                {orders.filter(o => selectedIds.includes(o._id)).map((order, idx) => (
-                  <div key={order._id} className={cn("label-body", idx < selectedIds.length - 1 && "print-page-break")}>
-                     {/* Header Block */}
-                     <div className="print-header">
-                        <div className="print-order-id">Order #{order._id.slice(-6).toUpperCase()}</div>
-                        <div className="print-date">{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                     </div>
-
-                     {/* Address Block */}
-                     <div className="columns">
-                        <div className="address">
-                           <div className="address-label">From</div>
-                           <div>LUZZIO</div>
-                           <div>Anuradhapura</div>
-                           <div>NEW BUS STAND LATEST</div>
-                           <div>SMART NEAR TO BOC BANK</div>
-                           <div>Anuradhapura, 50000</div>
-                           <div>Sri Lanka</div>
-                           <div style={{ marginTop: '8px' }}>Phone: 0764800541</div>
-                        </div>
-
-                        <div className="address">
-                           <div className="address-label">Ship to</div>
-                           <div>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</div>
-                           <div>{order.shippingAddress.address}</div>
-                           <div>{order.shippingAddress.city}</div>
-                           <div>{order.shippingAddress.postalCode}</div>
-                           <div>Sri Lanka</div>
-                           <div style={{ marginTop: '8px' }}>Phone: {order.shippingAddress.phone || (order.user && order.user.phone) || order.email || ''}</div>
+                  <div key={order._id} className={cn("invoice-container", idx < selectedIds.length - 1 && "print-page-break")}>
+                     {/* Invoice Header */}
+                     <div className="invoice-header">
+                        <div className="order-number">Order #{order._id.slice(-6).toUpperCase()}</div>
+                        <div className="order-date">
+                           {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                         </div>
                      </div>
 
-                     <hr />
+                     {/* From / Ship To Section */}
+                     <div className="address-section">
+                        {/* From Section */}
+                        <div className="address-block">
+                           <div className="address-title">From</div>
+                           <div className="address-line">LUZZIO</div>
+                           <div className="address-line">Nimal Karunathilaka</div>
+                           <div className="address-line">No 69, Awasdha, High Level</div>
+                           <div className="address-line">Road , Weagoda</div>
+                           <div className="address-line">Colombo District, 10560</div>
+                           <div className="address-line">Sri Lanka</div>
+                           <div className="address-line" style={{ marginTop: '8px' }}>Phone: 0712406222</div>
+                        </div>
 
-                     <h2 className="label-h2">Order Details</h2>
+                        {/* Ship To Section */}
+                        <div className="address-block">
+                           <div className="address-title">Ship to</div>
+                           <div className="address-line">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</div>
+                           <div className="address-line">{order.shippingAddress.address}</div>
+                           <div className="address-line">{order.shippingAddress.city}, {order.shippingAddress.postalCode}</div>
+                           <div className="address-line">Colombo District, {order.shippingAddress.postalCode}</div>
+                           <div className="address-line">Sri Lanka</div>
+                           <div className="address-line" style={{ marginTop: '8px' }}>Phone: {order.shippingAddress.phone || order.email || ''}</div>
+                        </div>
+                     </div>
 
-                     <table>
+                     <div className="separator-line"></div>
+
+                     {/* Order Details Section */}
+                     <div className="section-title">Order Details</div>
+
+                     <table className="items-table">
                         <thead>
                            <tr>
-                              <th style={{ width: '15%' }}>Qty</th>
-                              <th style={{ width: '85%' }}>Item</th>
+                              <th style={{ width: '80px' }}>Qty</th>
+                              <th>Item</th>
                            </tr>
                         </thead>
                         <tbody>
@@ -523,19 +528,19 @@ const AdminOrders = () => {
                               <tr key={i}>
                                  <td>{item.qty}</td>
                                  <td>
-                                    <div style={{ fontWeight: '900' }}>{item.name}</div>
-                                    <div style={{ fontSize: '12.5px', marginTop: '2px' }}>fit - {item.size}</div>
+                                    <div className="item-name">{item.name}</div>
+                                    <div className="item-variant">Regular fit - {item.size}</div>
                                  </td>
                               </tr>
                            ))}
                         </tbody>
                      </table>
 
-                     {/* Footer Block */}
-                     <div className="footer-note">
-                        www.luzzioclothing.com<br />
-                        For exchanges kindly contact our WhatsApp – 0781423168<br />
-                        DM us at @luzziopremium
+                     {/* Footer Information */}
+                     <div className="footer-info">
+                        <div className="footer-link">www.luzzioclothing.com</div>
+                        <div>For exchanges kindly contact our WhatsApp – 0781423168</div>
+                        <div>DM us at @luzziopremium</div>
                      </div>
                   </div>
                ))}
