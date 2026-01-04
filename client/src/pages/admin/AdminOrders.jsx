@@ -340,13 +340,13 @@ const AdminOrders = () => {
                   }
                   @page {
                      size: A4;
-                     margin: 1.5cm;
+                     margin: 0; /* Control margin via padding to avoid browser inconsistencies */
                   }
                   html, body {
                      margin: 0 !important;
                      padding: 0 !important;
                      width: 100% !important;
-                     height: auto !important; /* Fix empty pages */
+                     height: 100% !important;
                      overflow: visible !important;
                      background: white !important;
                   }
@@ -362,10 +362,12 @@ const AdminOrders = () => {
                      top: 0 !important;
                      width: 100% !important;
                      margin: 0 !important;
-                     padding: 0 !important;
+                     /* Proper padding simulates margins and keeps date off the edge */
+                     padding: 1.5cm 1.5cm !important; 
                      background: white !important;
                      color: #000;
                      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+                     box-sizing: border-box !important;
                   }
                   .print-page-break {
                      page-break-after: always;
@@ -373,17 +375,16 @@ const AdminOrders = () => {
                   }
                   .label-body {
                      width: 100%;
-                     /* Prevent blank page after last item */
                      page-break-after: always;
                      padding-bottom: 2rem;
                      position: relative;
                      box-sizing: border-box;
-                     /* Reduce right alignment */
-                     max-width: 95%; 
-                     margin: 0 auto;
+                     /* Left align strictly */
+                     text-align: left;
                   }
                   .label-body:last-child {
                      page-break-after: avoid;
+                     padding-bottom: 0;
                   }
                   
                   /* HEADER */
@@ -391,8 +392,8 @@ const AdminOrders = () => {
                      width: 100%;
                      display: flex;
                      justify-content: flex-end;
-                     margin-bottom: 40px;
-                     align-items: flex-start; /* Ensure top alignment */
+                     margin-bottom: 30px;
+                     align-items: flex-start;
                   }
                   .order-meta {
                      text-align: right;
@@ -400,7 +401,7 @@ const AdminOrders = () => {
                   .print-order-id {
                      font-size: 16pt;
                      font-weight: 700;
-                     margin-bottom: 4px;
+                     margin-bottom: 5px;
                      color: #000;
                      line-height: 1;
                   }
@@ -408,7 +409,6 @@ const AdminOrders = () => {
                      font-size: 11pt;
                      font-weight: 500;
                      color: #000;
-                     margin-top: 5px; /* Spacing */
                   }
 
                   /* ADDRESS COLUMNS */
@@ -445,7 +445,7 @@ const AdminOrders = () => {
                      font-size: 11pt;
                      font-weight: 700;
                      text-transform: capitalize;
-                     margin: 0 0 10px 0;
+                     margin: 0 0 15px 0;
                      color: #000;
                   }
                   table {
@@ -520,7 +520,6 @@ const AdminOrders = () => {
                               {order.shippingAddress.postalCode}<br />
                               {order.shippingAddress.country || 'Sri Lanka'}<br />
                               {order.shippingAddress.phone && `Phone: ${order.shippingAddress.phone}`}
-                              {/* Fallback to user phone or email if no shipping phone, but prioritize shipping phone */}
                               {!order.shippingAddress.phone && (
                                  (order.user && order.user.phone) ? `Phone: ${order.user.phone}` : `Email: ${order.email}`
                               )}
