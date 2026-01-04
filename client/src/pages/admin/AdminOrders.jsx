@@ -346,7 +346,7 @@ const AdminOrders = () => {
                      margin: 0 !important;
                      padding: 0 !important;
                      width: 100% !important;
-                     height: 100% !important;
+                     height: auto !important; /* Fix empty pages */
                      overflow: visible !important;
                      background: white !important;
                   }
@@ -373,9 +373,14 @@ const AdminOrders = () => {
                   }
                   .label-body {
                      width: 100%;
+                     /* Prevent blank page after last item */
                      page-break-after: always;
                      padding-bottom: 2rem;
                      position: relative;
+                     box-sizing: border-box;
+                     /* Reduce right alignment */
+                     max-width: 95%; 
+                     margin: 0 auto;
                   }
                   .label-body:last-child {
                      page-break-after: avoid;
@@ -385,8 +390,9 @@ const AdminOrders = () => {
                   .print-header {
                      width: 100%;
                      display: flex;
-                     justify-content: flex-end; /* Align strictly to right */
+                     justify-content: flex-end;
                      margin-bottom: 40px;
+                     align-items: flex-start; /* Ensure top alignment */
                   }
                   .order-meta {
                      text-align: right;
@@ -396,11 +402,13 @@ const AdminOrders = () => {
                      font-weight: 700;
                      margin-bottom: 4px;
                      color: #000;
+                     line-height: 1;
                   }
                   .print-date {
                      font-size: 11pt;
                      font-weight: 500;
                      color: #000;
+                     margin-top: 5px; /* Spacing */
                   }
 
                   /* ADDRESS COLUMNS */
@@ -511,7 +519,11 @@ const AdminOrders = () => {
                               {order.shippingAddress.city}<br />
                               {order.shippingAddress.postalCode}<br />
                               {order.shippingAddress.country || 'Sri Lanka'}<br />
-                              Phone: {order.shippingAddress.phone || (order.user && order.user.phone) || order.email || ''}
+                              {order.shippingAddress.phone && `Phone: ${order.shippingAddress.phone}`}
+                              {/* Fallback to user phone or email if no shipping phone, but prioritize shipping phone */}
+                              {!order.shippingAddress.phone && (
+                                 (order.user && order.user.phone) ? `Phone: ${order.user.phone}` : `Email: ${order.email}`
+                              )}
                            </div>
                         </div>
                      </div>

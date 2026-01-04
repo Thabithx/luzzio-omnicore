@@ -20,7 +20,8 @@ export function Checkout() {
       lastName: '',
       address: '',
       city: '',
-      postalCode: ''
+      postalCode: '',
+      phone: ''
    });
 
    // Auto-fill user data when component mounts or user changes
@@ -34,7 +35,8 @@ export function Checkout() {
             lastName: nameParts.slice(1).join(' ') || '',
             address: user.shippingAddress?.address || '',
             city: user.shippingAddress?.city || '',
-            postalCode: user.shippingAddress?.postalCode || ''
+            postalCode: user.shippingAddress?.postalCode || '',
+            phone: user.shippingAddress?.phone || ''
          }));
       }
    }, [user]);
@@ -93,7 +95,8 @@ export function Checkout() {
                city: formData.city,
                postalCode: formData.postalCode,
                firstName: formData.firstName,
-               lastName: formData.lastName
+               lastName: formData.lastName,
+               phone: formData.phone
             },
             paymentMethod: paymentMethod,
             itemsPrice: subtotal,
@@ -252,6 +255,7 @@ export function Checkout() {
                         <Input name="address" placeholder="Physical Address" className="col-span-2" value={formData.address} onChange={handleInputChange} required />
                         <Input name="city" placeholder="City" value={formData.city} onChange={handleInputChange} required />
                         <Input name="postalCode" placeholder="Postal Code" value={formData.postalCode} onChange={handleInputChange} required />
+                        <Input name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleInputChange} required className="col-span-2" />
                      </div>
                   </section>
 
