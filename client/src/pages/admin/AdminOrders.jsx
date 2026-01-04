@@ -329,7 +329,7 @@ const AdminOrders = () => {
             onTrackingUpdate={handleTrackingUpdate}
          />
 
-         {/* PRINTABLE AREA */}
+         {/* PRINTABLE AREA - SHOPIFY STYLE */}
          <div className="hidden print:block print:m-0 print:p-0">
             <style>
                {`
@@ -364,6 +364,8 @@ const AdminOrders = () => {
                      margin: 0 !important;
                      padding: 0 !important;
                      background: white !important;
+                     color: #000;
+                     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
                   }
                   .print-page-break {
                      page-break-after: always;
@@ -372,175 +374,175 @@ const AdminOrders = () => {
                   .label-body {
                      width: 100%;
                      page-break-after: always;
-                     page-break-inside: avoid;
-                     font-family: 'Helvetica', 'Arial', sans-serif !important;
-                     font-size: 11pt;
-                     line-height: 1.4;
-                     font-weight: 600;
-                     color: #000;
-                     padding: 0;
-                     margin: 0;
+                     padding-bottom: 2rem;
                   }
                   .label-body:last-child {
                      page-break-after: avoid;
                   }
+                  
+                  /* HEADER */
                   .print-header {
+                     display: flex;
+                     justify-content: space-between;
+                     align-items: flex-start;
+                     margin-bottom: 40px;
+                  }
+                  .store-branding h1 {
+                     font-size: 24pt;
+                     font-weight: 900;
+                     margin: 0;
+                     letter-spacing: -0.5px;
+                     text-transform: uppercase;
+                  }
+                  .order-meta {
                      text-align: right;
-                     margin-bottom: 25px;
-                     padding-bottom: 12px;
-                     border-bottom: 2px solid #000;
                   }
                   .print-order-id {
-                     font-size: 18pt;
+                     font-size: 14pt;
                      font-weight: 900;
-                     margin-bottom: 6px;
-                     color: #000;
+                     margin-bottom: 4px;
                   }
                   .print-date {
-                     font-size: 12pt;
-                     font-weight: 700;
-                     color: #333;
+                     font-size: 11pt;
+                     color: #555;
                   }
-                  .label-h2 {
-                     font-size: 13pt;
-                     margin: 18px 0 10px 0;
-                     text-transform: uppercase;
-                     font-weight: 900;
-                     letter-spacing: 0.5px;
-                  }
+
+                  /* ADDRESS COLUMNS */
                   .columns {
                      display: grid;
                      grid-template-columns: 1fr 1fr;
-                     gap: 25px;
-                     width: 100%;
-                     margin: 18px 0;
+                     gap: 40px;
+                     margin-bottom: 40px;
+                     border-bottom: 1px solid #ddd;
+                     padding-bottom: 30px;
                   }
-                  .address {
+                  .address-column h3 {
                      font-size: 10pt;
-                     font-weight: 600;
+                     font-weight: 700;
+                     text-transform: uppercase;
+                     color: #666;
+                     margin: 0 0 10px 0;
+                     letter-spacing: 0.5px;
+                  }
+                  .address-lines {
+                     font-size: 10pt;
                      line-height: 1.5;
                   }
-                  .address div {
-                     margin-bottom: 2px;
-                  }
-                  .address-label {
+
+                  /* ORDER TABLE */
+                  .label-h2 {
+                     font-size: 11pt;
                      font-weight: 900;
-                     margin-bottom: 8px !important;
-                     font-size: 9pt;
                      text-transform: uppercase;
-                     letter-spacing: 0.8px;
-                     color: #666;
+                     margin: 0 0 15px 0;
                   }
                   table {
                      width: 100%;
                      border-collapse: collapse;
-                     margin: 15px 0;
-                     border: 2px solid #000;
-                  }
-                  thead {
-                     display: table-header-group;
-                  }
-                  th, td {
-                     padding: 10px 12px;
-                     text-align: left;
-                     border: 1.5px solid #000;
+                     margin-bottom: 30px;
                   }
                   th {
-                     background-color: #f0f0f0;
-                     text-transform: uppercase;
+                     text-align: left;
                      font-size: 9pt;
-                     font-weight: 900;
-                     letter-spacing: 0.5px;
+                     font-weight: 700;
+                     text-transform: uppercase;
+                     color: #666;
+                     border-bottom: 1px solid #000;
+                     padding: 10px 0;
                   }
                   td {
+                     padding: 15px 0;
+                     border-bottom: 1px solid #eee;
+                     vertical-align: top;
                      font-size: 10pt;
-                     font-weight: 600;
                   }
-                  hr {
-                     margin: 20px 0;
-                     border: 0;
-                     border-top: 2px solid #000;
-                  }
+                  .qty-col { width: 10%; }
+                  .item-col { width: 70%; }
+                  .price-col { width: 20%; text-align: right; }
+                  
+                  /* FOOTER */
                   .footer-note {
-                     margin-top: 25px;
-                     padding-top: 18px;
-                     border-top: 1.5px solid #ddd;
-                     font-size: 9pt;
                      text-align: center;
-                     line-height: 1.7;
-                     font-weight: 600;
+                     font-size: 9pt;
                      color: #666;
+                     margin-top: 50px;
+                     line-height: 1.6;
                   }
                }
                `}
             </style>
             <div id="printable-registry">
                {orders.filter(o => selectedIds.includes(o._id)).map((order, idx) => (
-                  <div key={order._id} className={cn("invoice-container", idx < selectedIds.length - 1 && "print-page-break")}>
-                     {/* Invoice Header */}
-                     <div className="invoice-header">
-                        <div className="order-number">Order #{order._id.slice(-6).toUpperCase()}</div>
-                        <div className="order-date">
-                           {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  <div key={order._id} className={cn("label-body", idx < selectedIds.length - 1 && "print-page-break")}>
+                     {/* Header */}
+                     <div className="print-header">
+                        <div className="store-branding">
+                           {/* Typically Shopify invoices show the Store Name top left if no logo */}
+                           <h1>LUZZIO</h1>
+                        </div>
+                        <div className="order-meta">
+                           <div className="print-order-id">Order #{order._id.slice(-6).toUpperCase()}</div>
+                           <div className="print-date">
+                              {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                           </div>
                         </div>
                      </div>
 
-                     {/* From / Ship To Section */}
-                     <div className="address-section">
-                        {/* From Section */}
-                        <div className="address-block">
-                           <div className="address-title">From</div>
-                           <div className="address-line">LUZZIO</div>
-                           <div className="address-line">Nimal Karunathilaka</div>
-                           <div className="address-line">No 69, Awasdha, High Level</div>
-                           <div className="address-line">Road , Weagoda</div>
-                           <div className="address-line">Colombo District, 10560</div>
-                           <div className="address-line">Sri Lanka</div>
-                           <div className="address-line" style={{ marginTop: '8px' }}>Phone: 0712406222</div>
+                     {/* Addresses */}
+                     <div className="columns">
+                        <div className="address-column">
+                           <h3>From</h3>
+                           <div className="address-lines">
+                              <strong>LUZZIO</strong><br />
+                              Anuradhapura<br />
+                              NEW BUS STAND LATEST<br />
+                              SMART NEAR TO BOC BANK<br />
+                              Anuradhapura 50000<br />
+                              Sri Lanka<br />
+                              Tel: 0764800541
+                           </div>
                         </div>
-
-                        {/* Ship To Section */}
-                        <div className="address-block">
-                           <div className="address-title">Ship to</div>
-                           <div className="address-line">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</div>
-                           <div className="address-line">{order.shippingAddress.address}</div>
-                           <div className="address-line">{order.shippingAddress.city}, {order.shippingAddress.postalCode}</div>
-                           <div className="address-line">Colombo District, {order.shippingAddress.postalCode}</div>
-                           <div className="address-line">Sri Lanka</div>
-                           <div className="address-line" style={{ marginTop: '8px' }}>Phone: {order.shippingAddress.phone || order.email || ''}</div>
+                        <div className="address-column">
+                           <h3>Ship To</h3>
+                           <div className="address-lines">
+                              <strong>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</strong><br />
+                              {order.shippingAddress.address}<br />
+                              {order.shippingAddress.city} {order.shippingAddress.postalCode}<br />
+                              {order.shippingAddress.country || 'Sri Lanka'}<br />
+                              {order.shippingAddress.phone && `Tel: ${order.shippingAddress.phone}`}
+                           </div>
                         </div>
                      </div>
 
-                     <div className="separator-line"></div>
-
-                     {/* Order Details Section */}
-                     <div className="section-title">Order Details</div>
-
-                     <table className="items-table">
+                     {/* Order Details */}
+                     <h2 className="label-h2">Order Details</h2>
+                     <table>
                         <thead>
                            <tr>
-                              <th style={{ width: '80px' }}>Qty</th>
-                              <th>Item</th>
+                              <th className="qty-col">Qty</th>
+                              <th className="item-col">Item</th>
+                              <th className="price-col" style={{ textAlign: 'right' }}>Price</th>
                            </tr>
                         </thead>
                         <tbody>
                            {order.orderItems.map((item, i) => (
                               <tr key={i}>
-                                 <td>{item.qty}</td>
-                                 <td>
-                                    <div className="item-name">{item.name}</div>
-                                    <div className="item-variant">Regular fit - {item.size}</div>
+                                 <td className="qty-col">{item.qty}</td>
+                                 <td className="item-col">
+                                    <div style={{ fontWeight: 'bold' }}>{item.name}</div>
+                                    <div style={{ fontSize: '9pt', color: '#666', marginTop: '4px' }}>Variant: {item.size}</div>
                                  </td>
+                                 <td className="price-col">${item.price * item.qty}.00</td>
                               </tr>
                            ))}
                         </tbody>
                      </table>
 
-                     {/* Footer Information */}
-                     <div className="footer-info">
-                        <div className="footer-link">www.luzzioclothing.com</div>
-                        <div>For exchanges kindly contact our WhatsApp – 0781423168</div>
-                        <div>DM us at @luzziopremium</div>
+                     {/* Footer */}
+                     <div className="footer-note">
+                        <p>Thank you for shopping with Luzzio.</p>
+                        <p>www.luzzioclothing.com • @luzziopremium</p>
+                        <p>For exchanges kindly contact our WhatsApp: 0781423168</p>
                      </div>
                   </div>
                ))}
