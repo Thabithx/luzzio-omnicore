@@ -360,12 +360,12 @@ const AdminOrders = () => {
                      position: relative !important;
                      width: 100% !important;
                      margin: 0 !important;
-                     padding: 1.5cm !important; /* Balanced standard padding */
+                     /* Reduced left padding to shift content to the left */
+                     padding: 1.5cm 1.5cm 1.5cm 0.8cm !important; 
                      background: white !important;
                      color: #000;
                      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
                      box-sizing: border-box !important;
-                     min-height: 100%;
                   }
                   .print-page-break {
                      page-break-after: always !important;
@@ -377,6 +377,7 @@ const AdminOrders = () => {
                      position: relative;
                      box-sizing: border-box;
                      text-align: left;
+                     overflow: visible !important;
                   }
                   .label-body:last-child {
                      padding-bottom: 0;
