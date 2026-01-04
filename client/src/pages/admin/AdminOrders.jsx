@@ -340,14 +340,13 @@ const AdminOrders = () => {
                   }
                   @page {
                      size: A4;
-                     margin: 0; /* Control margin via padding to avoid browser inconsistencies */
+                     margin: 2cm 1.5cm !important; /* Native margins ensure top padding on all pages */
                   }
                   html, body {
                      margin: 0 !important;
                      padding: 0 !important;
                      width: 100% !important;
-                     height: auto !important; /* Changed to auto to stop blank pages */
-                     overflow: visible !important;
+                     height: auto !important;
                      background: white !important;
                   }
                   body * {
@@ -357,11 +356,10 @@ const AdminOrders = () => {
                      visibility: visible !important;
                   }
                   #printable-registry {
-                     position: relative !important;
+                     display: block !important;
                      width: 100% !important;
                      margin: 0 !important;
-                     /* Reduced left padding to shift content to the left */
-                     padding: 1.5cm 1.5cm 1.5cm 0.8cm !important; 
+                     padding: 0 !important;
                      background: white !important;
                      color: #000;
                      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
@@ -372,11 +370,10 @@ const AdminOrders = () => {
                      break-after: page !important;
                   }
                   .label-body {
-                     width: 100%;
-                     padding-bottom: 2rem;
-                     position: relative;
-                     box-sizing: border-box;
-                     text-align: left;
+                     width: 100% !important;
+                     position: relative !important;
+                     box-sizing: border-box !important;
+                     text-align: left !important;
                      overflow: visible !important;
                   }
                   .label-body:last-child {
