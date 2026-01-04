@@ -340,14 +340,14 @@ const AdminOrders = () => {
                   }
                   @page {
                      size: A4;
-                     margin: 15mm;
+                     margin: 1.5cm;
                   }
                   html, body {
                      margin: 0 !important;
                      padding: 0 !important;
                      width: 100% !important;
                      height: 100% !important;
-                     overflow: hidden !important;
+                     overflow: visible !important;
                      background: white !important;
                   }
                   body * {
@@ -375,6 +375,7 @@ const AdminOrders = () => {
                      width: 100%;
                      page-break-after: always;
                      padding-bottom: 2rem;
+                     position: relative;
                   }
                   .label-body:last-child {
                      page-break-after: avoid;
@@ -382,91 +383,95 @@ const AdminOrders = () => {
                   
                   /* HEADER */
                   .print-header {
+                     width: 100%;
                      display: flex;
-                     justify-content: space-between;
-                     align-items: flex-start;
+                     justify-content: flex-end; /* Align strictly to right */
                      margin-bottom: 40px;
-                  }
-                  .store-branding h1 {
-                     font-size: 24pt;
-                     font-weight: 900;
-                     margin: 0;
-                     letter-spacing: -0.5px;
-                     text-transform: uppercase;
                   }
                   .order-meta {
                      text-align: right;
                   }
                   .print-order-id {
-                     font-size: 14pt;
-                     font-weight: 900;
+                     font-size: 16pt;
+                     font-weight: 700;
                      margin-bottom: 4px;
+                     color: #000;
                   }
                   .print-date {
                      font-size: 11pt;
-                     color: #555;
+                     font-weight: 500;
+                     color: #000;
                   }
 
                   /* ADDRESS COLUMNS */
                   .columns {
-                     display: grid;
-                     grid-template-columns: 1fr 1fr;
-                     gap: 40px;
-                     margin-bottom: 40px;
-                     border-bottom: 1px solid #ddd;
+                     display: flex;
+                     width: 100%;
+                     margin-bottom: 30px;
+                     border-bottom: 1px solid #ccc;
                      padding-bottom: 30px;
+                  }
+                  .address-column {
+                     width: 50%;
+                     padding-right: 20px;
                   }
                   .address-column h3 {
                      font-size: 10pt;
                      font-weight: 700;
-                     text-transform: uppercase;
-                     color: #666;
+                     text-transform: capitalize;
+                     color: #000;
                      margin: 0 0 10px 0;
-                     letter-spacing: 0.5px;
                   }
                   .address-lines {
                      font-size: 10pt;
-                     line-height: 1.5;
+                     line-height: 1.4;
+                     color: #000;
+                  }
+                  .store-name {
+                     font-weight: 900;
+                     text-transform: uppercase;
                   }
 
                   /* ORDER TABLE */
                   .label-h2 {
                      font-size: 11pt;
-                     font-weight: 900;
-                     text-transform: uppercase;
-                     margin: 0 0 15px 0;
+                     font-weight: 700;
+                     text-transform: capitalize;
+                     margin: 0 0 10px 0;
+                     color: #000;
                   }
                   table {
                      width: 100%;
                      border-collapse: collapse;
                      margin-bottom: 30px;
+                     border: 1px solid #ccc;
                   }
                   th {
                      text-align: left;
                      font-size: 9pt;
-                     font-weight: 700;
-                     text-transform: uppercase;
-                     color: #666;
-                     border-bottom: 1px solid #000;
-                     padding: 10px 0;
+                     font-weight: 600;
+                     color: #000;
+                     border-bottom: 1px solid #ccc;
+                     padding: 10px 12px;
+                     background: #fafafa;
                   }
                   td {
-                     padding: 15px 0;
+                     padding: 12px;
                      border-bottom: 1px solid #eee;
                      vertical-align: top;
                      font-size: 10pt;
+                     color: #000;
                   }
-                  .qty-col { width: 10%; }
-                  .item-col { width: 70%; }
-                  .price-col { width: 20%; text-align: right; }
+                  .qty-col { width: 10%; vertical-align: top; }
+                  .item-col { width: 90%; }
                   
                   /* FOOTER */
                   .footer-note {
                      text-align: center;
-                     font-size: 9pt;
-                     color: #666;
+                     font-size: 8pt;
+                     color: #000;
                      margin-top: 50px;
-                     line-height: 1.6;
+                     line-height: 1.5;
                   }
                }
                `}
@@ -474,12 +479,8 @@ const AdminOrders = () => {
             <div id="printable-registry">
                {orders.filter(o => selectedIds.includes(o._id)).map((order, idx) => (
                   <div key={order._id} className={cn("label-body", idx < selectedIds.length - 1 && "print-page-break")}>
-                     {/* Header */}
+                     {/* Header: Only Order ID and Date on Right */}
                      <div className="print-header">
-                        <div className="store-branding">
-                           {/* Typically Shopify invoices show the Store Name top left if no logo */}
-                           <h1>LUZZIO</h1>
-                        </div>
                         <div className="order-meta">
                            <div className="print-order-id">Order #{order._id.slice(-6).toUpperCase()}</div>
                            <div className="print-date">
@@ -488,28 +489,29 @@ const AdminOrders = () => {
                         </div>
                      </div>
 
-                     {/* Addresses */}
+                     {/* Addresses: From (Left) - Ship To (Right) */}
                      <div className="columns">
                         <div className="address-column">
                            <h3>From</h3>
                            <div className="address-lines">
-                              <strong>LUZZIO</strong><br />
+                              <div className="store-name">LUZZIO</div>
                               Anuradhapura<br />
                               NEW BUS STAND LATEST<br />
                               SMART NEAR TO BOC BANK<br />
-                              Anuradhapura 50000<br />
+                              Anuradhapura, 50000<br />
                               Sri Lanka<br />
-                              Tel: 0764800541
+                              Phone: 0764800541
                            </div>
                         </div>
                         <div className="address-column">
-                           <h3>Ship To</h3>
+                           <h3>Ship to</h3>
                            <div className="address-lines">
-                              <strong>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</strong><br />
+                              <div className="store-name">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</div>
                               {order.shippingAddress.address}<br />
-                              {order.shippingAddress.city} {order.shippingAddress.postalCode}<br />
+                              {order.shippingAddress.city}<br />
+                              {order.shippingAddress.postalCode}<br />
                               {order.shippingAddress.country || 'Sri Lanka'}<br />
-                              {order.shippingAddress.phone && `Tel: ${order.shippingAddress.phone}`}
+                              Phone: {order.shippingAddress.phone || (order.user && order.user.phone) || order.email || ''}
                            </div>
                         </div>
                      </div>
@@ -521,7 +523,6 @@ const AdminOrders = () => {
                            <tr>
                               <th className="qty-col">Qty</th>
                               <th className="item-col">Item</th>
-                              <th className="price-col" style={{ textAlign: 'right' }}>Price</th>
                            </tr>
                         </thead>
                         <tbody>
@@ -529,10 +530,11 @@ const AdminOrders = () => {
                               <tr key={i}>
                                  <td className="qty-col">{item.qty}</td>
                                  <td className="item-col">
-                                    <div style={{ fontWeight: 'bold' }}>{item.name}</div>
-                                    <div style={{ fontSize: '9pt', color: '#666', marginTop: '4px' }}>Variant: {item.size}</div>
+                                    <div style={{ fontWeight: '600' }}>{item.name} {item.size && `- ${item.size}`}</div>
+                                    <div style={{ fontSize: '9pt', marginTop: '2px', color: '#555' }}>
+                                       {/* Optional: Add SKU if available */}
+                                    </div>
                                  </td>
-                                 <td className="price-col">${item.price * item.qty}.00</td>
                               </tr>
                            ))}
                         </tbody>
@@ -540,9 +542,9 @@ const AdminOrders = () => {
 
                      {/* Footer */}
                      <div className="footer-note">
-                        <p>Thank you for shopping with Luzzio.</p>
-                        <p>www.luzzioclothing.com • @luzziopremium</p>
-                        <p>For exchanges kindly contact our WhatsApp: 0781423168</p>
+                        www.luzzioclothing.com<br />
+                        For exchanges kindly contact our WhatsApp – 0781423168<br />
+                        DM us at @luzziopremium
                      </div>
                   </div>
                ))}
