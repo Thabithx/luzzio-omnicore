@@ -346,7 +346,7 @@ const AdminOrders = () => {
                      margin: 0 !important;
                      padding: 0 !important;
                      width: 100% !important;
-                     height: initial !important;
+                     height: auto !important; /* Changed to auto to stop blank pages */
                      overflow: visible !important;
                      background: white !important;
                   }
@@ -362,8 +362,8 @@ const AdminOrders = () => {
                      top: 0 !important;
                      width: 100% !important;
                      margin: 0 !important;
-                     /* Proper padding simulates margins and keeps date off the edge */
-                     padding: 1.5cm 1.5cm !important; 
+                     /* Increased top and left padding for better positioning */
+                     padding: 2.5cm 1.5cm 1.5cm 2.5cm !important; 
                      background: white !important;
                      color: #000;
                      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
