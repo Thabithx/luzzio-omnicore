@@ -346,7 +346,7 @@ const AdminOrders = () => {
                      margin: 0 !important;
                      padding: 0 !important;
                      width: 100% !important;
-                     height: 100% !important;
+                     height: initial !important;
                      overflow: visible !important;
                      background: white !important;
                   }
@@ -391,12 +391,12 @@ const AdminOrders = () => {
                   .print-header {
                      width: 100%;
                      display: flex;
-                     justify-content: flex-end;
+                     justify-content: flex-start;
                      margin-bottom: 30px;
                      align-items: flex-start;
                   }
                   .order-meta {
-                     text-align: right;
+                     text-align: left;
                   }
                   .print-order-id {
                      font-size: 16pt;
