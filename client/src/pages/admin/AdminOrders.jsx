@@ -357,34 +357,34 @@ const AdminOrders = () => {
                      visibility: visible !important;
                   }
                   #printable-registry {
-                     position: absolute !important;
+                     position: relative !important; /* Relative is more stable for page flow */
                      left: 0 !important;
                      top: 0 !important;
                      width: 100% !important;
                      margin: 0 !important;
-                     /* Increased top and left padding for better positioning */
-                     padding: 2.5cm 1.5cm 1.5cm 2.5cm !important; 
+                     /* Significant padding for balanced positioning (Top, Right, Bottom, Left) */
+                     padding: 4cm 2cm 2cm 4cm !important; 
                      background: white !important;
                      color: #000;
                      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
                      box-sizing: border-box !important;
                   }
                   .print-page-break {
-                     page-break-after: always;
-                     break-after: page;
+                     page-break-after: always !important;
+                     break-after: page !important;
                   }
                   .label-body {
                      width: 100%;
-                     page-break-after: always;
+                     /* Only break via the explicit print-page-break class */
                      padding-bottom: 2rem;
                      position: relative;
                      box-sizing: border-box;
-                     /* Left align strictly */
                      text-align: left;
                   }
                   .label-body:last-child {
-                     page-break-after: avoid;
                      padding-bottom: 0;
+                     page-break-after: avoid !important;
+                     break-after: avoid !important;
                   }
                   
                   /* HEADER */
