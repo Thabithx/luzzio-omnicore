@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const User = require('../models/User');
 const Cart = require('../models/Cart');
@@ -196,7 +197,7 @@ exports.getGuestOrders = async (req, res) => {
 // @access  Private
 exports.getMyOrders = async (req, res) => {
    try {
-      const orders = await Order.find({ user: req.user.id }).sort('-createdAt');
+      const orders = await Order.find({ user: req.user._id }).sort('-createdAt');
       res.status(200).json({
          success: true,
          data: orders
@@ -209,21 +210,29 @@ exports.getMyOrders = async (req, res) => {
 exports.linkGuestOrders = async (email, userId) => {
    try {
       if (!email) return;
-      const normalizedEmail = email.toLowerCase();
+      const normalizedEmail = email.trim().toLowerCase();
+
+      console.log(`[SYNC INITIATED] Attempting to link orders for: ${normalizedEmail} -> ${userId}`);
+
+      // Ensure we have an ObjectId for the update
+      const userObjectId = mongoose.isValidObjectId(userId) ? new mongoose.Types.ObjectId(userId) : userId;
 
       const result = await Order.updateMany(
          {
             email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') },
-            user: null
+            $or: [
+               { user: { $exists: false } },
+               { user: null }
+            ]
          },
-         { user: userId }
+         { $set: { user: userObjectId } }
       );
 
-      if (result.modifiedCount > 0) {
-         console.log(`[SYNC SUCCESS] Linked ${result.modifiedCount} orders for ${normalizedEmail}`);
-      }
+      console.log(`[SYNC RESULT] Email: ${normalizedEmail}, Modified: ${result.modifiedCount}, Matched: ${result.matchedCount}`);
+      return result.modifiedCount;
    } catch (err) {
-      console.error('Error linking guest orders:', err);
+      console.error(`[SYNC ERROR] Critical failure syncing guest orders for ${email}:`, err.message);
+      return 0;
    }
 };
 

@@ -90,5 +90,7 @@ const orderSchema = new mongoose.Schema({
 
 // Auto-delete orders after 60 days (60 * 60 * 24 * 60 seconds)
 orderSchema.index({ createdAt: 1 }, { expireAfterSeconds: 5184000 });
+orderSchema.index({ email: 1 });
+orderSchema.index({ user: 1 });
 
 module.exports = mongoose.model('Order', orderSchema);

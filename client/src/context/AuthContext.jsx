@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(userData));
             setToken(res.data.token);
             setUser(userData);
-            return { success: true };
+            return { success: true, syncCount: res.data.syncCount };
          }
       } catch (err) {
          return {
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(userData));
             setToken(res.data.token);
             setUser(userData);
-            return { success: true };
+            return { success: true, syncCount: res.data.syncCount };
          }
       } catch (err) {
          return {

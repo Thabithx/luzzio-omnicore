@@ -25,7 +25,7 @@ export function Login() {
          if (user?.role === 'admin') {
             navigate('/admin');
          } else {
-            navigate('/profile');
+            navigate('/profile', { state: { syncCount: result.syncCount } });
          }
       } else {
          setError(result.message);

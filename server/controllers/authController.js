@@ -34,7 +34,7 @@ exports.register = async (req, res) => {
 
       if (user) {
          // Link existing guest orders
-         await linkGuestOrders(user.email, user._id);
+         const syncCount = await linkGuestOrders(user.email, user._id);
 
          res.status(201).json({
             success: true,
@@ -42,7 +42,8 @@ exports.register = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            syncCount
          });
       } else {
          res.status(400).json({ success: false, message: 'Invalid user data' });
@@ -65,7 +66,7 @@ exports.login = async (req, res) => {
 
       if (user && (await user.matchPassword(password))) {
          // Link any guest orders placed with this email
-         await linkGuestOrders(user.email, user._id);
+         const syncCount = await linkGuestOrders(user.email, user._id);
 
          res.json({
             success: true,
@@ -73,7 +74,8 @@ exports.login = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            syncCount
          });
       } else {
          res.status(401).json({ success: false, message: 'Invalid credentials' });

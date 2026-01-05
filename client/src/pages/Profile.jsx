@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Package, MapPin, User as UserIcon, Clock, ChevronRight, LogOut } from 'lucide-react';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { useAuth } from '../context/AuthContext';
+import { useLocation } from 'react-router-dom';
 import Meta from '../components/ui/Meta';
 import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
 const OrderDetailsModal = ({ isOpen, onClose, order, user }) => {
@@ -130,6 +133,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, user }) => {
 };
 
 export function Profile() {
+   const location = useLocation();
    const [orders, setOrders] = useState([]);
    const [loading, setLoading] = useState(true);
    const [selectedOrder, setSelectedOrder] = useState(null);
@@ -202,6 +206,17 @@ export function Profile() {
          <Meta title={`Profile | ${profileUser.name} | Luzzio`} />
 
          <div className="max-w-[1920px] mx-auto">
+            {location.state?.syncCount > 0 && (
+               <div className="mb-10 p-6 bg-black text-white border border-black flex items-center justify-between">
+                  <div className="space-y-1">
+                     <p className="text-[10px] font-black uppercase tracking-[0.2em]">Synchronization Successful</p>
+                     <p className="text-[9px] text-gray-400 uppercase tracking-widest">
+                        {location.state.syncCount} past orders have been merged into your client registry.
+                     </p>
+                  </div>
+                  <div className="w-2 h-2 bg-white animate-pulse" />
+               </div>
+            )}
             <div className="flex flex-col lg:flex-row gap-20 text-black">
 
                {/* SIDEBAR: NAV & CREDENTIALS */}

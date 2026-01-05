@@ -38,7 +38,7 @@ export function Register() {
       );
 
       if (result.success) {
-         navigate('/profile');
+         navigate('/profile', { state: { syncCount: result.syncCount } });
       } else {
          setError(result.message);
          setLoading(false);
