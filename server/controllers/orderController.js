@@ -176,6 +176,21 @@ exports.updateItemTracking = async (req, res) => {
    }
 };
 
+// @desc    Get orders by email (Guest access)
+// @route   GET /api/orders/guest/:email
+// @access  Public
+exports.getGuestOrders = async (req, res) => {
+   try {
+      const orders = await Order.find({ email: req.params.email, user: null }).sort('-createdAt');
+      res.status(200).json({
+         success: true,
+         data: orders
+      });
+   } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+   }
+};
+
 // @desc    Get my orders
 // @route   GET /api/orders/myorders
 // @access  Private
@@ -188,6 +203,18 @@ exports.getMyOrders = async (req, res) => {
       });
    } catch (err) {
       res.status(500).json({ success: false, message: err.message });
+   }
+};
+
+// Helper: Link guest orders to user
+exports.linkGuestOrders = async (email, userId) => {
+   try {
+      await Order.updateMany(
+         { email: email, user: null },
+         { user: userId }
+      );
+   } catch (err) {
+      console.error('Error linking guest orders:', err);
    }
 };
 

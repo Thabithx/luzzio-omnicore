@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { linkGuestOrders } = require('./orderController');
 
 // Generate JWT
 const generateToken = (id) => {
@@ -31,6 +32,9 @@ exports.register = async (req, res) => {
       });
 
       if (user) {
+         // Link existing guest orders
+         await linkGuestOrders(user.email, user._id);
+
          res.status(201).json({
             success: true,
             _id: user.id,
@@ -58,6 +62,9 @@ exports.login = async (req, res) => {
       const user = await User.findOne({ email }).select('+password');
 
       if (user && (await user.matchPassword(password))) {
+         // Link any guest orders placed with this email
+         await linkGuestOrders(user.email, user._id);
+
          res.json({
             success: true,
             _id: user.id,

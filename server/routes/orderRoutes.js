@@ -3,6 +3,7 @@ const {
    createOrder,
    getMyOrders,
    getOrders,
+   getGuestOrders,
    updateOrderStatus,
    updateItemTracking
 } = require('../controllers/orderController');
@@ -11,6 +12,7 @@ const { protect, admin } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.post('/', createOrder);
+router.get('/guest/:email', getGuestOrders);
 
 router.use(protect);
 

@@ -8,6 +8,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
    const [user, setUser] = useState(null);
    const [token, setToken] = useState(localStorage.getItem('token'));
+   const [guestEmail, setGuestEmail] = useState(localStorage.getItem('guestEmail'));
    const [loading, setLoading] = useState(true);
 
    useEffect(() => {
@@ -78,6 +79,12 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('user');
       setToken(null);
       setUser(null);
+      // We keep guestEmail to allow them to see the Guest Profile after logout
+   };
+
+   const setGuestProfile = (email) => {
+      localStorage.setItem('guestEmail', email);
+      setGuestEmail(email);
    };
 
    const updateUser = (userData) => {
@@ -86,7 +93,7 @@ export const AuthProvider = ({ children }) => {
    };
 
    return (
-      <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateUser }}>
+      <AuthContext.Provider value={{ user, token, guestEmail, setGuestProfile, loading, login, register, logout, updateUser }}>
          {children}
       </AuthContext.Provider>
    );

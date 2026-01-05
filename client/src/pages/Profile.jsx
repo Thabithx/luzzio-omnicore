@@ -135,7 +135,7 @@ export function Profile() {
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [activeTab, setActiveTab] = useState('orders');
-   const { user, token, logout, updateUser } = useAuth();
+   const { user, token, guestEmail, logout, updateUser } = useAuth();
 
    // Profile Edit States
    const [editData, setEditData] = useState({
@@ -153,16 +153,21 @@ export function Profile() {
    useEffect(() => {
       const fetchOrders = async () => {
          try {
-            const res = await api.get('/orders/myorders');
-            setOrders(res.data.data);
+            if (token) {
+               const res = await api.get('/orders/myorders');
+               setOrders(res.data.data);
+            } else if (guestEmail) {
+               const res = await api.get(`/orders/guest/${guestEmail}`);
+               setOrders(res.data.data);
+            }
          } catch (err) {
             console.error('Error fetching orders:', err);
          } finally {
             setLoading(false);
          }
       };
-      if (token) fetchOrders();
-   }, [token]);
+      fetchOrders();
+   }, [token, guestEmail]);
 
    const handleUpdateProfile = async (e) => {
       e.preventDefault();
@@ -180,12 +185,17 @@ export function Profile() {
       }
    };
 
-   if (!user) return (
+   if (!user && !guestEmail) return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center p-10 text-center">
-         <h1 className="text-[5vw] font-black uppercase tracking-tighter mb-8 text-black">Authentication Required</h1>
+         <h1 className="text-[5vw] font-black uppercase tracking-tighter mb-8 text-black">Identification Required</h1>
+         <p className="text-small-brand text-gray-400 max-w-sm mb-12">
+            No acquisition sequences found for your current session. Please sign in or place an order to register your digital footprint.
+         </p>
          <Link to="/login" className="btn-brand">Sign In To Archive</Link>
       </div>
    );
+
+   const profileUser = user || { name: 'GUEST CLIENT', email: guestEmail };
 
    return (
       <div className="min-h-screen bg-white pt-24 pb-40 px-10">
@@ -197,14 +207,14 @@ export function Profile() {
                {/* SIDEBAR: NAV & CREDENTIALS */}
                <div className="lg:w-80 space-y-16">
                   <div className="space-y-6 pb-10 border-b border-black">
-                     <p className="text-small-brand text-gray-400">Digital Credentials</p>
+                     <p className="text-small-brand text-gray-400">{user ? 'Digital Credentials' : 'Guest Identification'}</p>
                      <div className="flex items-center gap-6">
                         <div className="w-20 h-20 bg-black text-white flex items-center justify-center text-3xl font-black">
-                           {user.name ? user.name[0] : 'U'}
+                           {profileUser.name ? profileUser.name[0] : 'U'}
                         </div>
                         <div className="space-y-1">
-                           <h1 className="text-2xl font-black uppercase tracking-tight leading-none truncate max-w-[150px]">{user.name}</h1>
-                           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest truncate max-w-[150px]">{user.email}</p>
+                           <h1 className="text-2xl font-black uppercase tracking-tight leading-none truncate max-w-[150px]">{profileUser.name}</h1>
+                           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest truncate max-w-[150px]">{profileUser.email}</p>
                         </div>
                      </div>
                   </div>
@@ -213,7 +223,7 @@ export function Profile() {
                      <p className="text-small-brand text-gray-400 mb-4 px-1">Navigation Protocols</p>
                      {[
                         { id: 'orders', icon: Package, label: 'Order Archive' },
-                        { id: 'settings', icon: UserIcon, label: 'Account Configuration' },
+                        ...(user ? [{ id: 'settings', icon: UserIcon, label: 'Account Configuration' }] : []),
                      ].map((item) => (
                         <button
                            key={item.id}
@@ -227,12 +237,22 @@ export function Profile() {
                            {activeTab === item.id && <div className="w-1 h-1 bg-black" />}
                         </button>
                      ))}
-                     <button
-                        onClick={logout}
-                        className="flex items-center gap-3 p-4 text-[10px] font-black uppercase tracking-[0.2em] text-red-500 border border-transparent hover:bg-red-50 hover:border-black transition-all mt-10"
-                     >
-                        <LogOut size={14} /> Terminate Session
-                     </button>
+                     {user ? (
+                        <button
+                           onClick={logout}
+                           className="flex items-center gap-3 p-4 text-[10px] font-black uppercase tracking-[0.2em] text-red-500 border border-transparent hover:bg-red-50 hover:border-black transition-all mt-10"
+                        >
+                           <LogOut size={14} /> Terminate Session
+                        </button>
+                     ) : (
+                        <div className="mt-10 p-6 bg-brand-grey border border-black space-y-4">
+                           <p className="text-[10px] font-black uppercase tracking-widest">Protocol Sync Available</p>
+                           <p className="text-[9px] text-gray-500 leading-relaxed tracking-widest uppercase mb-4">
+                              Login to synchronize this archive with your permanent registry.
+                           </p>
+                           <Link to="/login" className="btn-brand text-center whitespace-nowrap">Sign In</Link>
+                        </div>
+                     )}
                   </nav>
                </div>
 
@@ -395,7 +415,7 @@ export function Profile() {
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             order={selectedOrder}
-            user={user}
+            user={profileUser}
          />
       </div>
    );

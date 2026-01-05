@@ -11,7 +11,7 @@ import { cn } from '../utils/cn';
 
 export function Checkout() {
    const { cart, clearCart } = useCart();
-   const { token, user } = useAuth();
+   const { token, user, setGuestProfile } = useAuth();
    const navigate = useNavigate();
 
    const [formData, setFormData] = useState({
@@ -107,6 +107,10 @@ export function Checkout() {
          if (res.data.success) {
             const orderId = res.data.data._id;
             const preGeneratedParams = res.data.payhereParams;
+
+            // 2.5 Cache email for Guest Profile access
+            setGuestProfile(formData.email);
+
 
             if (paymentMethod === 'PayHere') {
                // 3. Initiate PayHere Payment (Using pre-generated params for speed)
