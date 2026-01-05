@@ -18,8 +18,8 @@ exports.register = async (req, res) => {
       const { name, email, password } = req.body;
       const normalizedEmail = email.toLowerCase();
 
-      // Check if user exists
-      const userExists = await User.findOne({ email: normalizedEmail });
+      // Check if user exists (Case-insensitive)
+      const userExists = await User.findOne({ email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } });
 
       if (userExists) {
          return res.status(400).json({ success: false, message: 'User already exists' });
@@ -60,8 +60,8 @@ exports.login = async (req, res) => {
       const { email, password } = req.body;
       const normalizedEmail = email.toLowerCase();
 
-      // Check for user email
-      const user = await User.findOne({ email: normalizedEmail }).select('+password');
+      // Check for user email (Case-insensitive)
+      const user = await User.findOne({ email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } }).select('+password');
 
       if (user && (await user.matchPassword(password))) {
          // Link any guest orders placed with this email

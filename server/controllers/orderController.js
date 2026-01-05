@@ -209,10 +209,19 @@ exports.getMyOrders = async (req, res) => {
 exports.linkGuestOrders = async (email, userId) => {
    try {
       if (!email) return;
-      await Order.updateMany(
-         { email: email.toLowerCase(), user: null },
+      const normalizedEmail = email.toLowerCase();
+
+      const result = await Order.updateMany(
+         {
+            email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') },
+            user: null
+         },
          { user: userId }
       );
+
+      if (result.modifiedCount > 0) {
+         console.log(`[SYNC SUCCESS] Linked ${result.modifiedCount} orders for ${normalizedEmail}`);
+      }
    } catch (err) {
       console.error('Error linking guest orders:', err);
    }
