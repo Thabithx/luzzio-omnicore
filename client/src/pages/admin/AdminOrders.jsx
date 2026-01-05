@@ -336,7 +336,7 @@ const AdminOrders = () => {
                @media print {
                   @page {
                      size: A4;
-                     margin: 1.5cm; /* Standard margins */
+                     margin: 0; /* Strict 0 margin to prevent auto-breaks */
                   }
                   html, body {
                      margin: 0 !important;
@@ -353,12 +353,10 @@ const AdminOrders = () => {
                      visibility: visible !important;
                   }
                   #printable-registry {
-                     position: absolute !important;
-                     left: 0 !important;
-                     top: 0 !important;
+                     position: relative !important; /* Relative is safer for flow */
                      width: 100% !important;
                      margin: 0 !important;
-                     padding: 0 !important;
+                     padding: 1.5cm !important; /* Simulate page margins */
                      background: white !important;
                      color: #000;
                      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
@@ -366,16 +364,13 @@ const AdminOrders = () => {
                   .label-body {
                      width: 100%;
                      page-break-inside: avoid;
-                     page-break-after: always;
-                     margin-bottom: 2cm;
+                     page-break-after: avoid; /* Only break via print-page-break class */
+                     margin: 0 !important;
+                     padding-bottom: 0 !important;
                      text-align: left;
                   }
-                  .label-body:last-child {
-                     page-break-after: avoid;
-                     margin-bottom: 0;
-                  }
                   .print-page-break {
-                     page-break-after: always;
+                     page-break-after: always !important;
                   }
                   
                   /* HEADER */
