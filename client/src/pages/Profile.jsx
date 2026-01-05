@@ -135,7 +135,7 @@ export function Profile() {
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [activeTab, setActiveTab] = useState('orders');
-   const { user, token, guestEmail, logout, updateUser, clearGuestProfile } = useAuth();
+   const { user, token, guestEmail, setGuestProfile, logout, updateUser, clearGuestProfile } = useAuth();
 
    // Profile Edit States
    const [editData, setEditData] = useState({
@@ -149,6 +149,7 @@ export function Profile() {
       }
    });
    const [updating, setUpdating] = useState(false);
+   const [manualEmail, setManualEmail] = useState('');
 
    useEffect(() => {
       const fetchOrders = async () => {
@@ -183,6 +184,13 @@ export function Profile() {
       fetchOrders();
    }, [token, guestEmail]);
 
+   const handleManualIdentity = (e) => {
+      e.preventDefault();
+      if (manualEmail.trim()) {
+         setGuestProfile(manualEmail.trim());
+      }
+   };
+
    const handleUpdateProfile = async (e) => {
       e.preventDefault();
       setUpdating(true);
@@ -199,17 +207,9 @@ export function Profile() {
       }
    };
 
-   if (!user && !guestEmail) return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-10 text-center">
-         <h1 className="text-[5vw] font-black uppercase tracking-tighter mb-8 text-black">Identification Required</h1>
-         <p className="text-small-brand text-gray-400 max-w-sm mb-12">
-            No acquisition sequences found for your current session. Please sign in or place an order to register your digital footprint.
-         </p>
-         <Link to="/login" className="btn-brand">Sign In To Archive</Link>
-      </div>
-   );
-
    const profileUser = user || { name: 'GUEST CLIENT', email: guestEmail };
+   const isGuest = !user;
+   const isAnonymous = !user && !guestEmail;
 
    return (
       <div className="min-h-screen bg-white pt-24 pb-40 px-10">
@@ -258,6 +258,29 @@ export function Profile() {
                         >
                            <LogOut size={14} /> Terminate Session
                         </button>
+                     ) : isAnonymous ? (
+                        <div className="mt-10 p-8 bg-brand-grey border border-black space-y-6">
+                           <div className="space-y-4">
+                              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black">Guest Access</p>
+                              <p className="text-[9px] text-gray-500 leading-relaxed tracking-widest uppercase">
+                                 Enter your email to retrieve your guest acquisition history.
+                              </p>
+                           </div>
+                           <form onSubmit={handleManualIdentity} className="space-y-4">
+                              <input
+                                 type="email"
+                                 value={manualEmail}
+                                 onChange={(e) => setManualEmail(e.target.value)}
+                                 placeholder="Email archive..."
+                                 className="w-full bg-white border border-black p-4 text-[11px] font-bold uppercase tracking-widest outline-none focus:ring-1 focus:ring-black"
+                                 required
+                              />
+                              <button type="submit" className="btn-brand w-full">Identify</button>
+                           </form>
+                           <div className="pt-4 border-t border-black/10">
+                              <Link to="/login" className="text-[9px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors">Or Sign In to Registry</Link>
+                           </div>
+                        </div>
                      ) : (
                         <div className="mt-10 p-8 bg-brand-grey border border-black space-y-6">
                            <div className="space-y-4">
@@ -267,6 +290,12 @@ export function Profile() {
                               </p>
                            </div>
                            <Link to="/login" className="btn-brand w-full block text-center">Sign In & Sync</Link>
+                           <button
+                              onClick={clearGuestProfile}
+                              className="text-[8px] font-black uppercase tracking-widest text-gray-400 hover:text-red-500 transition-colors w-full text-center"
+                           >
+                              Clear Identification
+                           </button>
                         </div>
                      )}
                   </nav>
