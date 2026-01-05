@@ -243,14 +243,16 @@ exports.updateOrderStatus = async (req, res) => {
             'cancelled': 'Your order has been cancelled'
          };
 
-         await createNotification(
-            order.user,
-            'order_status',
-            'Order Status Update',
-            statusMessages[req.body.status] || `Your order status has been updated to ${req.body.status}`,
-            order._id,
-            'Order'
-         );
+         if (order.user) {
+            await createNotification(
+               order.user,
+               'order_status',
+               'Order Status Update',
+               statusMessages[req.body.status] || `Your order status has been updated to ${req.body.status}`,
+               order._id,
+               'Order'
+            );
+         }
 
          res.status(200).json({
             success: true,

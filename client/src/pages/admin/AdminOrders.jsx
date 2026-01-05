@@ -175,7 +175,10 @@ const AdminOrders = () => {
    const filteredOrders = orders.filter(order =>
       order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.user?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      order.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.shippingAddress?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.shippingAddress?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.email?.toLowerCase().includes(searchTerm.toLowerCase())
    );
 
    const toggleSelectAll = () => {
