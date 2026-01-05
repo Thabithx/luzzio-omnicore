@@ -29,7 +29,7 @@ exports.createOrder = async (req, res) => {
       }
 
       // 1. Efficient Email & Name selection (No redundant DB trips)
-      const orderEmail = req.user ? req.user.email : email;
+      const orderEmail = (req.user ? req.user.email : email).toLowerCase();
       const recipientName = req.user ? req.user.name : `${shippingAddress.firstName || ''} ${shippingAddress.lastName || ''}`.trim();
 
       const order = new Order({
@@ -181,7 +181,7 @@ exports.updateItemTracking = async (req, res) => {
 // @access  Public
 exports.getGuestOrders = async (req, res) => {
    try {
-      const orders = await Order.find({ email: req.params.email, user: null }).sort('-createdAt');
+      const orders = await Order.find({ email: req.params.email.toLowerCase(), user: null }).sort('-createdAt');
       res.status(200).json({
          success: true,
          data: orders
@@ -206,11 +206,11 @@ exports.getMyOrders = async (req, res) => {
    }
 };
 
-// Helper: Link guest orders to user
 exports.linkGuestOrders = async (email, userId) => {
    try {
+      if (!email) return;
       await Order.updateMany(
-         { email: email, user: null },
+         { email: email.toLowerCase(), user: null },
          { user: userId }
       );
    } catch (err) {

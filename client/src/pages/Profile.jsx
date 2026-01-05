@@ -245,12 +245,14 @@ export function Profile() {
                            <LogOut size={14} /> Terminate Session
                         </button>
                      ) : (
-                        <div className="mt-10 p-6 bg-brand-grey border border-black space-y-4">
-                           <p className="text-[10px] font-black uppercase tracking-widest">Protocol Sync Available</p>
-                           <p className="text-[9px] text-gray-500 leading-relaxed tracking-widest uppercase mb-4">
-                              Login to synchronize this archive with your permanent registry.
-                           </p>
-                           <Link to="/login" className="btn-brand text-center whitespace-nowrap">Sign In</Link>
+                        <div className="mt-10 p-8 bg-brand-grey border border-black space-y-6">
+                           <div className="space-y-2">
+                              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black">Protocol Sync Available</p>
+                              <p className="text-[9px] text-gray-500 leading-relaxed tracking-widest uppercase">
+                                 Synchronize this guest archive with your permanent registry to prevent data loss.
+                              </p>
+                           </div>
+                           <Link to="/login" className="btn-brand w-full block text-center">Sign In & Sync</Link>
                         </div>
                      )}
                   </nav>
