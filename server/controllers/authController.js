@@ -20,7 +20,7 @@ const escapeRegex = (string) => {
 // @access  Public
 exports.register = async (req, res) => {
    try {
-      const { name, email, password } = req.body;
+      const { name, email, password, guestEmail } = req.body;
       const normalizedEmail = (email || '').trim().toLowerCase();
 
       // Check if user exists (Case-insensitive & Escaped)
@@ -38,8 +38,13 @@ exports.register = async (req, res) => {
       });
 
       if (user) {
-         // Link existing guest orders
+         // Link existing guest orders (Primary email)
          await linkGuestOrders(user.email, user._id);
+
+         // Link guest orders from identification (if provided and different)
+         if (guestEmail && guestEmail.toLowerCase() !== user.email.toLowerCase()) {
+            await linkGuestOrders(guestEmail, user._id);
+         }
 
          res.status(201).json({
             success: true,
@@ -62,7 +67,7 @@ exports.register = async (req, res) => {
 // @access  Public
 exports.login = async (req, res) => {
    try {
-      const { email, password } = req.body;
+      const { email, password, guestEmail } = req.body;
       const normalizedEmail = (email || '').trim().toLowerCase();
 
       // Check for user email (Case-insensitive & Escaped)
@@ -71,6 +76,11 @@ exports.login = async (req, res) => {
       if (user && (await user.matchPassword(password))) {
          // Link any guest orders placed with this email
          await linkGuestOrders(user.email, user._id);
+
+         // Link guest orders from identification (if provided and different)
+         if (guestEmail && guestEmail.toLowerCase() !== user.email.toLowerCase()) {
+            await linkGuestOrders(guestEmail, user._id);
+         }
 
          res.json({
             success: true,

@@ -236,7 +236,14 @@ exports.linkGuestOrders = async (email, userId) => {
 // @access  Private
 exports.syncMyOrders = async (req, res) => {
    try {
-      const count = await exports.linkGuestOrders(req.user.email, req.user.id);
+      const { email } = req.body;
+      let count = await exports.linkGuestOrders(req.user.email, req.user.id);
+
+      // If a specific guest email was provided and it's different, sync that too
+      if (email && email.toLowerCase() !== req.user.email.toLowerCase()) {
+         count += await exports.linkGuestOrders(email, req.user.id);
+      }
+
       res.status(200).json({
          success: true,
          message: `Synchronization complete. ${count} orders linked.`,

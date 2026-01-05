@@ -135,7 +135,7 @@ export function Profile() {
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [activeTab, setActiveTab] = useState('orders');
-   const { user, token, guestEmail, logout, updateUser } = useAuth();
+   const { user, token, guestEmail, logout, updateUser, clearGuestProfile } = useAuth();
 
    // Profile Edit States
    const [editData, setEditData] = useState({
@@ -157,15 +157,12 @@ export function Profile() {
                // 1. Check if we need to sync guest orders first
                if (guestEmail) {
                   try {
-                     const syncRes = await api.put('/orders/sync');
+                     const syncRes = await api.put('/orders/sync', { email: guestEmail });
                      if (syncRes.data.success && syncRes.data.count > 0) {
                         console.log(`[SYNC] Automatically linked ${syncRes.data.count} guest orders.`);
-                        // Optional: Show a toast here if available
                      }
                      // Clear guest identification once sync is attempted/confirmed
-                     localStorage.removeItem('guestEmail');
-                     // Note: We don't call setGuestEmail(null) here to avoid re-triggering this effect in the same render
-                     // but we could if we handle dependencies carefully.
+                     clearGuestProfile();
                   } catch (syncErr) {
                      console.error('[SYNC ERROR] Automatic order sync failed:', syncErr);
                   }

@@ -28,7 +28,11 @@ export const AuthProvider = ({ children }) => {
 
    const login = async (email, password) => {
       try {
-         const res = await api.post('/auth/login', { email, password });
+         const res = await api.post('/auth/login', {
+            email,
+            password,
+            guestEmail // Send local guest identification for merging
+         });
          if (res.data.success) {
             const userData = {
                name: res.data.name,
@@ -40,7 +44,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(userData));
             setToken(res.data.token);
             setUser(userData);
-            return { success: true, syncCount: res.data.syncCount };
+            return { success: true };
          }
       } catch (err) {
          return {
@@ -52,7 +56,12 @@ export const AuthProvider = ({ children }) => {
 
    const register = async (name, email, password) => {
       try {
-         const res = await api.post('/auth/register', { name, email, password });
+         const res = await api.post('/auth/register', {
+            name,
+            email,
+            password,
+            guestEmail // Send local guest identification for merging
+         });
          if (res.data.success) {
             const userData = {
                name: res.data.name,
@@ -64,7 +73,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(userData));
             setToken(res.data.token);
             setUser(userData);
-            return { success: true, syncCount: res.data.syncCount };
+            return { success: true };
          }
       } catch (err) {
          return {
@@ -87,13 +96,18 @@ export const AuthProvider = ({ children }) => {
       setGuestEmail(email);
    };
 
+   const clearGuestProfile = () => {
+      localStorage.removeItem('guestEmail');
+      setGuestEmail(null);
+   };
+
    const updateUser = (userData) => {
       localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
    };
 
    return (
-      <AuthContext.Provider value={{ user, token, guestEmail, setGuestProfile, loading, login, register, logout, updateUser }}>
+      <AuthContext.Provider value={{ user, token, guestEmail, setGuestProfile, clearGuestProfile, loading, login, register, logout, updateUser }}>
          {children}
       </AuthContext.Provider>
    );
