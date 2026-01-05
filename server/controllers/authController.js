@@ -10,6 +10,11 @@ const generateToken = (id) => {
    });
 };
 
+// Helper: Escape regex special characters
+const escapeRegex = (string) => {
+   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -18,8 +23,8 @@ exports.register = async (req, res) => {
       const { name, email, password } = req.body;
       const normalizedEmail = email.toLowerCase();
 
-      // Check if user exists (Case-insensitive)
-      const userExists = await User.findOne({ email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } });
+      // Check if user exists (Case-insensitive & Escaped)
+      const userExists = await User.findOne({ email: { $regex: new RegExp(`^${escapeRegex(normalizedEmail)}$`, 'i') } });
 
       if (userExists) {
          return res.status(400).json({ success: false, message: 'User already exists' });
@@ -34,7 +39,7 @@ exports.register = async (req, res) => {
 
       if (user) {
          // Link existing guest orders
-         const syncCount = await linkGuestOrders(user.email, user._id);
+         await linkGuestOrders(user.email, user._id);
 
          res.status(201).json({
             success: true,
@@ -42,8 +47,7 @@ exports.register = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
-            token: generateToken(user._id),
-            syncCount
+            token: generateToken(user._id)
          });
       } else {
          res.status(400).json({ success: false, message: 'Invalid user data' });
@@ -61,12 +65,12 @@ exports.login = async (req, res) => {
       const { email, password } = req.body;
       const normalizedEmail = email.toLowerCase();
 
-      // Check for user email (Case-insensitive)
-      const user = await User.findOne({ email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } }).select('+password');
+      // Check for user email (Case-insensitive & Escaped)
+      const user = await User.findOne({ email: { $regex: new RegExp(`^${escapeRegex(normalizedEmail)}$`, 'i') } }).select('+password');
 
       if (user && (await user.matchPassword(password))) {
          // Link any guest orders placed with this email
-         const syncCount = await linkGuestOrders(user.email, user._id);
+         await linkGuestOrders(user.email, user._id);
 
          res.json({
             success: true,
@@ -74,8 +78,7 @@ exports.login = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
-            token: generateToken(user._id),
-            syncCount
+            token: generateToken(user._id)
          });
       } else {
          res.status(401).json({ success: false, message: 'Invalid credentials' });
