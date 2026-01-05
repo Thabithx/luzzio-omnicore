@@ -49,10 +49,10 @@ export function ProductList() {
 
    const getPriceRange = (filter) => {
       switch (filter) {
-         case 'under500': return { min: 0, max: 500 };
-         case '500-1000': return { min: 500, max: 1000 };
-         case '1000-5000': return { min: 1000, max: 5000 };
-         case '5000+': return { min: 5000, max: Infinity };
+         case 'under10k': return { min: 0, max: 10000 };
+         case '10k-25k': return { min: 10000, max: 25000 };
+         case '25k-50k': return { min: 25000, max: 50000 };
+         case '50k+': return { min: 50000, max: Infinity };
          default: return null;
       }
    };
@@ -74,20 +74,32 @@ export function ProductList() {
          matchesPrice = p.price >= range.min && p.price <= range.max;
       }
 
-      // Color filter (simplified - matches if product name contains color keyword)
+      // Color filter (Improved - matches colors array + name/description keywords)
       let matchesColor = true;
       if (colorFilter !== 'all') {
-         const colorKeywords = {
-            'noir': ['black', 'noir'],
-            'blanc': ['white', 'blanc'],
-            'gris': ['gray', 'grey', 'gris', 'silver'],
-            'beige': ['beige', 'tan', 'cream']
-         };
-         const keywords = colorKeywords[colorFilter] || [];
-         matchesColor = keywords.some(keyword =>
-            p.name.toLowerCase().includes(keyword) ||
-            p.description?.toLowerCase().includes(keyword)
-         );
+         // 1. Check if color exists in the product's colors array (most accurate)
+         const inColorsArray = p.colors?.some(c => c.toLowerCase() === colorFilter.toLowerCase());
+
+         if (inColorsArray) {
+            matchesColor = true;
+         } else {
+            // 2. Fallback to keyword matching in name/description
+            const colorKeywords = {
+               'black': ['black', 'noir', 'nero', 'dark'],
+               'white': ['white', 'blanc', 'bianco', 'snow'],
+               'gray': ['gray', 'grey', 'gris', 'silver', 'slate'],
+               'beige': ['beige', 'tan', 'cream', 'sand'],
+               'blue': ['blue', 'navy', 'bleu', 'azure'],
+               'brown': ['brown', 'chocolate', 'taupe', 'coffee'],
+               'red': ['red', 'rouge', 'crimson', 'burgundy'],
+               'green': ['green', 'olive', 'forest', 'emerald']
+            };
+            const keywords = colorKeywords[colorFilter.toLowerCase()] || [];
+            matchesColor = keywords.some(keyword =>
+               p.name.toLowerCase().includes(keyword) ||
+               p.description?.toLowerCase().includes(keyword)
+            );
+         }
       }
 
       return matchesCategory && matchesSearch && matchesPrice && matchesColor;
@@ -189,28 +201,28 @@ export function ProductList() {
                            All Prices
                         </button>
                         <button
-                           onClick={() => setPriceFilter('under500')}
-                           className={`block text-small-brand ${priceFilter === 'under500' ? 'text-black font-black' : 'text-gray-500 hover:text-black'}`}
+                           onClick={() => setPriceFilter('under10k')}
+                           className={`block text-small-brand ${priceFilter === 'under10k' ? 'text-black font-black' : 'text-gray-500 hover:text-black'}`}
                         >
-                           Under $500
+                           Under LKR 10,000
                         </button>
                         <button
-                           onClick={() => setPriceFilter('500-1000')}
-                           className={`block text-small-brand ${priceFilter === '500-1000' ? 'text-black font-black' : 'text-gray-500 hover:text-black'}`}
+                           onClick={() => setPriceFilter('10k-25k')}
+                           className={`block text-small-brand ${priceFilter === '10k-25k' ? 'text-black font-black' : 'text-gray-500 hover:text-black'}`}
                         >
-                           $500 - $1000
+                           LKR 10,000 - 25,000
                         </button>
                         <button
-                           onClick={() => setPriceFilter('1000-5000')}
-                           className={`block text-small-brand ${priceFilter === '1000-5000' ? 'text-black font-black' : 'text-gray-500 hover:text-black'}`}
+                           onClick={() => setPriceFilter('25k-50k')}
+                           className={`block text-small-brand ${priceFilter === '25k-50k' ? 'text-black font-black' : 'text-gray-500 hover:text-black'}`}
                         >
-                           $1000 - $5000
+                           LKR 25,000 - 50,000
                         </button>
                         <button
-                           onClick={() => setPriceFilter('5000+')}
-                           className={`block text-small-brand ${priceFilter === '5000+' ? 'text-black font-black' : 'text-gray-500 hover:text-black'}`}
+                           onClick={() => setPriceFilter('50k+')}
+                           className={`block text-small-brand ${priceFilter === '50k+' ? 'text-black font-black' : 'text-gray-500 hover:text-black'}`}
                         >
-                           $5000+
+                           LKR 50,000+
                         </button>
                      </div>
                   </div>
@@ -224,28 +236,52 @@ export function ProductList() {
                            All
                         </button>
                         <button
-                           onClick={() => setColorFilter('noir')}
-                           className={`block text-small-brand ${colorFilter === 'noir' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
+                           onClick={() => setColorFilter('black')}
+                           className={`block text-small-brand ${colorFilter === 'black' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
                         >
-                           Noir
+                           Black
                         </button>
                         <button
-                           onClick={() => setColorFilter('blanc')}
-                           className={`block text-small-brand ${colorFilter === 'blanc' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
+                           onClick={() => setColorFilter('white')}
+                           className={`block text-small-brand ${colorFilter === 'white' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
                         >
-                           Blanc
+                           White
                         </button>
                         <button
-                           onClick={() => setColorFilter('gris')}
-                           className={`block text-small-brand ${colorFilter === 'gris' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
+                           onClick={() => setColorFilter('gray')}
+                           className={`block text-small-brand ${colorFilter === 'gray' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
                         >
-                           Gris
+                           Gray
                         </button>
                         <button
                            onClick={() => setColorFilter('beige')}
                            className={`block text-small-brand ${colorFilter === 'beige' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
                         >
                            Beige
+                        </button>
+                        <button
+                           onClick={() => setColorFilter('blue')}
+                           className={`block text-small-brand ${colorFilter === 'blue' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
+                        >
+                           Blue
+                        </button>
+                        <button
+                           onClick={() => setColorFilter('brown')}
+                           className={`block text-small-brand ${colorFilter === 'brown' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
+                        >
+                           Brown
+                        </button>
+                        <button
+                           onClick={() => setColorFilter('red')}
+                           className={`block text-small-brand ${colorFilter === 'red' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
+                        >
+                           Red
+                        </button>
+                        <button
+                           onClick={() => setColorFilter('green')}
+                           className={`block text-small-brand ${colorFilter === 'green' ? 'text-black font-black' : 'text-gray-500 hover:text-black'} text-left`}
+                        >
+                           Green
                         </button>
                      </div>
                   </div>
