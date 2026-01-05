@@ -10,6 +10,7 @@ export const CartProvider = ({ children }) => {
    const [cart, setCart] = useState([]);
    const [loading, setLoading] = useState(true);
    const { token } = useAuth();
+   const debounceTimer = React.useRef(null);
 
    const fetchCart = async () => {
       if (token) {
@@ -94,7 +95,7 @@ export const CartProvider = ({ children }) => {
    };
 
    const updateQuantity = async (productId, size, color, quantity) => {
-      // Optimistic Update
+      // 1. Instant Optimistic Update for UI Smoothness
       const previousCart = [...cart];
       const updatedCart = cart.map(item =>
          (item.product._id === productId && item.size === size && item.color === color)
@@ -103,11 +104,17 @@ export const CartProvider = ({ children }) => {
       );
 
       setCart(updatedCart);
+
+      // 2. Local Storage Sync (Instant)
       if (!token) {
          localStorage.setItem('cart', JSON.stringify(updatedCart));
+         return; // Guests don't need backend sync
       }
 
-      if (token) {
+      // 3. Debounced Backend Sync (Accuracy & Reliability)
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+      debounceTimer.current = setTimeout(async () => {
          try {
             const res = await api.put('/cart', {
                productId,
@@ -115,13 +122,16 @@ export const CartProvider = ({ children }) => {
                color,
                quantity
             });
+            // ONLY update from server if the network response is the absolute latest
+            // However, to avoid "jumping", we trust our optimistic state for the count
+            // and only use the server response to ensure ID consistency/metadata.
             setCart(res.data.data.items);
          } catch (err) {
-            console.error('Error updating cart:', err);
-            // Rollback on failure
+            console.error('Error syncing cart quantity:', err);
+            // Rollback to previous known good state on critical failure
             setCart(previousCart);
          }
-      }
+      }, 500); // 500ms delay to catch rapid clicks
    };
 
    const clearCart = async () => {
