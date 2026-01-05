@@ -12,6 +12,8 @@ export function PaymentSuccess() {
    useEffect(() => {
       // Clear cart on successful payment protocol
       clearCart();
+      // Ensure we start at the top of the completion screen
+      window.scrollTo(0, 0);
    }, [clearCart]);
 
    return (
