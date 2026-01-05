@@ -202,120 +202,122 @@ const AdminOrders = () => {
       </div>
    );
    return (
-      <div className="space-y-12 pb-40">
-         {/* HEADER SECTION */}
-         <div className="flex flex-col md:flex-row md:justify-between md:items-end border-b border-black pb-8 gap-8">
-            <div className="space-y-4">
-               <p className="text-small-brand text-gray-400">Digital Logistics</p>
-               <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">Order Fulfillment</h1>
-            </div>
-            <div className="flex items-center justify-between md:justify-end gap-4">
-               {selectedIds.length > 0 && (
-                  <button
-                     onClick={handlePrint}
-                     className="bg-black text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest border border-black hover:bg-white hover:text-black transition-all flex items-center gap-3"
-                  >
-                     <Printer size={14} />
-                     Print Selected ({selectedIds.length})
-                  </button>
-               )}
-               <div className="text-right space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-black">{orders.length} Sequences</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Real-Time Refresh Active</p>
+      <div className="space-y-12 pb-40 print:space-y-0 print:pb-0">
+         <div className="print:hidden space-y-12">
+            {/* HEADER SECTION */}
+            <div className="flex flex-col md:flex-row md:justify-between md:items-end border-b border-black pb-8 gap-8">
+               <div className="space-y-4">
+                  <p className="text-small-brand text-gray-400">Digital Logistics</p>
+                  <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">Order Fulfillment</h1>
+               </div>
+               <div className="flex items-center justify-between md:justify-end gap-4">
+                  {selectedIds.length > 0 && (
+                     <button
+                        onClick={handlePrint}
+                        className="bg-black text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest border border-black hover:bg-white hover:text-black transition-all flex items-center gap-3"
+                     >
+                        <Printer size={14} />
+                        Print Selected ({selectedIds.length})
+                     </button>
+                  )}
+                  <div className="text-right space-y-1">
+                     <p className="text-[10px] font-black uppercase tracking-widest text-black">{orders.length} Sequences</p>
+                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Real-Time Refresh Active</p>
+                  </div>
                </div>
             </div>
-         </div>
 
-         {/* Search bar */}
-         <div className="w-full max-w-xl relative">
-            <Input
-               placeholder="Identify sequence (ID, Client, Email)..."
-               className="pl-14 py-6 border-black focus:border-black rounded-none text-small-brand bg-brand-grey/50"
-               value={searchTerm}
-               onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-black/20" size={18} />
-         </div>
+            {/* Search bar */}
+            <div className="w-full max-w-xl relative">
+               <Input
+                  placeholder="Identify sequence (ID, Client, Email)..."
+                  className="pl-14 py-6 border-black focus:border-black rounded-none text-small-brand bg-brand-grey/50"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+               />
+               <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-black/20" size={18} />
+            </div>
 
-         {/* Table Section */}
-         <div className="bg-white border border-black">
-            <div className="overflow-x-auto w-full max-w-full">
-               <table className="w-full text-left min-w-[1000px]">
-                  <thead>
-                     <tr className="bg-brand-grey border-b border-black">
-                        <th className="px-8 py-5 w-10">
-                           <button onClick={toggleSelectAll} className="text-black">
-                              {selectedIds.length === filteredOrders.length && filteredOrders.length > 0 ? (
-                                 <CheckSquare size={16} strokeWidth={2.5} />
-                              ) : (
-                                 <Square size={16} strokeWidth={2.5} />
-                              )}
-                           </button>
-                        </th>
-                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Sequence ID</th>
-                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Client Entry</th>
-                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Protocol Status</th>
-                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Components</th>
-                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Settlement</th>
-                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black text-right">Audit</th>
-                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-black">
-                     {filteredOrders.map((order) => (
-                        <tr key={order._id} className={cn("hover:bg-brand-grey transition-all group", selectedIds.includes(order._id) && "bg-brand-grey")}>
-                           <td className="px-8 py-8">
-                              <button onClick={() => toggleSelectOne(order._id)} className="text-black/20 group-hover:text-black">
-                                 {selectedIds.includes(order._id) ? (
-                                    <CheckSquare size={16} strokeWidth={2.5} className="text-black" />
+            {/* Table Section */}
+            <div className="bg-white border border-black">
+               <div className="overflow-x-auto w-full max-w-full">
+                  <table className="w-full text-left min-w-[1000px]">
+                     <thead>
+                        <tr className="bg-brand-grey border-b border-black">
+                           <th className="px-8 py-5 w-10">
+                              <button onClick={toggleSelectAll} className="text-black">
+                                 {selectedIds.length === filteredOrders.length && filteredOrders.length > 0 ? (
+                                    <CheckSquare size={16} strokeWidth={2.5} />
                                  ) : (
                                     <Square size={16} strokeWidth={2.5} />
                                  )}
                               </button>
-                           </td>
-                           <td className="px-8 py-8">
-                              <div className="text-[11px] font-black uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors">LU-{order._id.slice(-8).toUpperCase()}</div>
-                           </td>
-                           <td className="px-8 py-8">
-                              <div className="text-[11px] font-black uppercase tracking-tight">{order.shippingAddress?.firstName && order.shippingAddress?.lastName ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 'GUEST CLIENT'}</div>
-                              <div className="text-[9px] text-gray-400 uppercase tracking-widest mt-1 font-bold">{order.email || 'N/A'}</div>
-                           </td>
-                           <td className="px-8 py-8">
-                              <select
-                                 value={order.status}
-                                 onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
-                                 className="text-[9px] font-black uppercase tracking-widest bg-white border border-black px-3 py-1.5 focus:border-black focus:ring-0 appearance-none rounded-none"
-                              >
-                                 <option value="pending">PENDING</option>
-                                 <option value="processing">PROCESSING</option>
-                                 <option value="packaged">PACKAGED</option>
-                                 <option value="out for delivery">OUT FOR DELIVERY</option>
-                                 <option value="delivered">DELIVERED</option>
-                                 <option value="completed">COMPLETED</option>
-                                 <option value="cancelled">CANCELLED</option>
-                                 <option value="returned">RETURNED</option>
-                              </select>
-                           </td>
-                           <td className="px-8 py-8 text-[11px] font-black uppercase tracking-widest text-gray-400">
-                              {order.orderItems?.length} Products
-                           </td>
-                           <td className="px-8 py-8 text-[11px] font-black text-black">${order.totalPrice}.00</td>
-                           <td className="px-8 py-8 text-right">
-                              <div className="flex justify-end gap-1">
-                                 <button
-                                    className="p-3 text-black/30 hover:text-black hover:bg-white border border-transparent hover:border-black transition-all"
-                                    onClick={() => {
-                                       setSelectedOrder(order);
-                                       setIsModalOpen(true);
-                                    }}
-                                 >
-                                    <Eye size={16} strokeWidth={1.5} />
-                                 </button>
-                              </div>
-                           </td>
+                           </th>
+                           <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Sequence ID</th>
+                           <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Client Entry</th>
+                           <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Protocol Status</th>
+                           <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Components</th>
+                           <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Settlement</th>
+                           <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black text-right">Audit</th>
                         </tr>
-                     ))}
-                  </tbody>
-               </table>
+                     </thead>
+                     <tbody className="divide-y divide-black">
+                        {filteredOrders.map((order) => (
+                           <tr key={order._id} className={cn("hover:bg-brand-grey transition-all group", selectedIds.includes(order._id) && "bg-brand-grey")}>
+                              <td className="px-8 py-8">
+                                 <button onClick={() => toggleSelectOne(order._id)} className="text-black/20 group-hover:text-black">
+                                    {selectedIds.includes(order._id) ? (
+                                       <CheckSquare size={16} strokeWidth={2.5} className="text-black" />
+                                    ) : (
+                                       <Square size={16} strokeWidth={2.5} />
+                                    )}
+                                 </button>
+                              </td>
+                              <td className="px-8 py-8">
+                                 <div className="text-[11px] font-black uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors">LU-{order._id.slice(-8).toUpperCase()}</div>
+                              </td>
+                              <td className="px-8 py-8">
+                                 <div className="text-[11px] font-black uppercase tracking-tight">{order.shippingAddress?.firstName && order.shippingAddress?.lastName ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 'GUEST CLIENT'}</div>
+                                 <div className="text-[9px] text-gray-400 uppercase tracking-widest mt-1 font-bold">{order.email || 'N/A'}</div>
+                              </td>
+                              <td className="px-8 py-8">
+                                 <select
+                                    value={order.status}
+                                    onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
+                                    className="text-[9px] font-black uppercase tracking-widest bg-white border border-black px-3 py-1.5 focus:border-black focus:ring-0 appearance-none rounded-none"
+                                 >
+                                    <option value="pending">PENDING</option>
+                                    <option value="processing">PROCESSING</option>
+                                    <option value="packaged">PACKAGED</option>
+                                    <option value="out for delivery">OUT FOR DELIVERY</option>
+                                    <option value="delivered">DELIVERED</option>
+                                    <option value="completed">COMPLETED</option>
+                                    <option value="cancelled">CANCELLED</option>
+                                    <option value="returned">RETURNED</option>
+                                 </select>
+                              </td>
+                              <td className="px-8 py-8 text-[11px] font-black uppercase tracking-widest text-gray-400">
+                                 {order.orderItems?.length} Products
+                              </td>
+                              <td className="px-8 py-8 text-[11px] font-black text-black">${order.totalPrice}.00</td>
+                              <td className="px-8 py-8 text-right">
+                                 <div className="flex justify-end gap-1">
+                                    <button
+                                       className="p-3 text-black/30 hover:text-black hover:bg-white border border-transparent hover:border-black transition-all"
+                                       onClick={() => {
+                                          setSelectedOrder(order);
+                                          setIsModalOpen(true);
+                                       }}
+                                    >
+                                       <Eye size={16} strokeWidth={1.5} />
+                                    </button>
+                                 </div>
+                              </td>
+                           </tr>
+                        ))}
+                     </tbody>
+                  </table>
+               </div>
             </div>
          </div>
 
@@ -336,7 +338,7 @@ const AdminOrders = () => {
                @media print {
                   @page {
                      size: A4;
-                     margin: 0; /* Strict 0 margin to prevent auto-breaks */
+                     margin: 1.5cm;
                   }
                   html, body {
                      margin: 0 !important;
@@ -344,19 +346,9 @@ const AdminOrders = () => {
                      height: auto !important;
                      overflow: visible !important;
                      background: white !important;
-                     box-sizing: border-box;
-                  }
-                  body * {
-                     visibility: hidden !important;
-                  }
-                  #printable-registry, #printable-registry * {
-                     visibility: visible !important;
                   }
                   #printable-registry {
-                     position: relative !important; /* Relative is safer for flow */
                      width: 100% !important;
-                     margin: 0 !important;
-                     padding: 1.5cm !important; /* Simulate page margins */
                      background: white !important;
                      color: #000;
                      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
@@ -364,13 +356,13 @@ const AdminOrders = () => {
                   .label-body {
                      width: 100%;
                      page-break-inside: avoid;
-                     page-break-after: avoid; /* Only break via print-page-break class */
-                     margin: 0 !important;
-                     padding-bottom: 0 !important;
+                     page-break-after: always;
+                     margin-bottom: 2cm;
                      text-align: left;
                   }
-                  .print-page-break {
-                     page-break-after: always !important;
+                  .label-body:last-child {
+                     page-break-after: avoid !important;
+                     margin-bottom: 0 !important;
                   }
                   
                   /* HEADER */
