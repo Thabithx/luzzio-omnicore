@@ -330,24 +330,21 @@ const AdminOrders = () => {
          />
 
          {/* PRINTABLE AREA - SHOPIFY STYLE */}
-         <div className="hidden print:block print:m-0 print:p-0">
+         <div className="hidden print:block">
             <style>
                {`
                @media print {
-                  * {
-                     print-color-adjust: exact;
-                     -webkit-print-color-adjust: exact;
-                  }
                   @page {
                      size: A4;
-                     margin: 2cm 1.5cm !important; /* Native margins ensure top padding on all pages */
+                     margin: 1.5cm; /* Standard margins */
                   }
                   html, body {
                      margin: 0 !important;
                      padding: 0 !important;
-                     width: 100% !important;
                      height: auto !important;
+                     overflow: visible !important;
                      background: white !important;
+                     box-sizing: border-box;
                   }
                   body * {
                      visibility: hidden !important;
@@ -356,49 +353,40 @@ const AdminOrders = () => {
                      visibility: visible !important;
                   }
                   #printable-registry {
-                     display: block !important;
+                     position: absolute !important;
+                     left: 0 !important;
+                     top: 0 !important;
                      width: 100% !important;
                      margin: 0 !important;
                      padding: 0 !important;
                      background: white !important;
                      color: #000;
                      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-                     box-sizing: border-box !important;
-                  }
-                  .print-page-break {
-                     page-break-after: always !important;
-                     break-after: page !important;
                   }
                   .label-body {
-                     width: 100% !important;
-                     position: relative !important;
-                     box-sizing: border-box !important;
-                     text-align: left !important;
-                     overflow: visible !important;
+                     width: 100%;
+                     page-break-inside: avoid;
+                     page-break-after: always;
+                     margin-bottom: 2cm;
+                     text-align: left;
                   }
                   .label-body:last-child {
-                     padding-bottom: 0;
-                     page-break-after: avoid !important;
-                     break-after: avoid !important;
+                     page-break-after: avoid;
+                     margin-bottom: 0;
+                  }
+                  .print-page-break {
+                     page-break-after: always;
                   }
                   
                   /* HEADER */
                   .print-header {
-                     width: 100%;
-                     display: flex;
-                     justify-content: flex-start;
                      margin-bottom: 30px;
-                     align-items: flex-start;
-                  }
-                  .order-meta {
-                     text-align: left;
                   }
                   .print-order-id {
                      font-size: 16pt;
                      font-weight: 700;
                      margin-bottom: 5px;
                      color: #000;
-                     line-height: 1;
                   }
                   .print-date {
                      font-size: 11pt;
@@ -416,19 +404,16 @@ const AdminOrders = () => {
                   }
                   .address-column {
                      width: 50%;
-                     padding-right: 20px;
                   }
                   .address-column h3 {
                      font-size: 10pt;
                      font-weight: 700;
                      text-transform: capitalize;
-                     color: #000;
                      margin: 0 0 10px 0;
                   }
                   .address-lines {
                      font-size: 10pt;
                      line-height: 1.4;
-                     color: #000;
                   }
                   .store-name {
                      font-weight: 900;
@@ -441,7 +426,6 @@ const AdminOrders = () => {
                      font-weight: 700;
                      text-transform: capitalize;
                      margin: 0 0 15px 0;
-                     color: #000;
                   }
                   table {
                      width: 100%;
@@ -453,7 +437,6 @@ const AdminOrders = () => {
                      text-align: left;
                      font-size: 9pt;
                      font-weight: 600;
-                     color: #000;
                      border-bottom: 1px solid #ccc;
                      padding: 10px 12px;
                      background: #fafafa;
@@ -463,16 +446,14 @@ const AdminOrders = () => {
                      border-bottom: 1px solid #eee;
                      vertical-align: top;
                      font-size: 10pt;
-                     color: #000;
                   }
-                  .qty-col { width: 10%; vertical-align: top; }
+                  .qty-col { width: 10%; }
                   .item-col { width: 90%; }
                   
                   /* FOOTER */
                   .footer-note {
                      text-align: center;
                      font-size: 8pt;
-                     color: #000;
                      margin-top: 50px;
                      line-height: 1.5;
                   }
