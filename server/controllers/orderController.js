@@ -29,7 +29,7 @@ exports.createOrder = async (req, res) => {
       }
 
       // 1. Efficient Email & Name selection (No redundant DB trips)
-      const orderEmail = (req.user ? req.user.email : email).toLowerCase();
+      const orderEmail = (req.user ? req.user.email : (email || '')).trim().toLowerCase();
       const recipientName = req.user ? req.user.name : `${shippingAddress.firstName || ''} ${shippingAddress.lastName || ''}`.trim();
 
       const order = new Order({
@@ -181,7 +181,8 @@ exports.updateItemTracking = async (req, res) => {
 // @access  Public
 exports.getGuestOrders = async (req, res) => {
    try {
-      const orders = await Order.find({ email: req.params.email.toLowerCase(), user: null }).sort('-createdAt');
+      const email = (req.params.email || '').trim().toLowerCase();
+      const orders = await Order.find({ email: email, user: null }).sort('-createdAt');
       res.status(200).json({
          success: true,
          data: orders
@@ -208,13 +209,13 @@ exports.getMyOrders = async (req, res) => {
 
 exports.linkGuestOrders = async (email, userId) => {
    try {
-      if (!email) return;
-      const normalizedEmail = email.toLowerCase();
+      if (!email) return 0;
+      const normalizedEmail = email.trim().toLowerCase();
       const escapedEmail = normalizedEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
       const result = await Order.updateMany(
          {
-            email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') },
+            email: { $regex: new RegExp(`^\\s*${escapedEmail}\\s*$`, 'i') },
             user: null
          },
          { user: userId }
@@ -223,8 +224,26 @@ exports.linkGuestOrders = async (email, userId) => {
       if (result.modifiedCount > 0) {
          console.log(`[SYNC SUCCESS] Linked ${result.modifiedCount} orders for ${normalizedEmail}`);
       }
+      return result.modifiedCount;
    } catch (err) {
       console.error('Error linking guest orders:', err);
+      return 0;
+   }
+};
+
+// @desc    Manually sync guest orders to current user
+// @route   PUT /api/orders/sync
+// @access  Private
+exports.syncMyOrders = async (req, res) => {
+   try {
+      const count = await exports.linkGuestOrders(req.user.email, req.user.id);
+      res.status(200).json({
+         success: true,
+         message: `Synchronization complete. ${count} orders linked.`,
+         count
+      });
+   } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
    }
 };
 

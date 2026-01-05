@@ -21,7 +21,7 @@ const escapeRegex = (string) => {
 exports.register = async (req, res) => {
    try {
       const { name, email, password } = req.body;
-      const normalizedEmail = email.toLowerCase();
+      const normalizedEmail = (email || '').trim().toLowerCase();
 
       // Check if user exists (Case-insensitive & Escaped)
       const userExists = await User.findOne({ email: { $regex: new RegExp(`^${escapeRegex(normalizedEmail)}$`, 'i') } });
@@ -63,7 +63,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
    try {
       const { email, password } = req.body;
-      const normalizedEmail = email.toLowerCase();
+      const normalizedEmail = (email || '').trim().toLowerCase();
 
       // Check for user email (Case-insensitive & Escaped)
       const user = await User.findOne({ email: { $regex: new RegExp(`^${escapeRegex(normalizedEmail)}$`, 'i') } }).select('+password');
