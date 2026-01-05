@@ -16,9 +16,10 @@ const generateToken = (id) => {
 exports.register = async (req, res) => {
    try {
       const { name, email, password } = req.body;
+      const normalizedEmail = email.toLowerCase();
 
       // Check if user exists
-      const userExists = await User.findOne({ email });
+      const userExists = await User.findOne({ email: normalizedEmail });
 
       if (userExists) {
          return res.status(400).json({ success: false, message: 'User already exists' });
@@ -57,9 +58,10 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
    try {
       const { email, password } = req.body;
+      const normalizedEmail = email.toLowerCase();
 
       // Check for user email
-      const user = await User.findOne({ email }).select('+password');
+      const user = await User.findOne({ email: normalizedEmail }).select('+password');
 
       if (user && (await user.matchPassword(password))) {
          // Link any guest orders placed with this email
