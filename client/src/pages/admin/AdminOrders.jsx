@@ -338,7 +338,7 @@ const AdminOrders = () => {
                @media print {
                   @page {
                      size: A4;
-                     margin: 1.5cm;
+                     margin: 0; /* Suppress browser headers/footers */
                   }
                   html, body {
                      margin: 0 !important;
@@ -349,6 +349,7 @@ const AdminOrders = () => {
                   }
                   #printable-registry {
                      width: 100% !important;
+                     padding: 1.5cm !important; /* Move margin into padding */
                      background: white !important;
                      color: #000;
                      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
