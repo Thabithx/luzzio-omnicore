@@ -199,7 +199,7 @@ export function Profile() {
 
    return (
       <div className="min-h-screen bg-white pt-24 pb-40 px-10">
-         <Meta title={`Profile | ${user.name} | Luzzio`} />
+         <Meta title={`Profile | ${profileUser.name} | Luzzio`} />
 
          <div className="max-w-[1920px] mx-auto">
             <div className="flex flex-col lg:flex-row gap-20 text-black">
