@@ -87,13 +87,9 @@ export function Navbar() {
             {/* Right: Tools & Bag */}
             <div className="flex items-center space-x-6 md:space-x-8">
                <div className="hidden md:flex items-center space-x-8">
-                  {user ? (
-                     <Link to={user.role === 'admin' ? '/admin' : '/profile'} className="flex items-center text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50">
-                        <User size={16} strokeWidth={2} />
-                     </Link>
-                  ) : (
-                     <Link to="/login" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50">Login</Link>
-                  )}
+                  <Link to={user?.role === 'admin' ? '/admin' : '/profile'} className="flex items-center text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50">
+                     <User size={16} strokeWidth={2} />
+                  </Link>
                </div>
 
                <div className="flex items-center gap-4">
@@ -235,13 +231,11 @@ export function Navbar() {
                {/* Utility Links */}
                <div className="mt-8 px-6 pb-20 flex flex-col space-y-5">
                   <div className="flex flex-col space-y-4">
-                     {!user ? (
-                        <Link to="/login" className="text-[9px] font-black uppercase tracking-widest hover:opacity-50" onClick={() => setIsMenuOpen(false)}>Login</Link>
+                     <Link to="/profile" className="text-[9px] font-black uppercase tracking-widest hover:opacity-50" onClick={() => setIsMenuOpen(false)}>Account Archive</Link>
+                     {user ? (
+                        <button onClick={handleLogout} className="text-start text-[9px] font-black uppercase tracking-widest hover:opacity-50">Logout Session</button>
                      ) : (
-                        <>
-                           <Link to="/profile" className="text-[9px] font-black uppercase tracking-widest hover:opacity-50" onClick={() => setIsMenuOpen(false)}>Account</Link>
-                           <button onClick={handleLogout} className="text-start text-[9px] font-black uppercase tracking-widest hover:opacity-50">Logout Session</button>
-                        </>
+                        <Link to="/login" className="text-[9px] font-black uppercase tracking-widest hover:opacity-50" onClick={() => setIsMenuOpen(false)}>Register / Sign In</Link>
                      )}
                      <span className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Country / Region: International Version</span>
                      <span className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Language: English</span>
