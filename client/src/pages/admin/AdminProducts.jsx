@@ -432,6 +432,7 @@ const AdminProducts = () => {
          setCategories(catRes.data.data);
       } catch (err) {
          console.error('Archive retrieval failed:', err);
+         alert('FAILED TO RETRIEVE ARCHIVE: ' + (err.response?.data?.message || err.message));
       }
    };
 
@@ -441,16 +442,24 @@ const AdminProducts = () => {
 
    const handleSave = async (formData) => {
       try {
+         const dataToSave = {
+            ...formData,
+            salePrice: formData.salePrice === '' ? 0 : Number(formData.salePrice),
+            price: Number(formData.price),
+            stock: Number(formData.stock)
+         };
+
          if (editingProduct) {
-            await api.put(`/products/${editingProduct._id}`, formData);
+            await api.put(`/products/${editingProduct._id}`, dataToSave);
          } else {
-            await api.post('/products', formData);
+            await api.post('/products', dataToSave);
          }
          setIsModalOpen(false);
          setEditingProduct(null);
          fetchData();
       } catch (err) {
          console.error('Archive synchronization failed:', err);
+         alert('ARCHIVE SYNCHRONIZATION FAILED: ' + (err.response?.data?.message || err.message));
       }
    };
 

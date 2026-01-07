@@ -26,6 +26,11 @@ export function ProductCard({ product }) {
       <div className="group relative cursor-pointer transition-all duration-500 bg-brand-grey hover:bg-[#EEEEEE] h-full">
          <Link to={`/products/${product._id}`} className="flex flex-col h-full">
             <div className="aspect-[3/4] relative overflow-hidden shrink-0">
+               {product.salePrice > 0 && (
+                  <div className="absolute top-0 right-0 z-10 bg-black text-white px-3 py-1 text-[9px] font-black uppercase tracking-widest">
+                     Sale
+                  </div>
+               )}
                <img
                   src={imageUrl}
                   alt={product.name}
