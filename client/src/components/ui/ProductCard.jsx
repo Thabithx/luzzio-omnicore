@@ -29,7 +29,7 @@ export function ProductCard({ product }) {
                <img
                   src={imageUrl}
                   alt={product.name}
-                  className="w-full h-full object-contain transition-all duration-700 mix-blend-multiply"
+                  className="w-full h-full object-cover transition-all duration-700 mix-blend-multiply group-hover:scale-110"
                />
             </div>
 
