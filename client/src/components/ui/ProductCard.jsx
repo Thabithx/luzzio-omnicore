@@ -23,17 +23,17 @@ export function ProductCard({ product }) {
    };
 
    return (
-      <div className="group relative cursor-pointer transition-all duration-500 hover:bg-brand-grey/50 p-6 h-full">
+      <div className="group relative cursor-pointer transition-all duration-500 hover:bg-brand-grey/50 p-4 h-full">
          <Link to={`/products/${product._id}`} className="flex flex-col h-full">
-            <div className="aspect-[3/4] bg-white relative overflow-hidden shrink-0 p-4">
+            <div className="aspect-[3/4] bg-transparent relative overflow-hidden shrink-0">
                <img
                   src={imageUrl}
                   alt={product.name}
-                  className="w-full h-full object-contain transition-all duration-700"
+                  className="w-full h-full object-contain transition-all duration-700 mix-blend-multiply"
                />
             </div>
 
-            <div className="mt-6 flex flex-col flex-1 justify-between items-center text-center space-y-4">
+            <div className="mt-4 flex flex-col flex-1 justify-between items-center text-center space-y-3">
                <div className="space-y-1 w-full">
                   <h3 className="text-small-brand group-hover:opacity-50 transition-opacity line-clamp-2 min-h-[2.5em]">
                      {product.name}
