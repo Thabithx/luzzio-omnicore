@@ -6,7 +6,7 @@ import { useCart } from '../context/CartContext';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Meta from '../components/ui/Meta';
-import { ChevronLeft, Lock } from 'lucide-react';
+import { ChevronLeft, Lock, ArrowRight } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export function Checkout() {
@@ -263,24 +263,84 @@ export function Checkout() {
                      </div>
                   </section>
 
-                  <section className="space-y-8 md:space-y-10">
-                     <p className="text-small-brand font-black pb-4 border-b border-black">Payment Protocol</p>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <PaymentMethodCard
-                           id="PayHere"
-                           label="PayHere"
-                           description="LKR Gateway Integration"
-                        />
-                        <PaymentMethodCard
-                           id="Cocopay"
-                           label="Cocopay"
-                           description="Mobile Commerce Protocol"
-                        />
-                        <div className="p-6 border border-black bg-brand-grey md:col-span-2 flex items-center gap-4">
-                           <Lock size={12} className="text-black" />
-                           <p className="text-[9px] uppercase font-bold leading-relaxed text-gray-500 tracking-widest">
-                              Encrypted Transaction Protocol Active. No data stored on local servers.
-                           </p>
+                  <section className="space-y-6">
+                     <div className="space-y-1">
+                        <p className="text-lg font-black text-black">Payment</p>
+                        <p className="text-sm text-gray-500">All transactions are secure and encrypted.</p>
+                     </div>
+
+                     <div className="flex flex-col gap-4">
+                        {/* PayHere Option */}
+                        <div
+                           onClick={() => setPaymentMethod('PayHere')}
+                           className={cn(
+                              "border rounded-lg overflow-hidden cursor-pointer transition-all duration-200",
+                              paymentMethod === 'PayHere' ? "border-blue-600 bg-white ring-1 ring-blue-600" : "border-gray-200 bg-white hover:border-gray-300"
+                           )}
+                        >
+                           <div className="p-4 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                 <div className={cn(
+                                    "w-4 h-4 rounded-full border flex items-center justify-center",
+                                    paymentMethod === 'PayHere' ? "border-blue-600" : "border-gray-300"
+                                 )}>
+                                    {paymentMethod === 'PayHere' && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                                 </div>
+                                 <span className="text-sm font-medium">Bank Card / Bank Account - PayHere</span>
+                              </div>
+                              <div className="flex gap-1.5 opacity-80">
+                                 <div className="h-6 w-9 bg-blue-900 rounded flex items-center justify-center text-[6px] text-white font-bold italic">VISA</div>
+                                 <div className="h-6 w-9 bg-red-600 rounded flex items-center justify-center text-[6px] text-white font-bold italic">MC</div>
+                                 <div className="h-6 w-9 bg-blue-400 rounded flex items-center justify-center text-[6px] text-white font-bold italic">AMEX</div>
+                              </div>
+                           </div>
+
+                           {/* Expanded Content for PayHere */}
+                           {paymentMethod === 'PayHere' && (
+                              <div className="bg-gray-50 p-8 border-t border-gray-100 flex flex-col items-center text-center space-y-4">
+                                 <div className="relative w-16 h-12 border-2 border-gray-400 rounded bg-white flex items-center justify-center mb-2">
+                                    <div className="w-full h-2 bg-gray-100 absolute top-0 border-b border-gray-200" />
+                                    <ArrowRight className="text-gray-400 ml-6" size={20} />
+                                 </div>
+                                 <p className="text-xs text-gray-600 max-w-xs leading-relaxed">
+                                    After clicking "Pay now", you will be redirected to Bank Card / Bank Account - PayHere to complete your purchase securely.
+                                 </p>
+                              </div>
+                           )}
+                        </div>
+
+                        {/* Koko Option */}
+                        <div
+                           onClick={() => setPaymentMethod('Koko')}
+                           className={cn(
+                              "border rounded-lg overflow-hidden cursor-pointer transition-all duration-200",
+                              paymentMethod === 'Koko' ? "border-blue-600 bg-white ring-1 ring-blue-600" : "border-gray-200 bg-white hover:border-gray-300"
+                           )}
+                        >
+                           <div className="p-4 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                 <div className={cn(
+                                    "w-4 h-4 rounded-full border flex items-center justify-center",
+                                    paymentMethod === 'Koko' ? "border-blue-600" : "border-gray-300"
+                                 )}>
+                                    {paymentMethod === 'Koko' && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                                 </div>
+                                 <span className="text-sm font-medium">Koko: Buy Now Pay Later</span>
+                              </div>
+                              <div className="flex gap-1.5 opacity-80">
+                                 <div className="h-6 w-9 bg-blue-900 rounded flex items-center justify-center text-[6px] text-white font-bold italic">VISA</div>
+                                 <div className="h-6 w-9 bg-red-600 rounded flex items-center justify-center text-[6px] text-white font-bold italic">MC</div>
+                              </div>
+                           </div>
+
+                           {/* Expanded Content for Koko (if needed, otherwise empty like typical radios) */}
+                           {paymentMethod === 'Koko' && (
+                              <div className="bg-gray-50 p-6 border-t border-gray-100 flex flex-col items-center text-center">
+                                 <p className="text-xs text-gray-600 max-w-xs leading-relaxed">
+                                    You will be redirected to Koko to complete your payment in 3 installments.
+                                 </p>
+                              </div>
+                           )}
                         </div>
                      </div>
                   </section>
