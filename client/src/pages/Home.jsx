@@ -222,9 +222,9 @@ export function Home() {
                      {/* Category Header - Clickable */}
                      <button
                         onClick={() => setActiveCategory(isOpen ? null : category._id)}
-                        className="w-full flex justify-between items-center px-10 py-8 bg-brand-grey hover:bg-black hover:text-white transition-colors group"
+                        className="w-full flex justify-between items-center px-5 md:px-10 py-6 md:py-8 bg-brand-grey hover:bg-black hover:text-white transition-colors group"
                      >
-                        <h3 className="text-sm md:text-base font-black uppercase tracking-[0.3em]">
+                        <h3 className="text-[10px] md:text-base font-black uppercase tracking-[0.3em] text-left">
                            {category.name}
                         </h3>
                         <ChevronDown
