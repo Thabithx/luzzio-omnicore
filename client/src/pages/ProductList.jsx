@@ -58,14 +58,41 @@ export function ProductList() {
    };
 
    const filteredProducts = products.filter(p => {
-      const matchesCategory = activeCategory === 'all' ||
-         p.category?.name?.toLowerCase() === activeCategory.toLowerCase() ||
-         p.category?._id === activeCategory ||
-         p.category === activeCategory;
+      // Category filtering - support both new categories array and old single category
+      let matchesCategory = activeCategory === 'all';
 
-      const matchesSearch = searchQuery === '' ||
-         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-         p.category?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+      if (!matchesCategory) {
+         if (p.categories && Array.isArray(p.categories) && p.categories.length > 0) {
+            // New structure: check if any category matches
+            matchesCategory = p.categories.some(cat =>
+               cat?.name?.toLowerCase() === activeCategory.toLowerCase() ||
+               cat?._id === activeCategory ||
+               cat === activeCategory
+            );
+         } else if (p.category) {
+            // Fallback for old single category structure
+            matchesCategory =
+               p.category?.name?.toLowerCase() === activeCategory.toLowerCase() ||
+               p.category?._id === activeCategory ||
+               p.category === activeCategory;
+         }
+      }
+
+      // Search filtering - search across all categories
+      let matchesSearch = searchQuery === '' ||
+         p.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+      if (!matchesSearch && searchQuery !== '') {
+         // Search in categories array
+         if (p.categories && Array.isArray(p.categories)) {
+            matchesSearch = p.categories.some(cat =>
+               cat?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+         } else if (p.category) {
+            // Fallback for old structure
+            matchesSearch = p.category?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+         }
+      }
 
       // Price filter
       let matchesPrice = true;

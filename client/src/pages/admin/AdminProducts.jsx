@@ -10,7 +10,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
    const [formData, setFormData] = useState({
       name: '',
       price: '',
-      category: '',
+      categories: [],
       stock: '',
       description: '',
       images: [''],
@@ -25,9 +25,17 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
 
    useEffect(() => {
       if (product) {
+         // Handle both old single category and new categories array
+         let productCategories = [];
+         if (product.categories && Array.isArray(product.categories)) {
+            productCategories = product.categories.map(cat => typeof cat === 'object' ? cat._id : cat);
+         } else if (product.category) {
+            productCategories = [typeof product.category === 'object' ? product.category._id : product.category];
+         }
+
          setFormData({
             ...product,
-            category: product.category?._id || product.category || '',
+            categories: productCategories,
             images: product.images.length > 0 ? product.images : [''],
             colors: product.colors || [],
             material: product.material || '',
@@ -38,7 +46,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
          setFormData({
             name: '',
             price: '',
-            category: categories[0]?._id || '',
+            categories: [],
             stock: '',
             description: '',
             images: [''],
@@ -130,16 +138,53 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                         className="rounded-none border-black focus:border-black"
                      />
                   </div>
-                  <div className="space-y-2">
-                     <label className="text-small-brand text-gray-400">Category Tag</label>
+                  <div className="space-y-2 md:col-span-2">
+                     <label className="text-small-brand text-gray-400">Category Tags (Multiple)</label>
+
+                     {/* Selected Categories Display */}
+                     <div className="flex flex-wrap gap-2 mb-3 min-h-[40px] p-3 border border-black/10 bg-gray-50">
+                        {formData.categories.length > 0 ? (
+                           formData.categories.map((catId) => {
+                              const cat = categories.find(c => c._id === catId);
+                              return cat ? (
+                                 <span key={catId} className="flex items-center gap-2 px-3 py-1.5 bg-black text-white text-[9px] font-black uppercase tracking-widest">
+                                    {cat.name}
+                                    <button
+                                       type="button"
+                                       onClick={() => {
+                                          setFormData({
+                                             ...formData,
+                                             categories: formData.categories.filter(id => id !== catId)
+                                          });
+                                       }}
+                                       className="hover:text-red-500 transition-colors"
+                                    >
+                                       <X size={10} />
+                                    </button>
+                                 </span>
+                              ) : null;
+                           })
+                        ) : (
+                           <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest italic">No categories selected</span>
+                        )}
+                     </div>
+
+                     {/* Category Selector */}
                      <select
                         className="w-full border-black focus:border-black focus:ring-0 text-[11px] h-10 px-3 font-black appearance-none bg-white rounded-none border"
-                        value={formData.category}
-                        onChange={e => setFormData({ ...formData, category: e.target.value })}
-                        required
+                        value=""
+                        onChange={e => {
+                           const catId = e.target.value;
+                           if (catId && !formData.categories.includes(catId)) {
+                              setFormData({
+                                 ...formData,
+                                 categories: [...formData.categories, catId]
+                              });
+                           }
+                        }}
                      >
-                        <option value="">Select Category</option>
-                        {categories.map(cat => (
+                        <option value="">+ Add Category</option>
+                        {categories.filter(cat => !formData.categories.includes(cat._id)).map(cat => (
                            <option key={cat._id} value={cat._id}>{cat.name}</option>
                         ))}
                      </select>
@@ -538,9 +583,29 @@ const AdminProducts = () => {
                               <div className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">CODE: {product._id.toUpperCase()}</div>
                            </td>
                            <td className="px-8 py-6">
-                              <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-white border border-black">
-                                 {typeof product.category === 'object' ? product.category?.name : categories.find(c => c._id === product.category)?.name || 'UNCLASSIFIED'}
-                              </span>
+                              <div className="flex flex-wrap gap-1">
+                                 {product.categories && product.categories.length > 0 ? (
+                                    product.categories.map((cat) => {
+                                       const categoryName = typeof cat === 'object' ? cat.name : categories.find(c => c._id === cat)?.name;
+                                       return categoryName ? (
+                                          <span key={typeof cat === 'object' ? cat._id : cat} className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-white border border-black">
+                                             {categoryName}
+                                          </span>
+                                       ) : null;
+                                    })
+                                 ) : (
+                                    // Fallback for old single category field
+                                    product.category ? (
+                                       <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-white border border-black">
+                                          {typeof product.category === 'object' ? product.category?.name : categories.find(c => c._id === product.category)?.name || 'UNCLASSIFIED'}
+                                       </span>
+                                    ) : (
+                                       <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-gray-100 border border-gray-300 text-gray-400">
+                                          NO CATEGORY
+                                       </span>
+                                    )
+                                 )}
+                              </div>
                            </td>
                            <td className="px-8 py-6 text-[11px] font-black text-black">
                               {product.salePrice > 0 ? (
