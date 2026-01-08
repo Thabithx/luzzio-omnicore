@@ -288,10 +288,23 @@ export function Checkout() {
                                  </div>
                                  <span className="text-sm font-medium">Bank Card / Bank Account - PayHere</span>
                               </div>
-                              <div className="flex gap-1.5 opacity-80">
-                                 <div className="h-6 w-9 bg-blue-900 rounded flex items-center justify-center text-[6px] text-white font-bold italic">VISA</div>
-                                 <div className="h-6 w-9 bg-red-600 rounded flex items-center justify-center text-[6px] text-white font-bold italic">MC</div>
-                                 <div className="h-6 w-9 bg-blue-400 rounded flex items-center justify-center text-[6px] text-white font-bold italic">AMEX</div>
+                              <div className="flex gap-2 items-center opacity-80">
+                                 {/* Visa Icon */}
+                                 <svg viewBox="0 0 36 12" fill="none" className="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M13.6 0.1L9.8 10.3H7.5L4.8 2.2C4.7 1.8 4.2 0.7 2.4 0.7H0.1V0.9C0.1 0.9 4.1 1.0 8.8 10.3H11.9L16.2 0.1H13.6ZM22.2 0.2C21.2 0.2 20.8 0.7 20.3 1.5C20.3 1.5 18.6 9.4 18.6 9.4C18.6 9.4 18.1 10.3 19.3 10.3H21.7C21.7 10.3 22.1 8.2 22.1 8.2C22.6 8.2 25.1 8.2 25.6 8.2C25.7 9.0 25.9 10.3 25.9 10.3H28.6C28.6 10.3 27.2 3.6 26.9 2.1C26.5 0.7 25.3 0.2 24.1 0.2H22.2ZM22.7 2.8L24.8 6.5H22.4C22.5 5.8 22.7 2.8 22.7 2.8ZM33.7 4.9C33.8 3.3 32.4 2.6 31.4 2.1C30.9 1.9 30.1 1.7 30.1 1.4C30.1 1.0 30.5 0.9 31.2 0.9C31.5 0.9 32.6 1.0 33.7 1.5L34.1 0.5C33.7 0.3 32.1 0.1 31.3 0.1C29.2 0.1 27.7 1.2 27.7 2.6C27.7 4.3 30.1 4.7 31.1 5.2C31.7 5.5 31.9 5.8 31.9 6.2C31.9 6.7 31.1 7.0 30.2 7.0C29.6 7.0 27.8 6.9 26.6 6.3L26.1 7.4C27.1 7.8 29.0 7.9 30.2 7.9C32.5 7.9 34.0 6.8 33.9 4.9Z" fill="#2566AF" />
+                                 </svg>
+                                 {/* Mastercard Icon */}
+                                 <svg viewBox="0 0 32 20" fill="none" className="h-5 w-auto" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="10" cy="10" r="10" fill="#EB001B" />
+                                    <circle cx="22" cy="10" r="10" fill="#F79E1B" />
+                                    <path d="M16 3.6C14.7 5.4 14 7.6 14 10C14 12.4 14.7 14.6 16 16.4C17.3 14.6 18 12.4 18 10C18 7.6 17.3 5.3 16 3.6Z" fill="#FF5F00" />
+                                 </svg>
+                                 {/* Amex Icon */}
+                                 <svg viewBox="0 0 30 20" fill="none" className="h-5 w-auto" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="30" height="20" rx="3" fill="#016FD0" />
+                                    <path d="M4.5 9.5H2V11H3.5V14H4.5V9.5ZM7.5 9.5H6.5L5.5 14H6.7L6.9 13H8.1L8.3 14H9.5L8.5 9.5H7.5ZM7 10.5L7.8 12H7.2L7 10.5ZM12.5 11H11V10.5H12.5V9.5H10V14H11V12H12.5V11ZM15.5 11H14.5V10H16V9.5H13.5V14H16V13.5H14.5V12.5H15.5V11ZM19 14H20.5V12H19V11.5H20.5V10.5H19V10H20.5V9.5H18V14H19ZM23.5 13L24.5 14H26L24.2 12.3L25.8 9.5H24.5L23.5 11.5L22.5 9.5H21L22.8 12.3L21 14H22.5L23.5 13Z" fill="white" />
+                                 </svg>
+                                 <div className="px-1.5 py-0.5 border border-gray-200 rounded text-[9px] font-bold text-gray-500 bg-gray-50">+2</div>
                               </div>
                            </div>
 
@@ -327,9 +340,17 @@ export function Checkout() {
                                  </div>
                                  <span className="text-sm font-medium">Koko: Buy Now Pay Later</span>
                               </div>
-                              <div className="flex gap-1.5 opacity-80">
-                                 <div className="h-6 w-9 bg-blue-900 rounded flex items-center justify-center text-[6px] text-white font-bold italic">VISA</div>
-                                 <div className="h-6 w-9 bg-red-600 rounded flex items-center justify-center text-[6px] text-white font-bold italic">MC</div>
+                              <div className="flex gap-2 items-center opacity-80">
+                                 {/* Visa Icon */}
+                                 <svg viewBox="0 0 36 12" fill="none" className="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M13.6 0.1L9.8 10.3H7.5L4.8 2.2C4.7 1.8 4.2 0.7 2.4 0.7H0.1V0.9C0.1 0.9 4.1 1.0 8.8 10.3H11.9L16.2 0.1H13.6ZM22.2 0.2C21.2 0.2 20.8 0.7 20.3 1.5C20.3 1.5 18.6 9.4 18.6 9.4C18.6 9.4 18.1 10.3 19.3 10.3H21.7C21.7 10.3 22.1 8.2 22.1 8.2C22.6 8.2 25.1 8.2 25.6 8.2C25.7 9.0 25.9 10.3 25.9 10.3H28.6C28.6 10.3 27.2 3.6 26.9 2.1C26.5 0.7 25.3 0.2 24.1 0.2H22.2ZM22.7 2.8L24.8 6.5H22.4C22.5 5.8 22.7 2.8 22.7 2.8ZM33.7 4.9C33.8 3.3 32.4 2.6 31.4 2.1C30.9 1.9 30.1 1.7 30.1 1.4C30.1 1.0 30.5 0.9 31.2 0.9C31.5 0.9 32.6 1.0 33.7 1.5L34.1 0.5C33.7 0.3 32.1 0.1 31.3 0.1C29.2 0.1 27.7 1.2 27.7 2.6C27.7 4.3 30.1 4.7 31.1 5.2C31.7 5.5 31.9 5.8 31.9 6.2C31.9 6.7 31.1 7.0 30.2 7.0C29.6 7.0 27.8 6.9 26.6 6.3L26.1 7.4C27.1 7.8 29.0 7.9 30.2 7.9C32.5 7.9 34.0 6.8 33.9 4.9Z" fill="#2566AF" />
+                                 </svg>
+                                 {/* Mastercard Icon */}
+                                 <svg viewBox="0 0 32 20" fill="none" className="h-5 w-auto" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="10" cy="10" r="10" fill="#EB001B" />
+                                    <circle cx="22" cy="10" r="10" fill="#F79E1B" />
+                                    <path d="M16 3.6C14.7 5.4 14 7.6 14 10C14 12.4 14.7 14.6 16 16.4C17.3 14.6 18 12.4 18 10C18 7.6 17.3 5.3 16 3.6Z" fill="#FF5F00" />
+                                 </svg>
                               </div>
                            </div>
 
