@@ -291,14 +291,13 @@ export function Checkout() {
                               <div className="flex gap-2 items-center opacity-80">
                                  {/* Visa Card */}
                                  <div className="h-8 w-12 bg-white border border-gray-200 rounded flex items-center justify-center p-1">
-                                    <svg viewBox="0 0 36 12" fill="none" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                    <svg viewBox="0 0 36 12" fill="none" className="max-h-full max-w-full h-auto w-auto" xmlns="http://www.w3.org/2000/svg">
                                        <path fill="#1A1F71" d="M15.1,0.5l-2.1,10.7h-3.4l2.1-10.7H15.1z M24.6,0.5l-2.6,10.7h-3.3l1.7-8.3c-0.8,0-2.8,0.7-3.7,1.8l-1.3,6.5h-3.5L16,0.5h3.6c0.5,0,0.9,0.1,1.3,0.2C22.2,1,22.8,1.4,23,2c0.2,0.6,0.1,1.1,0.1,1.1S24.6,0.5,24.6,0.5z M26,0.5l1.6,10.7h3.3l-1.4-8.8c0,0,1.9-0.8,3.8,0.3c0.4,0.3,0.7,0.6,0.9,1l-0.7,7.5h3.4l0.8-8.4c-0.1-0.9-1.2-2.3-4.2-2.3c-1,0-2.3,0.3-2.9,0.7L30,0.5H26z M10.4,0.5H7.1L4.4,7.8C4.3,8.1,4.2,8.3,4.1,8.5L3.9,7.5L2.9,2.6C2.8,2,2.7,1.4,2.5,0.9C2.2,0.4,1.1,0.5,1.1,0.5L0.2,0.7L0.1,1l4,9.6l0.6,0.6h3.6L13,0.5H10.4z" />
                                     </svg>
                                  </div>
                                  {/* Mastercard Card */}
                                  <div className="h-8 w-12 bg-white border border-gray-200 rounded flex items-center justify-center p-0.5">
-                                    <svg viewBox="0 0 24 16" fill="none" className="h-[90%] w-auto" xmlns="http://www.w3.org/2000/svg">
-                                       <rect width="24" height="16" fill="white" fillOpacity="0" />
+                                    <svg viewBox="0 0 24 16" fill="none" className="max-h-full max-w-full h-auto w-auto" xmlns="http://www.w3.org/2000/svg">
                                        <circle cx="7" cy="8" r="7" fill="#EB001B" />
                                        <circle cx="17" cy="8" r="7" fill="#F79E1B" />
                                        <path d="M12 12.8995C14.7062 12.8995 16.9 10.7056 16.9 8C16.9 5.29437 14.7062 3.10052 12 3.10052C9.2938 3.10052 7.10001 5.29437 7.10001 8C7.10001 10.7056 9.2938 12.8995 12 12.8995Z" fill="#FF5F00" />
@@ -306,7 +305,7 @@ export function Checkout() {
                                  </div>
                                  {/* Amex Card */}
                                  <div className="h-8 w-12 bg-[#006fcf] border border-gray-200 rounded flex items-center justify-center overflow-hidden">
-                                    <svg viewBox="0 0 24 16" fill="none" className="h-full w-full p-1" xmlns="http://www.w3.org/2000/svg">
+                                    <svg viewBox="0 0 24 16" fill="none" className="max-h-full max-w-full h-auto w-auto p-1" xmlns="http://www.w3.org/2000/svg">
                                        <path d="M4.5 7H2.5L2 10H0L3.5 2H6.5L10 10H8L7.5 7H4.5ZM5 5L6 3L7 5H5Z" fill="white" />
                                        <path d="M12 2H15L16 6L17 2H20V10H18L18 5L16.5 10H15.5L14 5L14 10H12V2Z" fill="white" />
                                        <path d="M21 2H24V3.5H22V5H23.5V6.5H22V8.5H24V10H21V2Z" fill="white" />
@@ -322,14 +321,14 @@ export function Checkout() {
                                        <div className="absolute bottom-[-4px] right-3 w-2 h-2 bg-black rotate-45"></div>
                                        {/* Discover */}
                                        <div className="h-8 w-12 bg-white rounded overflow-hidden flex items-center justify-center p-0.5">
-                                          <svg viewBox="0 0 24 16" fill="none" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                          <svg viewBox="0 0 24 16" fill="none" className="max-h-full max-w-full h-auto w-auto" xmlns="http://www.w3.org/2000/svg">
                                              <path d="M2 8C2 11.3 4.7 14 8 14H16C19.3 14 22 11.3 22 8C22 4.7 19.3 2 16 2H8C4.7 2 2 4.7 2 8Z" fill="#F47B20" />
                                              <text x="12" y="10" fontSize="7" fontWeight="bold" textAnchor="middle" fill="white" fontFamily="Arial">DISCOVER</text>
                                           </svg>
                                        </div>
                                        {/* Diners Club */}
                                        <div className="h-8 w-12 bg-white rounded overflow-hidden flex items-center justify-center p-0.5">
-                                          <svg viewBox="0 0 24 16" fill="none" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                          <svg viewBox="0 0 24 16" fill="none" className="max-h-full max-w-full h-auto w-auto" xmlns="http://www.w3.org/2000/svg">
                                              <circle cx="8" cy="8" r="5" fill="#0079C1" />
                                              <circle cx="16" cy="8" r="5" fill="#0079C1" />
                                              <path d="M12 4.5C10.067 4.5 8.5 6.067 8.5 8C8.5 9.933 10.067 11.5 12 11.5C13.933 11.5 15.5 9.933 15.5 8C15.5 6.067 13.933 4.5 12 4.5Z" fill="white" />
@@ -376,14 +375,13 @@ export function Checkout() {
                               <div className="flex gap-2 items-center opacity-80">
                                  {/* Visa Card */}
                                  <div className="h-8 w-12 bg-white border border-gray-200 rounded flex items-center justify-center p-1">
-                                    <svg viewBox="0 0 36 12" fill="none" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                    <svg viewBox="0 0 36 12" fill="none" className="max-h-full max-w-full h-auto w-auto" xmlns="http://www.w3.org/2000/svg">
                                        <path fill="#1A1F71" d="M15.1,0.5l-2.1,10.7h-3.4l2.1-10.7H15.1z M24.6,0.5l-2.6,10.7h-3.3l1.7-8.3c-0.8,0-2.8,0.7-3.7,1.8l-1.3,6.5h-3.5L16,0.5h3.6c0.5,0,0.9,0.1,1.3,0.2C22.2,1,22.8,1.4,23,2c0.2,0.6,0.1,1.1,0.1,1.1S24.6,0.5,24.6,0.5z M26,0.5l1.6,10.7h3.3l-1.4-8.8c0,0,1.9-0.8,3.8,0.3c0.4,0.3,0.7,0.6,0.9,1l-0.7,7.5h3.4l0.8-8.4c-0.1-0.9-1.2-2.3-4.2-2.3c-1,0-2.3,0.3-2.9,0.7L30,0.5H26z M10.4,0.5H7.1L4.4,7.8C4.3,8.1,4.2,8.3,4.1,8.5L3.9,7.5L2.9,2.6C2.8,2,2.7,1.4,2.5,0.9C2.2,0.4,1.1,0.5,1.1,0.5L0.2,0.7L0.1,1l4,9.6l0.6,0.6h3.6L13,0.5H10.4z" />
                                     </svg>
                                  </div>
                                  {/* Mastercard Card */}
                                  <div className="h-8 w-12 bg-white border border-gray-200 rounded flex items-center justify-center p-0.5">
-                                    <svg viewBox="0 0 24 16" fill="none" className="h-[90%] w-auto" xmlns="http://www.w3.org/2000/svg">
-                                       <rect width="24" height="16" fill="white" fillOpacity="0" />
+                                    <svg viewBox="0 0 24 16" fill="none" className="max-h-full max-w-full h-auto w-auto" xmlns="http://www.w3.org/2000/svg">
                                        <circle cx="7" cy="8" r="7" fill="#EB001B" />
                                        <circle cx="17" cy="8" r="7" fill="#F79E1B" />
                                        <path d="M12 12.8995C14.7062 12.8995 16.9 10.7056 16.9 8C16.9 5.29437 14.7062 3.10052 12 3.10052C9.2938 3.10052 7.10001 5.29437 7.10001 8C7.10001 10.7056 9.2938 12.8995 12 12.8995Z" fill="#FF5F00" />
