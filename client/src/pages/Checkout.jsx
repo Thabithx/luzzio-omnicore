@@ -290,49 +290,48 @@ export function Checkout() {
                               </div>
                               <div className="flex gap-2 items-center opacity-80">
                                  {/* Visa Card */}
-                                 <div className="h-9 w-14 bg-white border border-gray-200 rounded flex items-center justify-center p-1">
-                                    <svg viewBox="0 0 36 12" preserveAspectRatio="xMidYMid meet" fill="none" className="max-h-[65%] max-w-[90%] w-auto h-auto" xmlns="http://www.w3.org/2000/svg">
-                                       <path fill="#1A1F71" d="M15.1,0.5l-2.1,10.7h-3.4l2.1-10.7H15.1z M24.6,0.5l-2.6,10.7h-3.3l1.7-8.3c-0.8,0-2.8,0.7-3.7,1.8l-1.3,6.5h-3.5L16,0.5h3.6c0.5,0,0.9,0.1,1.3,0.2C22.2,1,22.8,1.4,23,2c0.2,0.6,0.1,1.1,0.1,1.1S24.6,0.5,24.6,0.5z M26,0.5l1.6,10.7h3.3l-1.4-8.8c0,0,1.9-0.8,3.8,0.3c0.4,0.3,0.7,0.6,0.9,1l-0.7,7.5h3.4l0.8-8.4c-0.1-0.9-1.2-2.3-4.2-2.3c-1,0-2.3,0.3-2.9,0.7L30,0.5H26z M10.4,0.5H7.1L4.4,7.8C4.3,8.1,4.2,8.3,4.1,8.5L3.9,7.5L2.9,2.6C2.8,2,2.7,1.4,2.5,0.9C2.2,0.4,1.1,0.5,1.1,0.5L0.2,0.7L0.1,1l4,9.6l0.6,0.6h3.6L13,0.5H10.4z" />
+                                 <div className="h-9 w-auto min-w-[2.5rem] bg-white border border-gray-200 rounded flex items-center justify-center px-2 py-1">
+                                    <svg viewBox="0 0 50 16" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                       <path fill="#142787" d="M21.05 15.004h3.084l1.928-11.854h-3.085l-1.927 11.854zm17.234.313c-0.68-.25-1.748-.517-3.062-.517-3.376 0-5.753 1.79-5.772 4.354-.02 1.892 1.69 2.948 2.98 3.57 1.325.642 1.768 1.058 1.768 1.632 0 .88-1.058 1.282-2.04 1.282-1.365 0-2.093-.207-3.218-.703l-.448-.208-.477 2.973c.797.368 2.27.688 3.8.688 3.587 0 5.922-1.77 5.947-4.51.018-1.503-.896-2.65-2.864-3.59-1.194-.61-1.927-1.01-1.927-1.625 0-.563.624-1.138 1.977-1.138 1.127 0 1.944.2 2.57.472l.31.137.452-2.828zm8.794-.313H44.69c-0.74 0-1.295.215-1.618.98l-5.714 13.52h3.237l.644-1.782h3.945l.37 1.782h2.855l-1.33-14.5zm-4.965 10.003l2.036-5.825 1.166 5.825h-3.202zm-18.32-10.003L19.4 25.894l-.426-2.167c-.732-2.483-3.024-5.18-5.59-6.52l3.635 13.725h3.284l4.873-11.826h-3.385zm-12.222 0H.212l-.1.5c4.214 1.07 7 3.655 8.152 6.757l-1.186-5.688c-.247-1.032-.96-1.564-2.42-1.564z" />
                                     </svg>
                                  </div>
                                  {/* Mastercard Card */}
-                                 <div className="h-9 w-14 bg-white border border-gray-200 rounded flex items-center justify-center p-0.5">
-                                    <svg viewBox="0 0 24 16" preserveAspectRatio="xMidYMid meet" fill="none" className="max-h-[75%] max-w-[85%] w-auto h-auto" xmlns="http://www.w3.org/2000/svg">
-                                       <circle cx="7" cy="8" r="7" fill="#EB001B" />
-                                       <circle cx="17" cy="8" r="7" fill="#F79E1B" />
-                                       <path d="M12 12.8995C14.7062 12.8995 16.9 10.7056 16.9 8C16.9 5.29437 14.7062 3.10052 12 3.10052C9.2938 3.10052 7.10001 5.29437 7.10001 8C7.10001 10.7056 9.2938 12.8995 12 12.8995Z" fill="#FF5F00" />
+                                 <div className="h-9 w-auto min-w-[2.5rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1">
+                                    <svg viewBox="0 0 24 15" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                       <path fill="#ff5f00" d="M12 0L12 15" stroke="none" />
+                                       <circle cx="4.5" cy="7.5" r="7.5" fill="#EB001B" />
+                                       <circle cx="19.5" cy="7.5" r="7.5" fill="#F79E1B" />
+                                       <path fill="#FF5F00" d="M12 2.58A7.47 7.47 0 0 0 9.24 7.5a7.47 7.47 0 0 0 2.76 4.92 7.47 7.47 0 0 0 2.76-4.92A7.47 7.47 0 0 0 12 2.58z" />
                                     </svg>
                                  </div>
                                  {/* Amex Card */}
-                                 <div className="h-9 w-14 bg-[#006fcf] border border-gray-200 rounded flex items-center justify-center overflow-hidden">
-                                    <svg viewBox="0 0 24 16" preserveAspectRatio="xMidYMid meet" fill="none" className="max-h-[70%] max-w-[85%] w-auto h-auto" xmlns="http://www.w3.org/2000/svg">
-                                       <path d="M4.5 7H2.5L2 10H0L3.5 2H6.5L10 10H8L7.5 7H4.5ZM5 5L6 3L7 5H5Z" fill="white" />
-                                       <path d="M12 2H15L16 6L17 2H20V10H18L18 5L16.5 10H15.5L14 5L14 10H12V2Z" fill="white" />
-                                       <path d="M21 2H24V3.5H22V5H23.5V6.5H22V8.5H24V10H21V2Z" fill="white" />
+                                 <div className="h-9 w-auto min-w-[2.5rem] bg-[#006fcf] border border-gray-200 rounded flex items-center justify-center overflow-hidden px-1">
+                                    <svg viewBox="0 0 40 25" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                       <path fill="white" d="M4.35 11.8h-1.9V8H.5v9h2.35v-3.7h1.5l1.9 3.7h2.6l-2.6-4.6 2.4-4.6H6.05l-1.7 4zm5.7-3.8h5.3v1.3h-3.4v2h3.2v1.3h-3.2v2.7h3.4V17H10V8zm9.5 0h-1.5l-2.9 8.2h-1.3l-2.9-8.2h-1.5v9h2v-4.1l1.5 4.1h1.3l1.5-4.1V17h2V8zm1.9 4.3h-1.8V8h-2.1v9h6.3v-1.6h-4.2V8h2.1l-.3 4.3zm6.6-4.3h-1.6l-2.2 3.6-2.1-3.6h-1.6l3 4.5-3.1 4.5h1.7l2.2-3.7 2.2 3.7h1.7l-3.2-4.5 3-4.5zm2.7 6.4h1.7V8h-1.7v6.4zm5.5-5.1h-2.6v2h2.5c.3 0 .4-.2.4-.4s-.1-.4-.4-.4h-1.9V8h2.5c1.4 0 2.1.6 2.1 1.6s-.8 1.6-2.6 1.6v.1c1.5 0 2.8.5 2.8 2.2 0 1.2-.7 1.9-2.2 1.9h-3.1V8h2.5zm-.1 6.5c1 0 1.3-.4 1.3-1s-.4-1.1-1.3-1.1h-2.5v2h2.5z" />
                                     </svg>
                                  </div>
 
                                  {/* +2 Tooltip Badge */}
                                  <div className="relative group/tooltip">
-                                    <div className="h-9 w-14 bg-white border border-gray-200 rounded flex items-center justify-center cursor-help">
-                                       <span className="text-xs font-bold text-gray-500">+2</span>
+                                    <div className="h-9 w-auto min-w-[2rem] px-2 bg-white border border-gray-200 rounded flex items-center justify-center cursor-help">
+                                       <span className="text-xs font-bold text-gray-500 whitespace-nowrap">+2</span>
                                     </div>
                                     <div className="absolute bottom-full right-0 mb-2 hidden group-hover/tooltip:flex gap-2 p-2 bg-black rounded shadow-lg z-10 w-max">
                                        <div className="absolute bottom-[-4px] right-3 w-2 h-2 bg-black rotate-45"></div>
                                        {/* Discover */}
-                                       <div className="h-9 w-14 bg-white rounded overflow-hidden flex items-center justify-center p-0.5">
-                                          <svg viewBox="0 0 24 16" preserveAspectRatio="xMidYMid meet" fill="none" className="max-h-[75%] max-w-[85%] w-auto h-auto" xmlns="http://www.w3.org/2000/svg">
-                                             <path d="M2 8C2 11.3 4.7 14 8 14H16C19.3 14 22 11.3 22 8C22 4.7 19.3 2 16 2H8C4.7 2 2 4.7 2 8Z" fill="#F47B20" />
-                                             <text x="12" y="10" fontSize="7" fontWeight="bold" textAnchor="middle" fill="white" fontFamily="Arial">DISCOVER</text>
+                                       <div className="h-9 w-auto bg-white rounded overflow-hidden flex items-center justify-center px-1">
+                                          <svg viewBox="0 0 54 12" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                             <path fill="#FF6000" d="M7.74 1.48C7.14.48 6.08 0 4.28 0H.6v11.59h3.76c2 0 3.2-.5 3.86-1.57.54-.87.82-2.2.82-4.23 0-2.1-.28-3.37-.82-4.23zM2.87 9.42V2.16h.9c1.64 0 2.1 1 2.1 3.55 0 2.5-.47 3.52-2.03 3.52l-.97.19zm8.56 2.17h2.27V0h-2.27v11.59zm6.65-2.2c1.78.13 2.65-.62 2.65-2.3 0-1.42-.58-2-2.13-2.27l-1.07-.17C16.27 6.64 16 6.3 16 5.67c0-.75.48-1.2 1.48-1.2s1.43.43 1.57 1.13l2.06-.3c-.23-1.63-1.35-2.6-3.68-2.6-1.65 0-3.66.75-3.66 3.1 0 1.5.58 2.37 2.17 2.62l1 .16c1.17.2 1.34.52 1.34 1.17 0 .82-.57 1.3-1.7 1.3-1.12 0-1.72-.53-1.87-1.35l-2.18.28c.3 2.1 1.7 3.2 5.08 3.2zm6.2-4.9c0-1.9.96-3.6 2.5-4.43l1.1 1.9c-.8.43-1.3 1.3-1.25 2.53 0 1.25.5 2.12 1.3 2.55l-1.1 1.9c-1.55-.83-2.5-2.53-2.5-4.45zm8.9 0c0-2.76 2.24-5 5-5s5 2.24 5 5-2.24 5-5 5-5-2.24-5-5zm2.75 0c0 1.24 1 2.25 2.25 2.25S40.42 7.9 40.42 6.66s-1-2.25-2.25-2.25-2.25 1-2.25 2.25zm6.8 5.4l3.15-11.59h2.15l-3.3 11.59h-2zm3.3-11.59h6v2.17h-3.73v2.33h3.5v2.17h-3.5v2.75h3.9v2.17h-6.17V0z" />
+                                             <circle cx="27.89" cy="2.2" r="1" fill="#FF9900" />
                                           </svg>
                                        </div>
                                        {/* Diners Club */}
-                                       <div className="h-9 w-14 bg-white rounded overflow-hidden flex items-center justify-center p-0.5">
-                                          <svg viewBox="0 0 24 16" preserveAspectRatio="xMidYMid meet" fill="none" className="max-h-[75%] max-w-[85%] w-auto h-auto" xmlns="http://www.w3.org/2000/svg">
-                                             <circle cx="8" cy="8" r="5" fill="#0079C1" />
-                                             <circle cx="16" cy="8" r="5" fill="#0079C1" />
-                                             <path d="M12 4.5C10.067 4.5 8.5 6.067 8.5 8C8.5 9.933 10.067 11.5 12 11.5C13.933 11.5 15.5 9.933 15.5 8C15.5 6.067 13.933 4.5 12 4.5Z" fill="white" />
-                                             <text x="12" y="10.5" fontSize="3" fontWeight="bold" textAnchor="middle" fill="white" fontFamily="Arial">Diners Club</text>
+                                       <div className="h-9 w-auto bg-white rounded overflow-hidden flex items-center justify-center px-1">
+                                          <svg viewBox="0 0 54 16" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                             <circle cx="8" cy="8" r="7" fill="#0079C1" />
+                                             <circle cx="18" cy="8" r="7" fill="#0079C1" />
+                                             <path d="M13 4C11 4 9 6 9 8C9 10 11 12 13 12C15 12 17 10 17 8C17 6 15 4 13 4Z" fill="white" />
+                                             <text x="28" y="11" fontSize="10" fontWeight="bold" fill="#0079C1" fontFamily="Arial">Diners Club</text>
                                           </svg>
                                        </div>
                                     </div>
@@ -374,17 +373,18 @@ export function Checkout() {
                               </div>
                               <div className="flex gap-2 items-center opacity-80">
                                  {/* Visa Card */}
-                                 <div className="h-9 w-14 bg-white border border-gray-200 rounded flex items-center justify-center p-1">
-                                    <svg viewBox="0 0 36 12" preserveAspectRatio="xMidYMid meet" fill="none" className="max-h-[65%] max-w-[90%] w-auto h-auto" xmlns="http://www.w3.org/2000/svg">
-                                       <path fill="#1A1F71" d="M15.1,0.5l-2.1,10.7h-3.4l2.1-10.7H15.1z M24.6,0.5l-2.6,10.7h-3.3l1.7-8.3c-0.8,0-2.8,0.7-3.7,1.8l-1.3,6.5h-3.5L16,0.5h3.6c0.5,0,0.9,0.1,1.3,0.2C22.2,1,22.8,1.4,23,2c0.2,0.6,0.1,1.1,0.1,1.1S24.6,0.5,24.6,0.5z M26,0.5l1.6,10.7h3.3l-1.4-8.8c0,0,1.9-0.8,3.8,0.3c0.4,0.3,0.7,0.6,0.9,1l-0.7,7.5h3.4l0.8-8.4c-0.1-0.9-1.2-2.3-4.2-2.3c-1,0-2.3,0.3-2.9,0.7L30,0.5H26z M10.4,0.5H7.1L4.4,7.8C4.3,8.1,4.2,8.3,4.1,8.5L3.9,7.5L2.9,2.6C2.8,2,2.7,1.4,2.5,0.9C2.2,0.4,1.1,0.5,1.1,0.5L0.2,0.7L0.1,1l4,9.6l0.6,0.6h3.6L13,0.5H10.4z" />
+                                 <div className="h-9 w-auto min-w-[2.5rem] bg-white border border-gray-200 rounded flex items-center justify-center px-2 py-1">
+                                    <svg viewBox="0 0 50 16" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                       <path fill="#142787" d="M21.05 15.004h3.084l1.928-11.854h-3.085l-1.927 11.854zm17.234.313c-0.68-.25-1.748-.517-3.062-.517-3.376 0-5.753 1.79-5.772 4.354-.02 1.892 1.69 2.948 2.98 3.57 1.325.642 1.768 1.058 1.768 1.632 0 .88-1.058 1.282-2.04 1.282-1.365 0-2.093-.207-3.218-.703l-.448-.208-.477 2.973c.797.368 2.27.688 3.8.688 3.587 0 5.922-1.77 5.947-4.51.018-1.503-.896-2.65-2.864-3.59-1.194-.61-1.927-1.01-1.927-1.625 0-.563.624-1.138 1.977-1.138 1.127 0 1.944.2 2.57.472l.31.137.452-2.828zm8.794-.313H44.69c-0.74 0-1.295.215-1.618.98l-5.714 13.52h3.237l.644-1.782h3.945l.37 1.782h2.855l-1.33-14.5zm-4.965 10.003l2.036-5.825 1.166 5.825h-3.202zm-18.32-10.003L19.4 25.894l-.426-2.167c-.732-2.483-3.024-5.18-5.59-6.52l3.635 13.725h3.284l4.873-11.826h-3.385zm-12.222 0H.212l-.1.5c4.214 1.07 7 3.655 8.152 6.757l-1.186-5.688c-.247-1.032-.96-1.564-2.42-1.564z" />
                                     </svg>
                                  </div>
                                  {/* Mastercard Card */}
-                                 <div className="h-9 w-14 bg-white border border-gray-200 rounded flex items-center justify-center p-0.5">
-                                    <svg viewBox="0 0 24 16" preserveAspectRatio="xMidYMid meet" fill="none" className="max-h-[75%] max-w-[85%] w-auto h-auto" xmlns="http://www.w3.org/2000/svg">
-                                       <circle cx="7" cy="8" r="7" fill="#EB001B" />
-                                       <circle cx="17" cy="8" r="7" fill="#F79E1B" />
-                                       <path d="M12 12.8995C14.7062 12.8995 16.9 10.7056 16.9 8C16.9 5.29437 14.7062 3.10052 12 3.10052C9.2938 3.10052 7.10001 5.29437 7.10001 8C7.10001 10.7056 9.2938 12.8995 12 12.8995Z" fill="#FF5F00" />
+                                 <div className="h-9 w-auto min-w-[2.5rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1">
+                                    <svg viewBox="0 0 24 15" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
+                                       <path fill="#ff5f00" d="M12 0L12 15" stroke="none" />
+                                       <circle cx="4.5" cy="7.5" r="7.5" fill="#EB001B" />
+                                       <circle cx="19.5" cy="7.5" r="7.5" fill="#F79E1B" />
+                                       <path fill="#FF5F00" d="M12 2.58A7.47 7.47 0 0 0 9.24 7.5a7.47 7.47 0 0 0 2.76 4.92 7.47 7.47 0 0 0 2.76-4.92A7.47 7.47 0 0 0 12 2.58z" />
                                     </svg>
                                  </div>
                               </div>
