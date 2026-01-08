@@ -130,9 +130,9 @@ export function Home() {
 
          {/* SELECTED ARCHIVE GRID - MOVED TO TOP */}
          <section className="bg-white border-b border-black">
-            <div className="flex flex-col items-center text-center py-12 md:py-24 bg-brand-grey border-b border-black">
-               <h2 className="text-xl md:text-3xl font-black uppercase tracking-[0.4em]">Selected Archives</h2>
-               <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-4 md:mt-6 italic">Winter 25/26 Collection</p>
+            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-10 md:py-24 bg-brand-grey border-b border-black">
+               <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Selected Archives</h2>
+               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-3 md:mt-6 italic">Winter 25/26 Collection</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-black">
@@ -162,9 +162,9 @@ export function Home() {
 
          {/* BEST SELLERS SLIDER */}
          <section className="bg-white border-b border-black">
-            <div className="flex flex-col items-center text-center py-12 md:py-24 bg-brand-grey border-b border-black">
-               <h2 className="text-xl md:text-3xl font-black uppercase tracking-[0.4em]">Best Sellers</h2>
-               <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-4 md:mt-6 italic">Most Coveted Pieces</p>
+            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-10 md:py-24 bg-brand-grey border-b border-black">
+               <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Best Sellers</h2>
+               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-3 md:mt-6 italic">Most Coveted Pieces</p>
             </div>
 
             {/* Horizontal Scrolling Product Slider */}
@@ -280,9 +280,9 @@ export function Home() {
 
          {/* SALE SLIDER */}
          <section className="bg-white border-t border-b border-black">
-            <div className="flex flex-col items-center text-center py-12 md:py-24 bg-brand-grey border-b border-black">
-               <h2 className="text-xl md:text-3xl font-black uppercase tracking-[0.4em]">Sale</h2>
-               <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-4 md:mt-6 italic">Limited Time Offers</p>
+            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-10 md:py-24 bg-brand-grey border-b border-black">
+               <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Sale</h2>
+               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-3 md:mt-6 italic">Limited Time Offers</p>
             </div>
 
             {/* Horizontal Scrolling Product Slider */}
