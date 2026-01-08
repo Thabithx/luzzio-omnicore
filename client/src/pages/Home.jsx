@@ -4,6 +4,7 @@ import { ProductCard } from '../components/ui/ProductCard';
 import { Link } from 'react-router-dom';
 import Meta from '../components/ui/Meta';
 import { motion } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 import api from '../services/api';
 import { cn } from '../utils/cn';
 
@@ -17,23 +18,32 @@ import bagsImg from '../assets/bags.jpg';
 export function Home() {
    const [newProducts, setNewProducts] = useState([]);
    const [bestSellers, setBestSellers] = useState([]);
+   const [categories, setCategories] = useState([]);
+   const [allProducts, setAllProducts] = useState([]);
+   const [activeCategory, setActiveCategory] = useState(null);
    const [loading, setLoading] = useState(true);
 
    useEffect(() => {
       const fetchProducts = async () => {
          try {
-            const res = await api.get('/products');
-            const allProducts = res.data.data;
+            const [productsRes, categoriesRes] = await Promise.all([
+               api.get('/products'),
+               api.get('/categories')
+            ]);
+
+            const products = productsRes.data.data;
+            setAllProducts(products);
+            setCategories(categoriesRes.data.data);
 
             // Filter products with "new" category (case-insensitive)
-            const newProds = allProducts.filter(p =>
+            const newProds = products.filter(p =>
                p.categories?.some(cat =>
                   cat.name?.toLowerCase() === 'new'
                )
             ).slice(0, 4);
 
             // Filter products with "best sellers" category (case-insensitive)
-            const bestSellersProds = allProducts.filter(p =>
+            const bestSellersProds = products.filter(p =>
                p.categories?.some(cat =>
                   cat.name?.toLowerCase() === 'best sellers' ||
                   cat.name?.toLowerCase() === 'bestsellers'
@@ -161,58 +171,77 @@ export function Home() {
             </div>
          </section>
 
-         {/* REFINED CATEGORY BOXES - ASSET INTEGRATION */}
-         <section className="flex flex-col">
-            {/* CATEGORY 1: READY-TO-WEAR */}
-            <div className="relative aspect-square md:h-screen w-full flex items-end justify-center group overflow-hidden border-b border-black bg-white">
-               <img
-                  src={hoodieCat}
-                  alt="Ready to Wear"
-                  className="absolute inset-0 w-full h-full object-cover"
-               />
-               <div className="relative w-full pb-4 md:pb-12 flex flex-col items-center space-y-2 md:px-6">
-                  <h4 className="text-black text-[9px] md:text-[11px] font-black uppercase tracking-[0.5em] text-center">Ready-to-Wear</h4>
-                  <Link to="/products?category=ready-to-wear">
-                     <button className="px-8 md:px-12 py-1.5 border border-black text-black text-[7px] md:text-[8px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all">
-                        Shop Men
-                     </button>
-                  </Link>
-               </div>
-            </div>
+         {/* CATEGORY DROPDOWNS - ACCORDION STYLE */}
+         <section className="bg-white border-t border-black">
+            {categories.map((category, index) => {
+               const isOpen = activeCategory === category._id;
 
-            {/* CATEGORY 2: BAGS / ARCHIVE */}
-            <div className="relative aspect-square md:h-screen w-full flex items-end justify-center group overflow-hidden border-b border-black">
-               <img
-                  src={bagsImg}
-                  alt="Leather Archive"
-                  className="absolute inset-0 w-full h-full object-cover"
-               />
-               <div className="relative w-full pb-4 md:pb-12 flex flex-col items-center space-y-2 md:px-6">
-                  <h4 className="text-white text-[9px] md:text-[11px] font-black uppercase tracking-[0.5em] drop-shadow-md text-center">Bags & Archive</h4>
-                  <Link to="/products?category=accessories">
-                     <button className="px-8 md:px-12 py-1.5 bg-white/90 backdrop-blur-sm border border-black text-black text-[7px] md:text-[8px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all">
-                        Shop Now
-                     </button>
-                  </Link>
-               </div>
-            </div>
+               // Filter products for this category
+               const categoryProducts = allProducts.filter(p =>
+                  p.categories?.some(cat =>
+                     cat._id === category._id || cat === category._id
+                  )
+               );
 
-            {/* CATEGORY 3: FOOTWEAR */}
-            <div className="relative aspect-square md:h-screen w-full flex items-end justify-center group overflow-hidden border-b border-black bg-white">
-               <img
-                  src={bootCat}
-                  alt="Footwear Collection"
-                  className="absolute inset-0 w-full h-full object-cover"
-               />
-               <div className="relative w-full pb-4 md:pb-12 flex flex-col items-center space-y-2 md:px-6">
-                  <h4 className="text-black text-[9px] md:text-[11px] font-black uppercase tracking-[0.5em] text-center">Footwear</h4>
-                  <Link to="/products?category=footwear">
-                     <button className="px-8 md:px-12 py-1.5 border border-black text-black text-[7px] md:text-[8px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all">
-                        Shop Archive
+               return (
+                  <div key={category._id} className="border-b border-black last:border-b-0">
+                     {/* Category Header - Clickable */}
+                     <button
+                        onClick={() => setActiveCategory(isOpen ? null : category._id)}
+                        className="w-full flex justify-between items-center px-10 py-8 bg-brand-grey hover:bg-black hover:text-white transition-colors group"
+                     >
+                        <h3 className="text-sm md:text-base font-black uppercase tracking-[0.3em]">
+                           {category.name}
+                        </h3>
+                        <ChevronDown
+                           size={16}
+                           className={`transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`}
+                        />
                      </button>
-                  </Link>
+
+                     {/* Category Products Grid - Expandable */}
+                     <div
+                        className={`overflow-hidden transition-all duration-500 ${isOpen ? 'max-h-[5000px]' : 'max-h-0'
+                           }`}
+                     >
+                        <div className="bg-white">
+                           {categoryProducts.length > 0 ? (
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
+                                 {categoryProducts.map((product, idx) => (
+                                    <div
+                                       key={product._id}
+                                       className={cn(
+                                          "border-black",
+                                          idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
+                                          idx % 4 === 3 ? "md:border-r-0" : "",
+                                          idx < categoryProducts.length - 2 ? "border-b" : "border-b md:border-b-0"
+                                       )}
+                                    >
+                                       <ProductCard product={product} />
+                                    </div>
+                                 ))}
+                              </div>
+                           ) : (
+                              <div className="py-20 text-center">
+                                 <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400">
+                                    No Products in this Category
+                                 </p>
+                              </div>
+                           )}
+                        </div>
+                     </div>
+                  </div>
+               );
+            })}
+
+            {/* Empty State if no categories */}
+            {categories.length === 0 && !loading && (
+               <div className="py-20 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400">
+                     No Categories Available
+                  </p>
                </div>
-            </div>
+            )}
          </section>
 
          {/* INTERSTITIAL SECTION */}
