@@ -9,6 +9,7 @@ import api from '../services/api';
 import { cn } from '../utils/cn';
 
 // Import brand assets
+import heroVideo from '../assets/hero.mp4';
 import heroImg from '../assets/hero.jpg';
 import bootsImg from '../assets/boots.png';
 import hoodieCat from '../assets/hoodie.jpg';
@@ -85,11 +86,16 @@ export function Home() {
 
          {/* SECTION 1: HERO - READY TO WEAR */}
          <section className="relative h-screen overflow-hidden group">
-            <img
-               src={heroImg}
-               alt="Spring 26 Collection"
+            <video
+               autoPlay
+               loop
+               muted
+               playsInline
+               poster={heroImg}
                className="absolute inset-0 w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000"
-            />
+            >
+               <source src={heroVideo} type="video/mp4" />
+            </video>
             <div className="absolute inset-x-0 bottom-20 flex flex-col items-center space-y-8 z-10 px-10 text-center">
                <div className="space-y-2">
                   <h2 className="text-white text-base md:text-xl font-black uppercase tracking-[0.6em]">Ready-to-Wear</h2>
