@@ -93,8 +93,10 @@ export function Home() {
                playsInline
                poster={heroImg}
                className="absolute inset-0 w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000"
+               key="hero-video"
             >
                <source src={heroVideo} type="video/mp4" />
+               Your browser does not support the video tag.
             </video>
             <div className="absolute inset-x-0 bottom-20 flex flex-col items-center space-y-8 z-10 px-10 text-center">
                <div className="space-y-2">
