@@ -26,6 +26,11 @@ const productSchema = new mongoose.Schema({
       type: mongoose.Schema.ObjectId,
       ref: 'Category'
    }],
+   // Deprecated: Kept for backward compatibility with existing products
+   category: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Category'
+   },
    stock: {
       type: Number,
       default: 0

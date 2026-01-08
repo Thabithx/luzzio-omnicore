@@ -18,6 +18,7 @@ import bagsImg from '../assets/bags.jpg';
 export function Home() {
    const [newProducts, setNewProducts] = useState([]);
    const [bestSellers, setBestSellers] = useState([]);
+   const [saleProducts, setSaleProducts] = useState([]);
    const [categories, setCategories] = useState([]);
    const [allProducts, setAllProducts] = useState([]);
    const [activeCategory, setActiveCategory] = useState(null);
@@ -27,7 +28,7 @@ export function Home() {
       const fetchProducts = async () => {
          try {
             const [productsRes, categoriesRes] = await Promise.all([
-               api.get('/products'),
+               api.get('/products?limit=1000'),
                api.get('/categories')
             ]);
 
@@ -35,23 +36,40 @@ export function Home() {
             setAllProducts(products);
             setCategories(categoriesRes.data.data);
 
-            // Filter products with "new" category (case-insensitive)
-            const newProds = products.filter(p =>
-               p.categories?.some(cat =>
-                  cat.name?.toLowerCase() === 'new'
-               )
-            ).slice(0, 4);
+            // Helper to check if product matches "New" category
+            const isNew = (p) => {
+               // Check new categories array
+               if (p.categories?.some(cat => cat.name?.toLowerCase() === 'new')) return true;
+               // Check legacy category field
+               if (p.category?.name?.toLowerCase() === 'new') return true;
+               return false;
+            };
 
-            // Filter products with "best sellers" category (case-insensitive)
-            const bestSellersProds = products.filter(p =>
-               p.categories?.some(cat =>
+            // Helper to check if product matches "Best Sellers"
+            const isBestSeller = (p) => {
+               // Check new categories array
+               if (p.categories?.some(cat =>
                   cat.name?.toLowerCase() === 'best sellers' ||
                   cat.name?.toLowerCase() === 'bestsellers'
-               )
-            );
+               )) return true;
+               // Check legacy category field
+               if (p.category?.name?.toLowerCase() === 'best sellers' ||
+                  p.category?.name?.toLowerCase() === 'bestsellers') return true;
+               return false;
+            };
 
-            setNewProducts(newProds);
-            setBestSellers(bestSellersProds);
+            // Helper to check if product matches "Sale"
+            const isSale = (p) => {
+               // Check new categories array
+               if (p.categories?.some(cat => cat.name?.toLowerCase() === 'sale')) return true;
+               // Check legacy category field
+               if (p.category?.name?.toLowerCase() === 'sale') return true;
+               return false;
+            };
+
+            setNewProducts(products.filter(isNew).slice(0, 4));
+            setBestSellers(products.filter(isBestSeller));
+            setSaleProducts(products.filter(isSale));
          } catch (err) {
             // Error feedback handled via UI/Meta
          } finally {
@@ -171,17 +189,60 @@ export function Home() {
             </div>
          </section>
 
+         {/* SALE SLIDER */}
+         <section className="bg-white border-b border-black">
+            <div className="flex flex-col items-center text-center py-12 md:py-24 bg-brand-grey border-b border-black">
+               <h2 className="text-xl md:text-3xl font-black uppercase tracking-[0.4em]">Sale</h2>
+               <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-4 md:mt-6 italic">Limited Time Offers</p>
+            </div>
+
+            {/* Horizontal Scrolling Product Slider */}
+            <div className="overflow-x-auto no-scrollbar">
+               <div className="flex border-b border-black">
+                  {loading ? (
+                     Array(4).fill(0).map((_, i) => (
+                        <div key={i} className="min-w-[50%] md:min-w-[25%] aspect-[3/4] bg-brand-grey animate-pulse border-r border-black" />
+                     ))
+                  ) : saleProducts.length > 0 ? (
+                     saleProducts.map((product) => (
+                        <div key={product._id} className="min-w-[50%] md:min-w-[25%] border-r border-black last:border-r-0">
+                           <ProductCard product={product} />
+                        </div>
+                     ))
+                  ) : (
+                     <div className="w-full py-20 text-center">
+                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400">
+                           No Sale Products Available
+                        </p>
+                     </div>
+                  )}
+               </div>
+            </div>
+
+            <div className="py-10 flex justify-center bg-brand-grey">
+               <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
+                  Shop All Sale
+               </Link>
+            </div>
+         </section>
+
          {/* CATEGORY DROPDOWNS - ACCORDION STYLE */}
          <section className="bg-white border-t border-black">
             {categories.map((category, index) => {
                const isOpen = activeCategory === category._id;
 
                // Filter products for this category
-               const categoryProducts = allProducts.filter(p =>
-                  p.categories?.some(cat =>
+               const categoryProducts = allProducts.filter(p => {
+                  // Check new categories array
+                  if (p.categories?.some(cat =>
                      cat._id === category._id || cat === category._id
-                  )
-               );
+                  )) return true;
+
+                  // Check legacy category field
+                  if (p.category?._id === category._id || p.category === category._id) return true;
+
+                  return false;
+               });
 
                return (
                   <div key={category._id} className="border-b border-black last:border-b-0">

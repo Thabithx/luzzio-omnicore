@@ -23,7 +23,7 @@ exports.getProducts = async (req, res) => {
       queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
       // Finding resource
-      query = Product.find(JSON.parse(queryStr)).populate('categories');
+      query = Product.find(JSON.parse(queryStr)).populate('categories').populate('category');
 
       // Select Fields
       if (req.query.select) {
@@ -66,7 +66,7 @@ exports.getProducts = async (req, res) => {
 // @access  Public
 exports.getProduct = async (req, res) => {
    try {
-      const product = await Product.findById(req.params.id).populate('categories');
+      const product = await Product.findById(req.params.id).populate('categories').populate('category');
 
       if (!product) {
          return res.status(404).json({ success: false, message: 'Product not found' });
