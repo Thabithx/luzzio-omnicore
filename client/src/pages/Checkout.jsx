@@ -274,7 +274,7 @@ export function Checkout() {
                         <div
                            onClick={() => setPaymentMethod('PayHere')}
                            className={cn(
-                              "border rounded-lg overflow-hidden cursor-pointer transition-all duration-200",
+                              "border rounded-lg cursor-pointer transition-all duration-200",
                               paymentMethod === 'PayHere' ? "border-blue-600 bg-white ring-1 ring-blue-600" : "border-gray-200 bg-white hover:border-gray-300"
                            )}
                         >
@@ -290,32 +290,32 @@ export function Checkout() {
                               </div>
                               <div className="flex gap-1.5 items-center opacity-90">
                                  {/* Visa Card */}
-                                 <div className="h-7 w-auto min-w-[2.5rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1.5">
-                                    <img src="/icons/visa.svg" alt="Visa" className="h-4 w-auto" />
+                                 <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1">
+                                    <img src="/icons/visa.svg" alt="Visa" className="h-3 w-auto" />
                                  </div>
                                  {/* Mastercard Card */}
-                                 <div className="h-7 w-auto min-w-[2.5rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1.5">
-                                    <img src="/icons/mastercard.svg" alt="Mastercard" className="h-5 w-auto" />
+                                 <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1">
+                                    <img src="/icons/mastercard.svg" alt="Mastercard" className="h-4 w-auto" />
                                  </div>
                                  {/* Amex Card */}
-                                 <div className="h-7 w-auto min-w-[2.5rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1.5 overflow-hidden">
-                                    <img src="/icons/amex.svg" alt="American Express" className="h-4 w-auto object-contain" />
+                                 <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1">
+                                    <img src="/icons/amex.svg" alt="American Express" className="h-2.5 w-auto object-contain" />
                                  </div>
 
                                  {/* +2 Tooltip Badge */}
                                  <div className="relative group/tooltip">
-                                    <div className="h-7 w-auto min-w-[1.75rem] px-1.5 bg-white border border-gray-200 rounded flex items-center justify-center cursor-help">
-                                       <span className="text-[9px] font-black text-gray-500 whitespace-nowrap">+2</span>
+                                    <div className="h-6 w-auto min-w-[1.5rem] px-1 bg-white border border-gray-200 rounded flex items-center justify-center cursor-help">
+                                       <span className="text-[8px] font-black text-gray-500 whitespace-nowrap">+2</span>
                                     </div>
-                                    <div className="absolute bottom-full right-0 mb-2 hidden group-hover/tooltip:flex gap-2 p-2 bg-black rounded shadow-lg z-10 w-max">
+                                    <div className="absolute bottom-full right-0 mb-2 hidden group-hover/tooltip:flex flex-col items-center gap-2 p-2 bg-black rounded shadow-lg z-[100] w-max">
                                        <div className="absolute bottom-[-4px] right-3 w-2 h-2 bg-black rotate-45"></div>
                                        {/* Discover */}
-                                       <div className="h-7 w-auto bg-white rounded overflow-hidden flex items-center justify-center px-2">
-                                          <img src="/icons/discover.svg" alt="Discover" className="h-4 w-auto" />
+                                       <div className="h-6 w-auto bg-white rounded overflow-hidden flex items-center justify-center px-2">
+                                          <img src="/icons/discover.svg" alt="Discover" className="h-3 w-auto" />
                                        </div>
                                        {/* Diners Club */}
-                                       <div className="h-7 w-auto bg-white rounded overflow-hidden flex items-center justify-center px-2">
-                                          <img src="/icons/diners.svg" alt="Diners Club" className="h-4 w-auto" />
+                                       <div className="h-6 w-auto bg-white rounded overflow-hidden flex items-center justify-center px-2">
+                                          <img src="/icons/diners.svg" alt="Diners Club" className="h-3 w-auto" />
                                        </div>
                                     </div>
                                  </div>
@@ -324,7 +324,7 @@ export function Checkout() {
 
                            {/* Expanded Content for PayHere */}
                            {paymentMethod === 'PayHere' && (
-                              <div className="bg-gray-50 p-8 border-t border-gray-100 flex flex-col items-center text-center space-y-4">
+                              <div className="bg-gray-50 p-8 border-t border-gray-100 flex flex-col items-center text-center space-y-4 rounded-b-lg overflow-hidden">
                                  <div className="relative w-16 h-12 border-2 border-gray-400 rounded bg-white flex items-center justify-center mb-2">
                                     <div className="w-full h-2 bg-gray-100 absolute top-0 border-b border-gray-200" />
                                     <ArrowRight className="text-gray-400 ml-6" size={20} />
@@ -340,7 +340,7 @@ export function Checkout() {
                         <div
                            onClick={() => setPaymentMethod('Koko')}
                            className={cn(
-                              "border rounded-lg overflow-hidden cursor-pointer transition-all duration-200",
+                              "border rounded-lg cursor-pointer transition-all duration-200",
                               paymentMethod === 'Koko' ? "border-blue-600 bg-white ring-1 ring-blue-600" : "border-gray-200 bg-white hover:border-gray-300"
                            )}
                         >
@@ -356,12 +356,12 @@ export function Checkout() {
                               </div>
                               <div className="flex gap-1.5 items-center opacity-90">
                                  {/* Visa Card */}
-                                 <div className="h-7 w-auto min-w-[2.5rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1.5">
-                                    <img src="/icons/visa.svg" alt="Visa" className="h-4 w-auto" />
+                                 <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1">
+                                    <img src="/icons/visa.svg" alt="Visa" className="h-3 w-auto" />
                                  </div>
                                  {/* Mastercard Card */}
-                                 <div className="h-7 w-auto min-w-[2.5rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1.5">
-                                    <img src="/icons/mastercard.svg" alt="Mastercard" className="h-5 w-auto" />
+                                 <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-200 rounded flex items-center justify-center px-1">
+                                    <img src="/icons/mastercard.svg" alt="Mastercard" className="h-4 w-auto" />
                                  </div>
                               </div>
                            </div>
