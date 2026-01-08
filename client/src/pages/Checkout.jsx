@@ -299,7 +299,7 @@ export function Checkout() {
                                  </div>
                                  {/* Amex Card */}
                                  <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-100 rounded flex items-center justify-center px-1">
-                                    <img src="/icons/amex.svg" alt="American Express" className="h-[0.7rem] w-auto object-contain opacity-70" />
+                                    <img src="/icons/amex.svg" alt="American Express" className="h-[1.05rem] w-auto object-contain opacity-70" />
                                  </div>
 
                                  {/* +2 Tooltip Badge */}
@@ -311,11 +311,11 @@ export function Checkout() {
                                        <div className="absolute bottom-[-4px] right-3 w-2 h-2 bg-black rotate-45"></div>
                                        {/* Discover */}
                                        <div className="h-6 w-auto bg-white rounded flex items-center justify-center px-1.5">
-                                          <img src="/icons/discover.svg" alt="Discover" className="h-[0.8rem] w-auto" />
+                                          <img src="/icons/discover.svg" alt="Discover" className="h-[0.55rem] w-auto" />
                                        </div>
                                        {/* Diners Club */}
                                        <div className="h-6 w-auto bg-white rounded flex items-center justify-center px-1.5">
-                                          <img src="/icons/diners.svg" alt="Diners Club" className="h-[0.8rem] w-auto" />
+                                          <img src="/icons/diners.svg" alt="Diners Club" className="h-[0.55rem] w-auto" />
                                        </div>
                                     </div>
                                  </div>
