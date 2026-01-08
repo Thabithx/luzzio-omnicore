@@ -291,30 +291,30 @@ export function Checkout() {
                               <div className="flex gap-1.5 items-center">
                                  {/* Visa Card */}
                                  <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-100 rounded flex items-center justify-center px-1">
-                                    <img src="/icons/visa.svg" alt="Visa" className="h-[0.7rem] w-auto opacity-90" />
+                                    <img src="/icons/visa.svg" alt="Visa" className="h-[0.55rem] w-auto opacity-70" />
                                  </div>
                                  {/* Mastercard Card */}
                                  <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-100 rounded flex items-center justify-center px-1">
-                                    <img src="/icons/mastercard.svg" alt="Mastercard" className="h-[0.8rem] w-auto opacity-90" />
+                                    <img src="/icons/mastercard.svg" alt="Mastercard" className="h-[0.8rem] w-auto opacity-70" />
                                  </div>
                                  {/* Amex Card */}
                                  <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-100 rounded flex items-center justify-center px-1">
-                                    <img src="/icons/amex.svg" alt="American Express" className="h-[0.5rem] w-auto object-contain opacity-90" />
+                                    <img src="/icons/amex.svg" alt="American Express" className="h-[0.7rem] w-auto object-contain opacity-70" />
                                  </div>
 
                                  {/* +2 Tooltip Badge */}
                                  <div className="relative group/tooltip">
                                     <div className="h-6 w-auto min-w-[1.5rem] px-1 bg-white border border-gray-100 rounded flex items-center justify-center cursor-help">
-                                       <span className="text-[8px] font-black text-gray-400 whitespace-nowrap">+2</span>
+                                       <span className="text-[8px] font-black text-gray-300 whitespace-nowrap">+2</span>
                                     </div>
-                                    <div className="absolute bottom-full right-0 mb-2 hidden group-hover/tooltip:flex flex-col items-center gap-1.5 p-2 bg-black rounded shadow-lg z-[100] w-max">
+                                    <div className="absolute bottom-full right-0 mb-2 hidden group-hover/tooltip:flex items-center gap-1.5 p-1.5 bg-black rounded shadow-lg z-[100] w-max">
                                        <div className="absolute bottom-[-4px] right-3 w-2 h-2 bg-black rotate-45"></div>
                                        {/* Discover */}
-                                       <div className="h-7 w-auto bg-white rounded flex items-center justify-center px-2">
+                                       <div className="h-6 w-auto bg-white rounded flex items-center justify-center px-1.5">
                                           <img src="/icons/discover.svg" alt="Discover" className="h-[0.8rem] w-auto" />
                                        </div>
                                        {/* Diners Club */}
-                                       <div className="h-7 w-auto bg-white rounded flex items-center justify-center px-2">
+                                       <div className="h-6 w-auto bg-white rounded flex items-center justify-center px-1.5">
                                           <img src="/icons/diners.svg" alt="Diners Club" className="h-[0.8rem] w-auto" />
                                        </div>
                                     </div>
@@ -357,11 +357,11 @@ export function Checkout() {
                               <div className="flex gap-1.5 items-center">
                                  {/* Visa Card */}
                                  <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-100 rounded flex items-center justify-center px-1">
-                                    <img src="/icons/visa.svg" alt="Visa" className="h-[0.7rem] w-auto opacity-90" />
+                                    <img src="/icons/visa.svg" alt="Visa" className="h-[0.55rem] w-auto opacity-70" />
                                  </div>
                                  {/* Mastercard Card */}
                                  <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-100 rounded flex items-center justify-center px-1">
-                                    <img src="/icons/mastercard.svg" alt="Mastercard" className="h-[0.8rem] w-auto opacity-90" />
+                                    <img src="/icons/mastercard.svg" alt="Mastercard" className="h-[0.8rem] w-auto opacity-70" />
                                  </div>
                               </div>
                            </div>
