@@ -15,14 +15,33 @@ import bootCat from '../assets/boot.jpg';
 import bagsImg from '../assets/bags.jpg';
 
 export function Home() {
-   const [products, setProducts] = useState([]);
+   const [newProducts, setNewProducts] = useState([]);
+   const [bestSellers, setBestSellers] = useState([]);
    const [loading, setLoading] = useState(true);
 
    useEffect(() => {
       const fetchProducts = async () => {
          try {
             const res = await api.get('/products');
-            setProducts(res.data.data.slice(0, 4));
+            const allProducts = res.data.data;
+
+            // Filter products with "new" category (case-insensitive)
+            const newProds = allProducts.filter(p =>
+               p.categories?.some(cat =>
+                  cat.name?.toLowerCase() === 'new'
+               )
+            ).slice(0, 4);
+
+            // Filter products with "best sellers" category (case-insensitive)
+            const bestSellersProds = allProducts.filter(p =>
+               p.categories?.some(cat =>
+                  cat.name?.toLowerCase() === 'best sellers' ||
+                  cat.name?.toLowerCase() === 'bestsellers'
+               )
+            );
+
+            setNewProducts(newProds);
+            setBestSellers(bestSellersProds);
          } catch (err) {
             // Error feedback handled via UI/Meta
          } finally {
@@ -86,7 +105,7 @@ export function Home() {
                      <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
                   ))
                ) : (
-                  products.map((product, idx) => (
+                  newProducts.map((product, idx) => (
                      <div key={product._id} className={cn(
                         "border-black",
                         "border-b md:border-b-0",
@@ -101,6 +120,43 @@ export function Home() {
             <div className="py-10 flex justify-center bg-brand-grey">
                <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
                   View Full Archive
+               </Link>
+            </div>
+         </section>
+
+         {/* BEST SELLERS SLIDER */}
+         <section className="bg-white border-b border-black">
+            <div className="flex flex-col items-center text-center py-12 md:py-24 bg-brand-grey border-b border-black">
+               <h2 className="text-xl md:text-3xl font-black uppercase tracking-[0.4em]">Best Sellers</h2>
+               <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-4 md:mt-6 italic">Most Coveted Pieces</p>
+            </div>
+
+            {/* Horizontal Scrolling Product Slider */}
+            <div className="overflow-x-auto no-scrollbar">
+               <div className="flex border-b border-black">
+                  {loading ? (
+                     Array(4).fill(0).map((_, i) => (
+                        <div key={i} className="min-w-[50%] md:min-w-[25%] aspect-[3/4] bg-brand-grey animate-pulse border-r border-black" />
+                     ))
+                  ) : bestSellers.length > 0 ? (
+                     bestSellers.map((product) => (
+                        <div key={product._id} className="min-w-[50%] md:min-w-[25%] border-r border-black last:border-r-0">
+                           <ProductCard product={product} />
+                        </div>
+                     ))
+                  ) : (
+                     <div className="w-full py-20 text-center">
+                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400">
+                           No Best Sellers Available
+                        </p>
+                     </div>
+                  )}
+               </div>
+            </div>
+
+            <div className="py-10 flex justify-center bg-brand-grey">
+               <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
+                  Explore Collection
                </Link>
             </div>
          </section>
