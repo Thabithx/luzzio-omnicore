@@ -15,6 +15,11 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
       description: '',
       images: [''],
       sizes: ['S', 'M', 'L'],
+      variants: [
+         { size: 'S', stock: '' },
+         { size: 'M', stock: '' },
+         { size: 'L', stock: '' }
+      ],
       colors: [],
       material: '',
       salePrice: '',
@@ -40,7 +45,8 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
             colors: product.colors || [],
             material: product.material || '',
             salePrice: product.salePrice || '',
-            sizeChart: product.sizeChart || ''
+            sizeChart: product.sizeChart || '',
+            variants: product.variants || (product.sizes || []).map(s => ({ size: s, stock: '' }))
          });
       } else {
          setFormData({
@@ -51,6 +57,11 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
             description: '',
             images: [''],
             sizes: ['S', 'M', 'L'],
+            variants: [
+               { size: 'S', stock: '' },
+               { size: 'M', stock: '' },
+               { size: 'L', stock: '' }
+            ],
             colors: [],
             material: '',
             salePrice: '',
@@ -254,208 +265,239 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                         <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest italic">No sizes defined</span>
                      )}
                   </div>
-                  <div className="flex gap-2">
-                     <Input
-                        placeholder="Add size (e.g. UK 6, 42, OS)..."
-                        className="flex-1 rounded-none border-black focus:border-black text-[10px] font-bold"
-                        onKeyDown={(e) => {
-                           if (e.key === 'Enter') {
-                              e.preventDefault();
-                              const val = e.target.value.trim();
-                              if (val && !formData.sizes.includes(val)) {
-                                 setFormData({ ...formData, sizes: [...formData.sizes, val] });
-                                 e.target.value = '';
-                              }
-                           }
-                        }}
-                     />
-                     <Button
-                        type="button"
-                        onClick={(e) => {
-                           const input = e.currentTarget.previousSibling;
-                           const val = input.value.trim();
-                           if (val && !formData.sizes.includes(val)) {
-                              setFormData({ ...formData, sizes: [...formData.sizes, val] });
-                              input.value = '';
-                           }
-                        }}
-                        className="px-6 py-2 h-10 text-[10px] font-black uppercase tracking-widest"
-                     >
-                        Add
-                     </Button>
-                  </div>
-                  <div className="pt-6 space-y-2">
-                     <label className="text-small-brand text-gray-400">Size Chart Guide (Image)</label>
-                     <div className="flex gap-4 items-center">
-                        {formData.sizeChart ? (
-                           <div className="relative group w-24 h-24 border border-black">
-                              <img src={formData.sizeChart} alt="Size Chart" className="w-full h-full object-cover" />
-                              <button
-                                 type="button"
-                                 onClick={() => setFormData({ ...formData, sizeChart: '' })}
-                                 className="absolute top-0 right-0 p-1 bg-black text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                 <X size={12} />
-                              </button>
-                           </div>
-                        ) : (
-                           <div className="relative border border-dashed border-black/20 hover:border-black transition-colors w-24 h-24 flex flex-col items-center justify-center gap-2 bg-brand-grey/30 group">
-                              {uploading ? (
-                                 <Loader2 size={16} className="animate-spin text-black" />
-                              ) : (
-                                 <Upload size={16} className="text-black/40 group-hover:text-black" />
-                              )}
-                              <p className="text-[7px] font-black uppercase tracking-widest text-center px-1">Upload Guide</p>
-                              <input
-                                 type="file"
-                                 className="absolute inset-0 opacity-0 cursor-pointer"
-                                 onChange={async (e) => {
-                                    const file = e.target.files[0];
-                                    if (!file) return;
-                                    const data = new FormData();
-                                    data.append('images', file);
-                                    try {
-                                       setUploading(true);
-                                       const res = await api.post('/upload', data, {
-                                          headers: { 'Content-Type': 'multipart/form-data' }
-                                       });
-                                       setFormData({ ...formData, sizeChart: res.data.files[0].url });
-                                    } catch (err) {
-                                       alert('Upload failed');
-                                    } finally {
-                                       setUploading(false);
-                                    }
-                                 }}
-                                 disabled={uploading}
-                                 accept="image/*"
-                              />
-                           </div>
-                        )}
-                     </div>
+               </div>
+               {/* Per-Size Stock Inputs */}
+               <div className="space-y-3 bg-gray-50 p-4 border border-black/5">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-2">Inventory Levels (Units)</p>
+                  <div className="grid grid-cols-2 gap-4">
+                     {formData.variants?.map((variant, idx) => (
+                        <div key={idx} className="flex items-center gap-3">
+                           <span className="text-[10px] font-black uppercase w-8">{variant.size}</span>
+                           <Input
+                              type="number"
+                              placeholder="QTY"
+                              value={variant.stock}
+                              onChange={(e) => {
+                                 const newVariants = [...formData.variants];
+                                 newVariants[idx].stock = e.target.value;
+                                 setFormData({ ...formData, variants: newVariants });
+                              }}
+                              className="h-8 text-[10px] rounded-none border-black/20 focus:border-black"
+                           />
+                        </div>
+                     ))}
                   </div>
                </div>
-
-               {/* COLOR MANAGEMENT */}
-               <div className="space-y-4 pt-4 border-t border-black/10">
-                  <label className="text-small-brand text-gray-400">Available Palette (Colors)</label>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                     {formData.colors?.map((color, index) => (
-                        <span key={index} className="flex items-center gap-2 px-3 py-1.5 bg-black text-white text-[9px] font-black uppercase tracking-widest">
-                           {color}
+               <div className="flex gap-2">
+                  <Input
+                     placeholder="Add size (e.g. UK 6, 42, OS)..."
+                     className="flex-1 rounded-none border-black focus:border-black text-[10px] font-bold"
+                     onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                           e.preventDefault();
+                           const val = e.target.value.trim();
+                           if (val && !formData.variants.some(v => v.size === val)) {
+                              setFormData({
+                                 ...formData,
+                                 sizes: [...(formData.sizes || []), val],
+                                 variants: [...(formData.variants || []), { size: val, stock: '' }]
+                              });
+                              e.target.value = '';
+                           }
+                        }
+                     }}
+                  />
+                  <Button
+                     type="button"
+                     onClick={(e) => {
+                        const input = e.currentTarget.previousSibling;
+                        const val = input.value.trim();
+                        if (val && !formData.variants.some(v => v.size === val)) {
+                           setFormData({
+                              ...formData,
+                              sizes: [...(formData.sizes || []), val],
+                              variants: [...(formData.variants || []), { size: val, stock: '' }]
+                           });
+                           input.value = '';
+                        }
+                     }}
+                     className="px-6 py-2 h-10 text-[10px] font-black uppercase tracking-widest"
+                  >
+                     Add
+                  </Button>
+               </div>
+               <div className="pt-6 space-y-2">
+                  <label className="text-small-brand text-gray-400">Size Chart Guide (Image)</label>
+                  <div className="flex gap-4 items-center">
+                     {formData.sizeChart ? (
+                        <div className="relative group w-24 h-24 border border-black">
+                           <img src={formData.sizeChart} alt="Size Chart" className="w-full h-full object-cover" />
                            <button
                               type="button"
-                              onClick={() => {
-                                 const newColors = formData.colors.filter((_, i) => i !== index);
-                                 setFormData({ ...formData, colors: newColors });
-                              }}
-                              className="hover:text-red-500 transition-colors"
+                              onClick={() => setFormData({ ...formData, sizeChart: '' })}
+                              className="absolute top-0 right-0 p-1 bg-black text-white opacity-0 group-hover:opacity-100 transition-opacity"
                            >
-                              <X size={10} />
+                              <X size={12} />
                            </button>
-                        </span>
-                     ))}
-                     {formData.colors?.length === 0 && (
-                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest italic">No colors defined</span>
-                     )}
-                  </div>
-                  <div className="flex gap-2">
-                     <Input
-                        placeholder="Add color (e.g. Midnight Black)..."
-                        className="flex-1 rounded-none border-black focus:border-black text-[10px] font-bold"
-                        onKeyDown={(e) => {
-                           if (e.key === 'Enter') {
-                              e.preventDefault();
-                              const val = e.target.value.trim();
-                              if (val && !formData.colors.includes(val)) {
-                                 setFormData({ ...formData, colors: [...formData.colors, val] });
-                                 e.target.value = '';
-                              }
-                           }
-                        }}
-                     />
-                     <Button
-                        type="button"
-                        onClick={(e) => {
-                           const input = e.currentTarget.previousSibling;
-                           const val = input.value.trim();
-                           if (val && !formData.colors.includes(val)) {
-                              setFormData({ ...formData, colors: [...formData.colors, val] });
-                              input.value = '';
-                           }
-                        }}
-                        className="px-6 py-2 h-10 text-[10px] font-black uppercase tracking-widest"
-                     >
-                        Add
-                     </Button>
-                  </div>
-                  <p className="text-[8px] text-gray-400 italic">Press Enter to register color tag</p>
-               </div>
-
-               <div className="space-y-6">
-                  <div className="space-y-4">
-                     <label className="text-small-brand text-gray-400">Archive Assets (Visual) - Max 10 Documents</label>
-
-                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {/* Upload Button */}
-                        <div className="relative border border-dashed border-black/20 hover:border-black transition-colors aspect-[3/4] flex flex-col items-center justify-center gap-3 bg-brand-grey/30 group">
+                        </div>
+                     ) : (
+                        <div className="relative border border-dashed border-black/20 hover:border-black transition-colors w-24 h-24 flex flex-col items-center justify-center gap-2 bg-brand-grey/30 group">
                            {uploading ? (
-                              <Loader2 size={20} className="animate-spin text-black" />
+                              <Loader2 size={16} className="animate-spin text-black" />
                            ) : (
-                              <Upload size={20} className="text-black/40 group-hover:text-black transition-colors" />
+                              <Upload size={16} className="text-black/40 group-hover:text-black" />
                            )}
-                           <p className="text-[8px] font-black uppercase tracking-widest text-center px-2">
-                              {uploading ? 'Synchronizing...' : 'Upload Sequence Assets'}
-                           </p>
+                           <p className="text-[7px] font-black uppercase tracking-widest text-center px-1">Upload Guide</p>
                            <input
                               type="file"
-                              multiple
                               className="absolute inset-0 opacity-0 cursor-pointer"
-                              onChange={handleUpload}
+                              onChange={async (e) => {
+                                 const file = e.target.files[0];
+                                 if (!file) return;
+                                 const data = new FormData();
+                                 data.append('images', file);
+                                 try {
+                                    setUploading(true);
+                                    const res = await api.post('/upload', data, {
+                                       headers: { 'Content-Type': 'multipart/form-data' }
+                                    });
+                                    setFormData({ ...formData, sizeChart: res.data.files[0].url });
+                                 } catch (err) {
+                                    alert('Upload failed');
+                                 } finally {
+                                    setUploading(false);
+                                 }
+                              }}
                               disabled={uploading}
                               accept="image/*"
                            />
                         </div>
-
-                        {/* Image Previews */}
-                        {formData.images.filter(img => img !== '').map((img, index) => (
-                           <div key={index} className="w-full aspect-[3/4] bg-white border border-black overflow-hidden relative group">
-                              <img
-                                 src={img}
-                                 alt={`Asset ${index + 1}`}
-                                 className="w-full h-full object-cover transition-all duration-500"
-                              />
-                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-4">
-                                 <p className="text-[7px] text-white/60 font-black uppercase tracking-widest">Asset {index + 1}</p>
-                                 <button
-                                    type="button"
-                                    onClick={() => {
-                                       const newImages = formData.images.filter((_, i) => i !== index);
-                                       setFormData({ ...formData, images: newImages.length > 0 ? newImages : [''] });
-                                    }}
-                                    className="p-2.5 bg-white text-black hover:bg-red-600 hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0"
-                                    title="Release Asset"
-                                 >
-                                    <Trash2 size={14} />
-                                 </button>
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-
+                     )}
                   </div>
                </div>
-
-               <div className="pt-8 border-t border-black flex justify-end gap-1">
-                  <button type="button" onClick={onClose} className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] border border-black hover:bg-black hover:text-white transition-all">
-                     Abandon
-                  </button>
-                  <button type="submit" className="btn-brand px-12 py-5 font-black uppercase tracking-[0.2em]" disabled={uploading}>
-                     {product ? 'Authorize Update' : 'Initialize Entry'}
-                  </button>
-               </div>
-            </form>
          </div>
-      </div>
+
+         {/* COLOR MANAGEMENT */}
+         <div className="space-y-4 pt-4 border-t border-black/10">
+            <label className="text-small-brand text-gray-400">Available Palette (Colors)</label>
+            <div className="flex flex-wrap gap-2 mb-4">
+               {formData.colors?.map((color, index) => (
+                  <span key={index} className="flex items-center gap-2 px-3 py-1.5 bg-black text-white text-[9px] font-black uppercase tracking-widest">
+                     {color}
+                     <button
+                        type="button"
+                        onClick={() => {
+                           const newColors = formData.colors.filter((_, i) => i !== index);
+                           setFormData({ ...formData, colors: newColors });
+                        }}
+                        className="hover:text-red-500 transition-colors"
+                     >
+                        <X size={10} />
+                     </button>
+                  </span>
+               ))}
+               {formData.colors?.length === 0 && (
+                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest italic">No colors defined</span>
+               )}
+            </div>
+            <div className="flex gap-2">
+               <Input
+                  placeholder="Add color (e.g. Midnight Black)..."
+                  className="flex-1 rounded-none border-black focus:border-black text-[10px] font-bold"
+                  onKeyDown={(e) => {
+                     if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const val = e.target.value.trim();
+                        if (val && !formData.colors.includes(val)) {
+                           setFormData({ ...formData, colors: [...formData.colors, val] });
+                           e.target.value = '';
+                        }
+                     }
+                  }}
+               />
+               <Button
+                  type="button"
+                  onClick={(e) => {
+                     const input = e.currentTarget.previousSibling;
+                     const val = input.value.trim();
+                     if (val && !formData.colors.includes(val)) {
+                        setFormData({ ...formData, colors: [...formData.colors, val] });
+                        input.value = '';
+                     }
+                  }}
+                  className="px-6 py-2 h-10 text-[10px] font-black uppercase tracking-widest"
+               >
+                  Add
+               </Button>
+            </div>
+            <p className="text-[8px] text-gray-400 italic">Press Enter to register color tag</p>
+         </div>
+
+         <div className="space-y-6">
+            <div className="space-y-4">
+               <label className="text-small-brand text-gray-400">Archive Assets (Visual) - Max 10 Documents</label>
+
+               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {/* Upload Button */}
+                  <div className="relative border border-dashed border-black/20 hover:border-black transition-colors aspect-[3/4] flex flex-col items-center justify-center gap-3 bg-brand-grey/30 group">
+                     {uploading ? (
+                        <Loader2 size={20} className="animate-spin text-black" />
+                     ) : (
+                        <Upload size={20} className="text-black/40 group-hover:text-black transition-colors" />
+                     )}
+                     <p className="text-[8px] font-black uppercase tracking-widest text-center px-2">
+                        {uploading ? 'Synchronizing...' : 'Upload Sequence Assets'}
+                     </p>
+                     <input
+                        type="file"
+                        multiple
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        onChange={handleUpload}
+                        disabled={uploading}
+                        accept="image/*"
+                     />
+                  </div>
+
+                  {/* Image Previews */}
+                  {formData.images.filter(img => img !== '').map((img, index) => (
+                     <div key={index} className="w-full aspect-[3/4] bg-white border border-black overflow-hidden relative group">
+                        <img
+                           src={img}
+                           alt={`Asset ${index + 1}`}
+                           className="w-full h-full object-cover transition-all duration-500"
+                        />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-4">
+                           <p className="text-[7px] text-white/60 font-black uppercase tracking-widest">Asset {index + 1}</p>
+                           <button
+                              type="button"
+                              onClick={() => {
+                                 const newImages = formData.images.filter((_, i) => i !== index);
+                                 setFormData({ ...formData, images: newImages.length > 0 ? newImages : [''] });
+                              }}
+                              className="p-2.5 bg-white text-black hover:bg-red-600 hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0"
+                              title="Release Asset"
+                           >
+                              <Trash2 size={14} />
+                           </button>
+                        </div>
+                     </div>
+                  ))}
+               </div>
+
+            </div>
+         </div>
+
+         <div className="pt-8 border-t border-black flex justify-end gap-1">
+            <button type="button" onClick={onClose} className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] border border-black hover:bg-black hover:text-white transition-all">
+               Abandon
+            </button>
+            <button type="submit" className="btn-brand px-12 py-5 font-black uppercase tracking-[0.2em]" disabled={uploading}>
+               {product ? 'Authorize Update' : 'Initialize Entry'}
+            </button>
+         </div>
+      </form>
+         </div >
+      </div >
    );
 };
 
@@ -491,7 +533,8 @@ const AdminProducts = () => {
             ...formData,
             salePrice: formData.salePrice === '' ? 0 : Number(formData.salePrice),
             price: Number(formData.price),
-            stock: Number(formData.stock)
+            stock: (formData.variants || []).reduce((acc, v) => acc + (Number(v.stock) || 0), 0),
+            variants: (formData.variants || []).map(v => ({ ...v, stock: Number(v.stock) || 0 }))
          };
 
          if (editingProduct) {

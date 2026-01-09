@@ -220,20 +220,33 @@ export function ProductDetail() {
                         )}
                      </div>
                      <div className="flex flex-wrap gap-2">
-                        {product.sizes?.map(size => (
-                           <button
-                              key={size}
-                              onClick={() => setSelectedSize(size)}
-                              className={cn(
-                                 "px-6 py-3 text-[10px] font-black uppercase tracking-[0.15em] border transition-all duration-300",
-                                 selectedSize === size
-                                    ? "bg-black text-white border-black"
-                                    : "bg-white text-black border-gray-200 hover:border-black"
-                              )}
-                           >
-                              {size}
-                           </button>
-                        ))}
+                        {product.sizes?.map(size => {
+                           const variant = product.variants?.find(v => v.size === size);
+                           const isOutOfStock = variant && variant.stock <= 0;
+
+                           return (
+                              <button
+                                 key={size}
+                                 disabled={isOutOfStock}
+                                 onClick={() => setSelectedSize(size)}
+                                 className={cn(
+                                    "px-6 py-3 text-[10px] font-black uppercase tracking-[0.15em] border transition-all duration-300 relative overflow-hidden",
+                                    selectedSize === size
+                                       ? "bg-black text-white border-black"
+                                       : isOutOfStock
+                                          ? "bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed"
+                                          : "bg-white text-black border-gray-200 hover:border-black"
+                                 )}
+                              >
+                                 <span className={cn(isOutOfStock && "opacity-50")}>{size}</span>
+                                 {isOutOfStock && (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                       <div className="w-full h-[1px] bg-gray-300 -rotate-12"></div>
+                                    </div>
+                                 )}
+                              </button>
+                           );
+                        })}
                         {(!product.sizes || product.sizes.length === 0) && (
                            <p className="text-[10px] text-gray-400 italic">One Size</p>
                         )}
