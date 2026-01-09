@@ -100,8 +100,8 @@ export function Home() {
             </video>
             <div className="absolute inset-x-0 bottom-20 flex flex-col items-center space-y-8 z-10 px-10 text-center">
                <div className="space-y-2">
-                  <h2 className="text-white text-base md:text-xl font-black uppercase tracking-[0.6em]">Ready-to-Wear</h2>
-                  <p className="text-white/70 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em]">Spring 26 Collection</p>
+                  <h2 className="text-white text-base md:text-xl font-black uppercase tracking-[0.6em]">Built to Last</h2>
+                  <p className="text-white/70 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em]">Premium collections</p>
                </div>
                <div className="flex gap-4">
                   <Link to="/products">
