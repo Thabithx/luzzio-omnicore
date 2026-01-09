@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Input } from '../components/ui/Input';
+import { Select } from '../components/ui/Select';
 import { Button } from '../components/ui/Button';
+import { SRI_LANKA_LOCATIONS } from '../constants/sl-locations';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -256,7 +258,15 @@ export function Checkout() {
                         <Input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleInputChange} required />
                         <Input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleInputChange} required />
                         <Input name="address" placeholder="Physical Address" className="col-span-2" value={formData.address} onChange={handleInputChange} required />
-                        <Input name="city" placeholder="City" value={formData.city} onChange={handleInputChange} required className="col-span-2" />
+                        <Select
+                           name="city"
+                           placeholder="Select City / Area"
+                           options={SRI_LANKA_LOCATIONS}
+                           value={formData.city}
+                           onChange={handleInputChange}
+                           required
+                           className="col-span-2"
+                        />
                         <Input name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleInputChange} required />
                         <Input name="phone2" placeholder="Secondary Phone (Optional)" value={formData.phone2} onChange={handleInputChange} />
                      </div>
