@@ -12,6 +12,9 @@ export function Cart() {
       return acc + (price * item.quantity);
    }, 0);
 
+   const shippingPrice = subtotal >= 10000 ? 0 : 390;
+   const totalPrice = subtotal + shippingPrice;
+
    if (loading) return <div className="min-h-screen flex items-center justify-center text-small-brand animate-pulse">Syncing Shopping Bag...</div>;
 
    if (cart.length === 0) {
@@ -117,9 +120,18 @@ export function Cart() {
                            <span className="text-gray-400">Subtotal</span>
                            <span>LKR {subtotal.toLocaleString()}.00</span>
                         </div>
-                        <div className="flex justify-between">
-                           <span className="text-gray-400">Shipping (Standard)</span>
-                           <span className="text-black">LKR 390.00</span>
+                        <div className="flex flex-col">
+                           <div className="flex justify-between">
+                              <span className="text-gray-400">Shipping (Standard)</span>
+                              <span className={shippingPrice === 0 ? "text-green-600 font-black" : "text-black"}>
+                                 {shippingPrice === 0 ? "FREE" : `LKR ${shippingPrice.toLocaleString()}.00`}
+                              </span>
+                           </div>
+                           {shippingPrice > 0 && (
+                              <p className="text-[9px] text-black/40 font-bold lowercase tracking-widest mt-1 text-right">
+                                 Spend LKR {(10000 - subtotal).toLocaleString()}.00 more for FREE delivery
+                              </p>
+                           )}
                         </div>
                         <div className="flex justify-between">
                            <span className="text-gray-400">Estimated Tax</span>
@@ -127,7 +139,7 @@ export function Cart() {
                         </div>
                         <div className="border-t border-black pt-6 flex justify-between text-lg font-black tracking-tighter">
                            <span>Total</span>
-                           <span>LKR {(subtotal + 390).toLocaleString()}.00</span>
+                           <span>LKR {totalPrice.toLocaleString()}.00</span>
                         </div>
                      </div>
 
