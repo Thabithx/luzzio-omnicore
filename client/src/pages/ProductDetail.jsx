@@ -89,7 +89,7 @@ export function ProductDetail() {
                <div
                   ref={scrollContainerRef}
                   onScroll={handleScroll}
-                  className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scroll-smooth relative touch-pan-x antialiased"
+                  className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scroll-smooth relative touch-auto antialiased ios-slider-scrollbar"
                   style={{ WebkitOverflowScrolling: 'touch' }}
                >
                   {productImages.map((img, index) => (

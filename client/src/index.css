@@ -6,7 +6,7 @@
   :root {
     --brand-black: #000000;
     --brand-white: #FFFFFF;
-    --brand-grey: #F6F6F6;
+    --brand-grey: #EDEDED;
     --brand-border: #000000;
   }
 
@@ -84,6 +84,23 @@
 
   ::-webkit-scrollbar-thumb {
     background: black;
+  }
+
+  /* Force black scrollbars for sliders on iOS/Safari */
+  .ios-slider-scrollbar::-webkit-scrollbar {
+    -webkit-appearance: none;
+    height: 3px;
+    background-color: transparent;
+  }
+
+  .ios-slider-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #000000 !important;
+    border-radius: 0;
+  }
+
+  .ios-slider-scrollbar {
+    scrollbar-color: black transparent;
+    scrollbar-width: thin;
   }
 }
 
