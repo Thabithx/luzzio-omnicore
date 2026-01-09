@@ -25,6 +25,10 @@ export function ProductDetail() {
    const [activeImageIndex, setActiveImageIndex] = useState(0);
    const [scrollProgress, setScrollProgress] = useState(0);
    const scrollContainerRef = useRef(null);
+   const [recommendedProducts, setRecommendedProducts] = useState([]);
+   const [loadingRecommended, setLoadingRecommended] = useState(true);
+   const recommendedRef = useRef(null);
+   const [recommendedProgress, setRecommendedProgress] = useState(0);
 
    const handleScroll = () => {
       if (scrollContainerRef.current) {
