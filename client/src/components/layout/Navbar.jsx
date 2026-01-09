@@ -131,7 +131,7 @@ export function Navbar() {
                </button>
 
                {/* Recommendations Dropdown */}
-               <div className="absolute top-full left-0 right-0 bg-white border-x border-b border-black p-10 z-[110] shadow-2xl animate-in fade-in slide-in-from-top-4 duration-500">
+               <div className="absolute top-full left-0 right-0 bg-white border-x border-b border-black p-6 md:p-10 z-[110] shadow-2xl animate-in fade-in slide-in-from-top-4 duration-500">
                   <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-20">
                      {/* Products */}
                      <div className="md:col-span-3 space-y-8">
