@@ -4,7 +4,7 @@ import { ProductCard } from '../components/ui/ProductCard';
 import { Link } from 'react-router-dom';
 import Meta from '../components/ui/Meta';
 import { motion } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Play, Pause } from 'lucide-react';
 import api from '../services/api';
 import { cn } from '../utils/cn';
 
@@ -85,6 +85,7 @@ export function Home() {
    const [bestSellersProgress, setBestSellersProgress] = useState(0);
    const [saleProgress, setSaleProgress] = useState(0);
 
+   const [isPlaying, setIsPlaying] = useState(true);
    const videoRef = React.useRef(null);
 
    useEffect(() => {
@@ -94,6 +95,17 @@ export function Home() {
          });
       }
    }, []);
+
+   const togglePlay = () => {
+      if (videoRef.current) {
+         if (isPlaying) {
+            videoRef.current.pause();
+         } else {
+            videoRef.current.play();
+         }
+         setIsPlaying(!isPlaying);
+      }
+   };
 
    const handleScroll = (ref, setProgress) => {
       if (!ref.current) return;
@@ -121,6 +133,21 @@ export function Home() {
                <source src={heroVideo} type="video/mp4" />
                Your browser does not support the video tag.
             </video>
+
+            {/* Video Control - Top Right */}
+            <div className="absolute top-24 right-4 md:right-10 z-[110]">
+               <button
+                  onClick={togglePlay}
+                  className="p-3 bg-black/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-all duration-500 group/btn"
+               >
+                  {isPlaying ? (
+                     <Pause size={14} className="group-hover/btn:scale-110 transition-transform" />
+                  ) : (
+                     <Play size={14} className="ml-0.5 group-hover/btn:scale-110 transition-transform" />
+                  )}
+               </button>
+            </div>
+
             <div className="absolute inset-x-0 bottom-20 flex flex-col items-center space-y-8 z-10 px-10 text-center">
                <div className="space-y-2">
                   <h2 className="text-white text-base md:text-xl font-black uppercase tracking-[0.6em]">Built to Last</h2>
@@ -128,7 +155,7 @@ export function Home() {
                </div>
                <div className="flex gap-4">
                   <Link to="/products">
-                     <button className="px-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white border border-black transition-all duration-500">
+                     <button className="px-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white border border-black transition-all duration-500 rounded-md">
                         Shop
                      </button>
                   </Link>
