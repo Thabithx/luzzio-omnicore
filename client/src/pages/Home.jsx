@@ -130,9 +130,9 @@ export function Home() {
 
          {/* SELECTED ARCHIVE GRID - MOVED TO TOP */}
          <section className="bg-white border-b border-black">
-            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-10 md:py-24 bg-brand-grey border-b border-black">
-               <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Selected Archives</h2>
-               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-3 md:mt-6 italic">Winter 25/26 Collection</p>
+            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
+               <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">New Arrivals</h2>
+               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Explore Latest Release</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-black">
@@ -162,9 +162,9 @@ export function Home() {
 
          {/* BEST SELLERS SLIDER */}
          <section className="bg-white border-b border-black">
-            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-10 md:py-24 bg-brand-grey border-b border-black">
+            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
                <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Best Sellers</h2>
-               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-3 md:mt-6 italic">Most Coveted Pieces</p>
+               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Most Coveted Pieces</p>
             </div>
 
             {/* Horizontal Scrolling Product Slider */}
@@ -200,7 +200,7 @@ export function Home() {
 
 
          {/* CATEGORY DROPDOWNS - ACCORDION STYLE */}
-         <section className="bg-white border-t border-black">
+         <section className="bg-brand-grey border-t border-black">
             {categories.map((category, index) => {
                const isOpen = activeCategory === category._id;
 
@@ -238,7 +238,7 @@ export function Home() {
                         className={`overflow-hidden transition-all duration-500 ${isOpen ? 'max-h-[5000px]' : 'max-h-0'
                            }`}
                      >
-                        <div className="bg-white">
+                        <div className="bg-brand-grey px-0">
                            {categoryProducts.length > 0 ? (
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
                                  {categoryProducts.map((product, idx) => (
@@ -280,9 +280,9 @@ export function Home() {
 
          {/* SALE SLIDER */}
          <section className="bg-white border-t border-b border-black">
-            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-10 md:py-24 bg-brand-grey border-b border-black">
+            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
                <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Sale</h2>
-               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-3 md:mt-6 italic">Limited Time Offers</p>
+               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Limited Time Offers</p>
             </div>
 
             {/* Horizontal Scrolling Product Slider */}
@@ -316,8 +316,8 @@ export function Home() {
          </section>
 
          {/* INTERSTITIAL SECTION */}
-         <section className="py-32 md:py-40 bg-white flex flex-col items-center justify-center space-y-12 text-center px-6 md:px-10 border-t border-black">
-            <div className="space-y-4">
+         <section className="py-20 md:py-24 bg-white flex flex-col items-center justify-center space-y-8 text-center px-6 md:px-10 border-t border-black">
+            <div className="space-y-3">
                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">Corporate Excellence</p>
                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter">Sustainability & Ethics</h2>
             </div>

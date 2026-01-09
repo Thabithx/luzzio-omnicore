@@ -54,7 +54,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                         <MapPin size={12} strokeWidth={2.5} /> Destination Logic
                      </p>
                      <p className="text-sm font-black uppercase leading-tight">
-                        {order.shippingAddress.city}, {order.shippingAddress.postalCode}
+                        {order.shippingAddress.city}
                      </p>
                   </div>
                </div>
@@ -71,6 +71,9 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                         <p className="text-[11px] text-gray-400 font-medium uppercase tracking-widest leading-relaxed">
                            {order.shippingAddress.address}
                         </p>
+                        {order.shippingAddress.phone2 && (
+                           <p className="text-[10px] text-black font-black uppercase tracking-widest mt-2 bg-yellow-400 inline-block px-2">Secondary: {order.shippingAddress.phone2}</p>
+                        )}
                      </div>
                   </div>
                </div>
@@ -484,9 +487,9 @@ const AdminOrders = () => {
                               <div className="store-name">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</div>
                               {order.shippingAddress.address}<br />
                               {order.shippingAddress.city}<br />
-                              {order.shippingAddress.postalCode}<br />
                               {order.shippingAddress.country || 'Sri Lanka'}<br />
                               {order.shippingAddress.phone && `Phone: ${order.shippingAddress.phone}`}
+                              {order.shippingAddress.phone2 && <><br />Secondary Phone: {order.shippingAddress.phone2}</>}
                               {!order.shippingAddress.phone && (
                                  (order.user && order.user.phone) ? `Phone: ${order.user.phone}` : `Email: ${order.email}`
                               )}

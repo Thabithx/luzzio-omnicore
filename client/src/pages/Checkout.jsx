@@ -20,8 +20,8 @@ export function Checkout() {
       lastName: '',
       address: '',
       city: '',
-      postalCode: '',
-      phone: ''
+      phone: '',
+      phone2: ''
    });
 
    // Auto-fill user data when component mounts or user changes
@@ -35,8 +35,8 @@ export function Checkout() {
             lastName: nameParts.slice(1).join(' ') || '',
             address: user.shippingAddress?.address || '',
             city: user.shippingAddress?.city || '',
-            postalCode: user.shippingAddress?.postalCode || '',
-            phone: user.shippingAddress?.phone || ''
+            phone: user.shippingAddress?.phone || '',
+            phone2: user.shippingAddress?.phone2 || ''
          }));
       }
    }, [user]);
@@ -74,8 +74,7 @@ export function Checkout() {
             api.put('/auth/profile', {
                shippingAddress: {
                   address: formData.address,
-                  city: formData.city,
-                  postalCode: formData.postalCode
+                  city: formData.city
                }
             }).then(profileRes => {
                if (profileRes.data.success) {
@@ -93,10 +92,10 @@ export function Checkout() {
             shippingAddress: {
                address: formData.address,
                city: formData.city,
-               postalCode: formData.postalCode,
                firstName: formData.firstName,
                lastName: formData.lastName,
-               phone: formData.phone
+               phone: formData.phone,
+               phone2: formData.phone2
             },
             paymentMethod: paymentMethod,
             itemsPrice: subtotal,
@@ -257,9 +256,9 @@ export function Checkout() {
                         <Input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleInputChange} required />
                         <Input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleInputChange} required />
                         <Input name="address" placeholder="Physical Address" className="col-span-2" value={formData.address} onChange={handleInputChange} required />
-                        <Input name="city" placeholder="City" value={formData.city} onChange={handleInputChange} required />
-                        <Input name="postalCode" placeholder="Postal Code" value={formData.postalCode} onChange={handleInputChange} required />
-                        <Input name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleInputChange} required className="col-span-2" />
+                        <Input name="city" placeholder="City" value={formData.city} onChange={handleInputChange} required className="col-span-2" />
+                        <Input name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleInputChange} required />
+                        <Input name="phone2" placeholder="Secondary Phone (Optional)" value={formData.phone2} onChange={handleInputChange} />
                      </div>
                   </section>
 

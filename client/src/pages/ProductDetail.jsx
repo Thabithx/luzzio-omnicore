@@ -89,7 +89,8 @@ export function ProductDetail() {
                <div
                   ref={scrollContainerRef}
                   onScroll={handleScroll}
-                  className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scroll-smooth no-scrollbar relative group touch-pan-x"
+                  className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scroll-smooth relative touch-pan-x antialiased"
+                  style={{ WebkitOverflowScrolling: 'touch' }}
                >
                   {productImages.map((img, index) => (
                      <div
@@ -120,8 +121,8 @@ export function ProductDetail() {
             </div>
 
             {/* RIGHT: STICKY PRODUCT INFO */}
-            <div className="w-full lg:w-[40%] px-6 md:px-12 lg:px-20 pt-16 md:pt-24 lg:pt-32 pb-24 lg:sticky lg:top-12 lg:h-[calc(100vh-48px)] overflow-y-auto no-scrollbar bg-white lg:border-l border-black">
-               <div className="max-w-md mx-auto space-y-14">
+            <div className="w-full lg:w-[40%] px-6 md:px-10 lg:px-14 pt-10 md:pt-16 lg:pt-20 pb-20 lg:sticky lg:top-12 lg:h-[calc(100vh-48px)] overflow-y-auto no-scrollbar bg-white lg:border-l border-black">
+               <div className="max-w-md mx-auto space-y-10">
 
                   {/* BRANDING & PRICE */}
                   <div className="space-y-4">
@@ -142,7 +143,7 @@ export function ProductDetail() {
 
                   {/* COLOR SELECTION */}
                   {product.colors?.length > 0 && (
-                     <div className="space-y-6 pt-12 border-t border-black">
+                     <div className="space-y-6 pt-8 border-t border-black">
                         <div className="flex justify-between items-baseline">
                            <span className="text-[10px] uppercase font-black tracking-[0.15em] text-black" id="scroll-to-color">Color</span>
                            <span className="text-[10px] uppercase font-medium tracking-[0.1em] text-black/40">{selectedColor}</span>
@@ -167,7 +168,7 @@ export function ProductDetail() {
                   )}
 
                   {/* SIZE SELECTION */}
-                  <div className="space-y-6 pt-12 border-t border-black">
+                  <div className="space-y-6 pt-8 border-t border-black">
                      <div className="flex justify-between items-baseline">
                         <span className="text-[10px] uppercase font-black tracking-[0.15em] text-black">Size (US/EU)</span>
                         {product.sizeChart && (
@@ -237,7 +238,7 @@ export function ProductDetail() {
                   </div>
 
                   {/* PRODUCT DETAILS ACCORDION */}
-                  <div className="pt-24 space-y-0">
+                  <div className="pt-16 space-y-0">
                      <details className="group border-t border-black py-8" open>
                         <summary className="flex justify-between items-center list-none cursor-pointer">
                            <span className="text-[10px] uppercase font-black tracking-[0.2em] text-black">Product Details</span>
@@ -289,7 +290,7 @@ export function ProductDetail() {
          </div>
 
          {/* REVIEWS SECTION */}
-         <div className="px-6 md:px-12 lg:px-20 py-32 border-t border-black">
+         <div className="px-6 md:px-12 lg:px-20 py-20 border-t border-black">
             <Reviews
                productId={product._id}
                reviews={product.reviews || []}

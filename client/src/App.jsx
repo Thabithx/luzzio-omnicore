@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
+import ScrollToTop from './components/ScrollToTop';
 
 // Lazy load pages
 const Home = lazy(() => import('./pages/Home').then(module => ({ default: module.Home })));
@@ -46,6 +47,7 @@ const Loading = () => (
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Suspense fallback={<Loading />}>
         <Routes>
           {/* Storefront Routes */}
