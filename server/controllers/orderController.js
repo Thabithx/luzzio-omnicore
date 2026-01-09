@@ -31,7 +31,10 @@ exports.createOrder = async (req, res) => {
 
       // 1. Efficient Email & Name selection (No redundant DB trips)
       const orderEmail = (req.user ? req.user.email : (email || '')).trim().toLowerCase();
-      const recipientName = req.user ? req.user.name : `${shippingAddress.firstName || ''} ${shippingAddress.lastName || ''}`.trim();
+
+      const firstName = shippingAddress?.firstName || '';
+      const lastName = shippingAddress?.lastName || '';
+      const recipientName = req.user ? req.user.name : `${firstName} ${lastName}`.trim();
 
       const order = new Order({
          orderItems,
@@ -105,7 +108,7 @@ exports.createOrder = async (req, res) => {
             first_name: shippingAddress.firstName,
             last_name: shippingAddress.lastName,
             email: createdOrder.email,
-            phone: '0771234567',
+            phone: shippingAddress.phone || '0771234567',
             address: shippingAddress.address,
             city: shippingAddress.city,
             country: 'Sri Lanka',

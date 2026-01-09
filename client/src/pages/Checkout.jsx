@@ -170,7 +170,9 @@ export function Checkout() {
          }
       } catch (err) {
          console.error('Checkout protocol failure:', err);
-         setLoading(false); // Ensure loading stops on error
+         const errorMessage = err.response?.data?.message || err.message || 'Unknown checkout error';
+         alert(`Transaction failed: ${errorMessage}`);
+         setLoading(false);
       }
    };
 

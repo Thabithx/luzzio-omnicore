@@ -21,7 +21,7 @@ const orderSchema = new mongoose.Schema({
             ref: 'Product',
             required: true
          },
-         size: { type: String, required: true },
+         size: { type: String },
          color: { type: String, default: 'Noir' },
          trackingNumber: { type: String, default: '' }
       }
@@ -31,8 +31,9 @@ const orderSchema = new mongoose.Schema({
       lastName: { type: String },
       address: { type: String, required: true },
       city: { type: String, required: true },
-      postalCode: { type: String, required: true },
-      phone: { type: String, required: true }
+      postalCode: { type: String },
+      phone: { type: String, required: true },
+      phone2: { type: String }
    },
    paymentMethod: {
       type: String,
