@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import Meta from '../components/ui/Meta';
-import { ChevronDown, Plus, Minus, X } from 'lucide-react';
+import { ChevronDown, Plus, Minus, X, ArrowRight } from 'lucide-react';
+import { ProductCard } from '../components/ui/ProductCard';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { cn } from '../utils/cn';
@@ -35,6 +37,14 @@ export function ProductDetail() {
       }
    };
 
+   const handleRecommendedScroll = () => {
+      if (recommendedRef.current) {
+         const { scrollLeft, scrollWidth, offsetWidth } = recommendedRef.current;
+         const progress = (scrollLeft / (scrollWidth - offsetWidth)) * 100;
+         setRecommendedProgress(progress);
+      }
+   };
+
    const handleAddToCart = async () => {
       if (!selectedSize || (product.colors?.length > 0 && !selectedColor)) return;
       setAdding(true);
@@ -56,19 +66,41 @@ export function ProductDetail() {
    useEffect(() => {
       const fetchProduct = async () => {
          try {
+            setLoading(true);
             const res = await api.get(`/products/${id}`);
             const prodData = res.data.data;
             setProduct(prodData);
             if (prodData.colors?.length > 0) {
                setSelectedColor(prodData.colors[0]);
             }
+
+            // Fetch recommendations
+            setLoadingRecommended(true);
+            const allRes = await api.get('/products');
+            const allProds = allRes.data.data;
+
+            // Filter by category (using either categories array or category field)
+            const related = allProds.filter(p => {
+               if (p._id === id) return false;
+
+               const sameCategory = p.categories?.some(cat =>
+                  prodData.categories?.some(pCat => pCat._id === cat._id)
+               ) || p.category?._id === prodData.category?._id;
+
+               return sameCategory;
+            }).slice(0, 8);
+
+            setRecommendedProducts(related);
          } catch (err) {
             console.error('Error fetching product:', err);
          } finally {
             setLoading(false);
+            setLoadingRecommended(false);
          }
       };
       fetchProduct();
+      // Scroll to top on ID change
+      window.scrollTo(0, 0);
    }, [id]);
 
    if (loading) return <div className="min-h-screen flex items-center justify-center text-small-brand animate-pulse">Retrieving Product Details...</div>;
@@ -322,6 +354,48 @@ export function ProductDetail() {
                </div>
             )
          }
+         {/* RECOMMENDED PRODUCTS SLIDER */}
+         {recommendedProducts.length > 0 && (
+            <section className="bg-brand-grey border-t border-black">
+               <div className="flex flex-col items-center py-16 border-b border-black">
+                  <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Recommended for You</h2>
+                  <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-4 italic">You Might Also Archive</p>
+               </div>
+
+               <div
+                  ref={recommendedRef}
+                  onScroll={handleRecommendedScroll}
+                  className="overflow-x-auto ios-slider-scrollbar bg-white"
+               >
+                  <div className="flex">
+                     {recommendedProducts.map((p) => (
+                        <div key={p._id} className="min-w-[50%] md:min-w-[25%] border-r border-b border-black md:last:border-r-0">
+                           <ProductCard product={p} />
+                        </div>
+                     ))}
+                  </div>
+               </div>
+
+               <div className="slider-progress-container border-b border-black">
+                  <div
+                     className="slider-progress-bar"
+                     style={{
+                        width: `25%`,
+                        transform: `translateX(${recommendedProgress * 3}%)`
+                     }}
+                  />
+               </div>
+
+               <div className="py-12 flex justify-center bg-brand-grey">
+                  <Link
+                     to="/products"
+                     className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black"
+                  >
+                     Explore Collection
+                  </Link>
+               </div>
+            </section>
+         )}
       </div >
    );
 }
