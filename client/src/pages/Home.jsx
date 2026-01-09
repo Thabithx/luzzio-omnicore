@@ -85,6 +85,16 @@ export function Home() {
    const [bestSellersProgress, setBestSellersProgress] = useState(0);
    const [saleProgress, setSaleProgress] = useState(0);
 
+   const videoRef = React.useRef(null);
+
+   useEffect(() => {
+      if (videoRef.current) {
+         videoRef.current.play().catch(error => {
+            console.log("Autoplay blocked:", error);
+         });
+      }
+   }, []);
+
    const handleScroll = (ref, setProgress) => {
       if (!ref.current) return;
       const { scrollLeft, scrollWidth, clientWidth } = ref.current;
@@ -99,6 +109,7 @@ export function Home() {
          {/* SECTION 1: HERO - READY TO WEAR */}
          <section className="relative h-screen overflow-hidden group">
             <video
+               ref={videoRef}
                autoPlay
                loop
                muted

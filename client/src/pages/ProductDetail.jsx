@@ -122,14 +122,14 @@ export function ProductDetail() {
 
             {/* RIGHT: STICKY PRODUCT INFO */}
             <div className="w-full lg:w-[40%] px-4 md:px-10 lg:px-14 pt-10 md:pt-16 lg:pt-20 pb-20 lg:sticky lg:top-12 lg:h-[calc(100vh-48px)] overflow-y-auto bg-white lg:border-l border-black">
-               <div className="max-w-md mx-auto space-y-10">
+               <div className="max-w-md mx-auto space-y-6">
 
                   {/* BRANDING & PRICE */}
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                      <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight leading-[1.1] text-black">
                         {product.name}
                      </h1>
-                     <div className="pt-2 flex flex-col">
+                     <div className="pt-1 flex flex-col">
                         {product.salePrice > 0 ? (
                            <>
                               <p className="text-lg font-bold text-black tracking-tighter">LKR {product.salePrice.toLocaleString()}.00</p>
@@ -143,7 +143,7 @@ export function ProductDetail() {
 
                   {/* COLOR SELECTION */}
                   {product.colors?.length > 0 && (
-                     <div className="space-y-6 pt-8 border-t border-black">
+                     <div className="space-y-4 pt-5 border-t border-black">
                         <div className="flex justify-between items-baseline">
                            <span className="text-[10px] uppercase font-black tracking-[0.15em] text-black" id="scroll-to-color">Color</span>
                            <span className="text-[10px] uppercase font-medium tracking-[0.1em] text-black/40">{selectedColor}</span>
@@ -168,7 +168,7 @@ export function ProductDetail() {
                   )}
 
                   {/* SIZE SELECTION */}
-                  <div className="space-y-6 pt-8 border-t border-black">
+                  <div className="space-y-4 pt-5 border-t border-black">
                      <div className="flex justify-between items-baseline">
                         <span className="text-[10px] uppercase font-black tracking-[0.15em] text-black">Size (US/EU)</span>
                         {product.sizeChart && (
@@ -202,7 +202,7 @@ export function ProductDetail() {
                   </div>
 
                   {/* ADD TO BAG */}
-                  <div className="space-y-4 pt-4">
+                  <div className="space-y-4 pt-2">
                      <div className="grid grid-cols-2 gap-4">
                         <button
                            disabled={!selectedSize || (product.colors?.length > 0 && !selectedColor) || adding}
@@ -229,23 +229,17 @@ export function ProductDetail() {
                            Buy It Now
                         </button>
                      </div>
-                     <button
-                        onClick={() => navigate('/products')}
-                        className="w-full py-4 text-[9px] font-bold uppercase tracking-[0.2em] text-black/40 hover:text-black transition-colors"
-                     >
-                        Continue Browsing
-                     </button>
                   </div>
 
                   {/* PRODUCT DETAILS ACCORDION */}
-                  <div className="pt-16 space-y-0 text-left">
-                     <details className="group border-t border-black py-6 text-left" open>
+                  <div className="pt-8 space-y-0 text-left">
+                     <details className="group border-t border-black py-4 text-left" open>
                         <summary className="flex justify-between items-center list-none cursor-pointer">
                            <span className="text-[10px] uppercase font-black tracking-[0.2em] text-black">Product Details</span>
                            <Plus size={12} className="group-open:hidden text-black/40" />
                            <Minus size={12} className="hidden group-open:block text-black/40" />
                         </summary>
-                        <div className="mt-10 text-[10px] leading-[2] font-medium text-black/60 uppercase tracking-[0.15em] space-y-6 max-w-sm">
+                        <div className="mt-4 text-[10px] leading-[2] font-medium text-black/60 uppercase tracking-[0.15em] space-y-6 max-w-sm">
                            {product.sizeChart && (
                               <div className="mb-6 border border-black p-2">
                                  <img src={product.sizeChart} alt="Size Guide" className="w-full h-auto" />
