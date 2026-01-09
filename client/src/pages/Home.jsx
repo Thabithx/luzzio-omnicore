@@ -200,7 +200,7 @@ export function Home() {
 
 
          {/* CATEGORY DROPDOWNS - ACCORDION STYLE */}
-         <section className="bg-brand-grey border-t border-black">
+         <section className="bg-brand-grey-dark border-t border-black">
             {categories.map((category, index) => {
                const isOpen = activeCategory === category._id;
 
@@ -222,7 +222,7 @@ export function Home() {
                      {/* Category Header - Clickable */}
                      <button
                         onClick={() => setActiveCategory(isOpen ? null : category._id)}
-                        className="w-full flex justify-between items-center px-4 md:px-10 py-6 md:py-8 bg-brand-grey hover:bg-black hover:text-white transition-colors group"
+                        className="w-full flex justify-between items-center px-4 md:px-10 py-6 md:py-8 bg-brand-grey-dark hover:bg-black hover:text-white transition-colors group"
                      >
                         <h3 className="text-[10px] md:text-base font-black uppercase tracking-[0.3em] text-left">
                            {category.name}
@@ -238,7 +238,7 @@ export function Home() {
                         className={`overflow-hidden transition-all duration-500 ${isOpen ? 'max-h-[5000px]' : 'max-h-0'
                            }`}
                      >
-                        <div className="bg-brand-grey px-0">
+                        <div className="bg-brand-grey-dark px-0">
                            {categoryProducts.length > 0 ? (
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
                                  {categoryProducts.map((product, idx) => (

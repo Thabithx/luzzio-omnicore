@@ -56,7 +56,7 @@ export function Footer() {
    };
 
    return (
-      <footer className="bg-brand-grey text-black border-t border-black selection:bg-black selection:text-white">
+      <footer className="bg-brand-grey-dark text-black border-t border-black selection:bg-black selection:text-white">
          <div className="max-w-[1920px] mx-auto">
             {/* 5-COLUMN GRID WITH VERTICAL DIVIDERS */}
             <div className="grid grid-cols-1 lg:grid-cols-5">
