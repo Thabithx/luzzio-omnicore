@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
 const Cart = require('../models/Cart');
+const Product = require('../models/Product');
 const { createNotification } = require('./notificationController');
 const sendEmail = require('../utils/sendEmail');
 const { orderConfirmationTemplate, trackingUpdateTemplate } = require('../utils/emailTemplates');
@@ -53,7 +54,30 @@ exports.createOrder = async (req, res) => {
       const [createdOrder] = await Promise.all(saveTasks);
       console.timeEnd('DB_OPERATIONS');
 
-      // 3. Prepare PayHere parameters if needed (Calculated locally, near-instant)
+      // 3. SECURE STOCK RESERVATION PROTOCOL (Internal)
+      // Deduct stock for each item's specific variant
+      setImmediate(async () => {
+         try {
+            for (const item of orderItems) {
+               const product = await Product.findById(item.product);
+               if (product && product.variants && product.variants.length > 0) {
+                  const variantIndex = product.variants.findIndex(v => v.size === item.size);
+                  if (variantIndex !== -1) {
+                     // Deduct from variant
+                     product.variants[variantIndex].stock = Math.max(0, product.variants[variantIndex].stock - (item.qty || 1));
+
+                     // total stock is auto-recalculated by the pre-save hook in Product.js
+                     await product.save();
+                     console.log(`[STOCK SYNC] Deducted ${item.qty || 1} units from ${product.name} (Size: ${item.size})`);
+                  }
+               }
+            }
+         } catch (stockErr) {
+            console.error('[STOCK SYNC FAILURE] Critical inventory mismatch:', stockErr.message);
+         }
+      });
+
+      // 4. Prepare PayHere parameters if needed (Calculated locally, near-instant)
       let payhereParams = null;
       if (paymentMethod === 'PayHere') {
          const merchantId = (process.env.PAYHERE_MERCHANT_ID || '').trim();

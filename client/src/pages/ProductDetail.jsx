@@ -251,6 +251,31 @@ export function ProductDetail() {
                            <p className="text-[10px] text-gray-400 italic">One Size</p>
                         )}
                      </div>
+
+                     {/* Stock Level Display */}
+                     {selectedSize && (
+                        <div className="pt-2">
+                           {(() => {
+                              const variant = product.variants?.find(v => v.size === selectedSize);
+                              const stock = variant ? variant.stock : 0;
+
+                              if (stock > 0 && stock <= 5) {
+                                 return (
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-red-500 animate-pulse">
+                                       Limited Reserve: Only {stock} items remaining
+                                    </p>
+                                 );
+                              } else if (stock > 0) {
+                                 return (
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600/60">
+                                       Archive Available ({stock} units in stock)
+                                    </p>
+                                 );
+                              }
+                              return null;
+                           })()}
+                        </div>
+                     )}
                   </div>
 
                   {/* ADD TO BAG */}
