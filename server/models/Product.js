@@ -92,8 +92,12 @@ const productSchema = new mongoose.Schema({
 });
 
 // Create product slug from the name
-productSchema.pre('save', async function () {
+productSchema.pre('save', function (next) {
    this.slug = slugify(this.name, { lower: true });
+   if (this.variants && this.variants.length > 0) {
+      this.stock = this.variants.reduce((total, variant) => total + (variant.stock || 0), 0);
+   }
+   next();
 });
 
 module.exports = mongoose.model('Product', productSchema);
