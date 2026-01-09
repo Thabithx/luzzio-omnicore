@@ -129,7 +129,7 @@ export function Home() {
          </section>
 
          {/* SELECTED ARCHIVE GRID - MOVED TO TOP */}
-         <section className="bg-white border-b border-black">
+         <section className="bg-brand-grey border-b border-black">
             <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
                <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">New Arrivals</h2>
                <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Explore Latest Release</p>
