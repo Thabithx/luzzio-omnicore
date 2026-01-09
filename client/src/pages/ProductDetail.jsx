@@ -18,6 +18,7 @@ export function ProductDetail() {
    const [loading, setLoading] = useState(true);
    const [selectedSize, setSelectedSize] = useState('');
    const [selectedColor, setSelectedColor] = useState('');
+   const [quantity, setQuantity] = useState(1);
    const [adding, setAdding] = useState(false);
    const [added, setAdded] = useState(false);
    const [showSizeGuide, setShowSizeGuide] = useState(false);
@@ -52,7 +53,7 @@ export function ProductDetail() {
    const handleAddToCart = async () => {
       if (!selectedSize || (product.colors?.length > 0 && !selectedColor)) return;
       setAdding(true);
-      await addToCart(product, 1, selectedSize, selectedColor);
+      await addToCart(product, quantity, selectedSize, selectedColor);
       setAdding(false);
       setAdded(true);
       setTimeout(() => setAdded(false), 2000);
@@ -62,7 +63,7 @@ export function ProductDetail() {
    const handleBuyNow = async () => {
       if (!selectedSize || (product.colors?.length > 0 && !selectedColor)) return;
       setAdding(true);
-      await addToCart(product, 1, selectedSize, selectedColor);
+      await addToCart(product, quantity, selectedSize, selectedColor);
       setAdding(false);
       navigate('/checkout');
    };
@@ -228,7 +229,10 @@ export function ProductDetail() {
                               <button
                                  key={size}
                                  disabled={isOutOfStock}
-                                 onClick={() => setSelectedSize(size)}
+                                 onClick={() => {
+                                    setSelectedSize(size);
+                                    setQuantity(1);
+                                 }}
                                  className={cn(
                                     "px-6 py-3 text-[10px] font-black uppercase tracking-[0.15em] border transition-all duration-300 relative overflow-hidden",
                                     selectedSize === size
@@ -252,28 +256,33 @@ export function ProductDetail() {
                         )}
                      </div>
 
-                     {/* Stock Level Display */}
+                     {/* QUANTITY SELECTION */}
                      {selectedSize && (
-                        <div className="pt-2">
-                           {(() => {
-                              const variant = product.variants?.find(v => v.size === selectedSize);
-                              const stock = variant ? variant.stock : 0;
-
-                              if (stock > 0 && stock <= 5) {
-                                 return (
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-red-500 animate-pulse">
-                                       Limited Reserve: Only {stock} items remaining
-                                    </p>
-                                 );
-                              } else if (stock > 0) {
-                                 return (
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600/60">
-                                       Archive Available ({stock} units in stock)
-                                    </p>
-                                 );
-                              }
-                              return null;
-                           })()}
+                        <div className="pt-6 border-t border-black space-y-4">
+                           <div className="flex justify-between items-center">
+                              <span className="text-[10px] uppercase font-black tracking-[0.15em] text-black">Quantity</span>
+                              <div className="flex items-center border border-black h-12">
+                                 <button
+                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                    className="w-12 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors"
+                                 >
+                                    <Minus size={12} />
+                                 </button>
+                                 <div className="w-12 h-full flex items-center justify-center text-[10px] font-black border-x border-black">
+                                    {quantity}
+                                 </div>
+                                 <button
+                                    onClick={() => {
+                                       const variant = product.variants?.find(v => v.size === selectedSize);
+                                       const maxStock = variant ? variant.stock : 1;
+                                       setQuantity(Math.min(maxStock, quantity + 1));
+                                    }}
+                                    className="w-12 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors"
+                                 >
+                                    <Plus size={12} />
+                                 </button>
+                              </div>
+                           </div>
                         </div>
                      )}
                   </div>
@@ -361,7 +370,7 @@ export function ProductDetail() {
          </div>
 
          {/* REVIEWS SECTION */}
-         <div className="px-6 md:px-12 lg:px-20 py-20 border-t border-black">
+         <div className="px-6 md:px-12 lg:px-20 py-20 border-t border-black" >
             <Reviews
                productId={product._id}
                reviews={product.reviews || []}
@@ -374,7 +383,7 @@ export function ProductDetail() {
                   }));
                }}
             />
-         </div>
+         </div >
 
          {/* SIZE GUIDE MODAL */}
          {
@@ -397,47 +406,49 @@ export function ProductDetail() {
             )
          }
          {/* RECOMMENDED PRODUCTS SLIDER */}
-         {recommendedProducts.length > 0 && (
-            <section className="bg-brand-grey border-t border-black">
-               <div className="flex flex-col items-center py-16 border-b border-black">
-                  <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Recommended for You</h2>
-                  <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-4 italic">You Might Also Archive</p>
-               </div>
-
-               <div
-                  ref={recommendedRef}
-                  onScroll={handleRecommendedScroll}
-                  className="overflow-x-auto ios-slider-scrollbar bg-white"
-               >
-                  <div className="flex">
-                     {recommendedProducts.map((p) => (
-                        <div key={p._id} className="min-w-[50%] md:min-w-[25%] border-r border-b border-black md:last:border-r-0">
-                           <ProductCard product={p} />
-                        </div>
-                     ))}
+         {
+            recommendedProducts.length > 0 && (
+               <section className="bg-brand-grey border-t border-black">
+                  <div className="flex flex-col items-center py-16 border-b border-black">
+                     <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Recommended for You</h2>
+                     <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-4 italic">You Might Also Archive</p>
                   </div>
-               </div>
 
-               <div className="slider-progress-container border-b border-black">
                   <div
-                     className="slider-progress-bar"
-                     style={{
-                        width: `25%`,
-                        transform: `translateX(${recommendedProgress * 3}%)`
-                     }}
-                  />
-               </div>
-
-               <div className="py-12 flex justify-center bg-brand-grey">
-                  <Link
-                     to="/products"
-                     className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black"
+                     ref={recommendedRef}
+                     onScroll={handleRecommendedScroll}
+                     className="overflow-x-auto ios-slider-scrollbar bg-white"
                   >
-                     Explore Collection
-                  </Link>
-               </div>
-            </section>
-         )}
+                     <div className="flex">
+                        {recommendedProducts.map((p) => (
+                           <div key={p._id} className="min-w-[50%] md:min-w-[25%] border-r border-b border-black md:last:border-r-0">
+                              <ProductCard product={p} />
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+
+                  <div className="slider-progress-container border-b border-black">
+                     <div
+                        className="slider-progress-bar"
+                        style={{
+                           width: `25%`,
+                           transform: `translateX(${recommendedProgress * 3}%)`
+                        }}
+                     />
+                  </div>
+
+                  <div className="py-12 flex justify-center bg-brand-grey">
+                     <Link
+                        to="/products"
+                        className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black"
+                     >
+                        Explore Collection
+                     </Link>
+                  </div>
+               </section>
+            )
+         }
       </div >
    );
 }
