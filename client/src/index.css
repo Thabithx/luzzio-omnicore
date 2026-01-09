@@ -105,7 +105,12 @@
   }
 
   .slider-progress-bar {
-    @apply h-full bg-black transition-all duration-300 ease-out;
+    @apply h-full bg-black transition-all duration-500 ease-in-out;
+  }
+
+  /* Kill native highlights for a cleaner feel */
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Suppress native Safari/iOS video play overlays */
