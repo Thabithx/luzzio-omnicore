@@ -105,7 +105,7 @@
   }
 
   .slider-progress-bar {
-    @apply h-full bg-black transition-all duration-500 ease-in-out;
+    @apply h-full bg-black transition-all duration-300 ease-out;
   }
 
   /* Kill native highlights for a cleaner feel */
