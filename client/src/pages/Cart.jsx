@@ -133,10 +133,6 @@ export function Cart() {
                               </p>
                            )}
                         </div>
-                        <div className="flex justify-between">
-                           <span className="text-gray-400">Estimated Tax</span>
-                           <span>LKR 0.00</span>
-                        </div>
                         <div className="border-t border-black pt-6 flex justify-between text-lg font-black tracking-tighter">
                            <span>Total</span>
                            <span>LKR {totalPrice.toLocaleString()}.00</span>
