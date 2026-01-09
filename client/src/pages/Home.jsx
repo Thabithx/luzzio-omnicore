@@ -80,6 +80,18 @@ export function Home() {
       fetchProducts();
    }, []);
 
+   const bestSellersRef = React.useRef(null);
+   const saleRef = React.useRef(null);
+   const [bestSellersProgress, setBestSellersProgress] = useState(0);
+   const [saleProgress, setSaleProgress] = useState(0);
+
+   const handleScroll = (ref, setProgress) => {
+      if (!ref.current) return;
+      const { scrollLeft, scrollWidth, clientWidth } = ref.current;
+      const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
+      setProgress(progress);
+   };
+
    return (
       <div className="min-h-screen bg-white">
          <Meta title="Luxury Redefined" description="Explore the Luzzio collection. High-fashion minimalist luxury." />
@@ -188,6 +200,17 @@ export function Home() {
                      </div>
                   )}
                </div>
+            </div>
+
+            {/* Premium Custom Scroll Progress Bar */}
+            <div className="slider-progress-container">
+               <div
+                  className="slider-progress-bar"
+                  style={{
+                     width: `${Math.max(10, 25)}%`,
+                     transform: `translateX(${bestSellersProgress * (100 / (100 / 75))}%)`
+                  }}
+               />
             </div>
 
             <div className="py-10 flex justify-center bg-brand-grey">

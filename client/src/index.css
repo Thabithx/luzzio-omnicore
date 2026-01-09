@@ -87,27 +87,25 @@
     background: black;
   }
 
-  /* Aggressive black scrollbars for sliders on iOS/Safari */
+  /* Hide native scrollbars for custom progress implementation */
   .ios-slider-scrollbar::-webkit-scrollbar {
-    -webkit-appearance: none;
-    height: 4px !important;
-    display: block !important;
-  }
-
-  .ios-slider-scrollbar::-webkit-scrollbar-track {
-    background: transparent !important;
-  }
-
-  .ios-slider-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #000000 !important;
-    border-radius: 0 !important;
-    -webkit-box-shadow: none !important;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   .ios-slider-scrollbar {
-    scrollbar-color: black transparent !important;
-    scrollbar-width: thin !important;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .slider-progress-container {
+    @apply h-[2px] bg-black/5 relative overflow-hidden;
+  }
+
+  .slider-progress-bar {
+    @apply h-full bg-black transition-all duration-300 ease-out;
   }
 }
 

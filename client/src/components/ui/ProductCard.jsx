@@ -38,19 +38,19 @@ export function ProductCard({ product }) {
                />
             </div>
 
-            <div className="p-4 pt-1 flex flex-col flex-1 justify-between items-center text-center space-y-3">
-               <div className="space-y-1 w-full">
-                  <h3 className="text-small-brand group-hover:opacity-50 transition-opacity line-clamp-2 min-h-[2.5em]">
+            <div className="p-3 pt-1 flex flex-col flex-1 justify-between items-center text-center space-y-2">
+               <div className="space-y-0.5 w-full">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest group-hover:opacity-50 transition-opacity line-clamp-2 min-h-[2.5em]">
                      {product.name}
                   </h3>
                   <div className="flex flex-row items-baseline gap-2 justify-center">
                      {product.salePrice > 0 ? (
                         <>
-                           <p className="text-sm font-black tracking-tight text-black">LKR {product.salePrice.toLocaleString()}</p>
-                           <p className="text-[10px] font-black text-gray-400 line-through opacity-50">LKR {product.price.toLocaleString()}</p>
+                           <p className="text-[11px] font-black tracking-tight text-black">LKR {product.salePrice.toLocaleString()}</p>
+                           <p className="text-[9px] font-black text-gray-400 line-through opacity-50">LKR {product.price.toLocaleString()}</p>
                         </>
                      ) : (
-                        <p className="text-sm font-black tracking-tight">LKR {product.price.toLocaleString()}</p>
+                        <p className="text-[11px] font-black tracking-tight">LKR {product.price.toLocaleString()}</p>
                      )}
                   </div>
                </div>
