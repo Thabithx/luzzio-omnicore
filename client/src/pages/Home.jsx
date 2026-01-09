@@ -163,20 +163,6 @@ export function Home() {
             </div>
          </section>
 
-         {/* SECTION 2: BRAND INTERSTITIAL */}
-         <section className="h-[60vh] md:h-[70vh] flex items-center justify-center bg-brand-grey relative overflow-hidden border-b border-black">
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-               <h2 className="text-[25vw] md:text-[20vw] font-black uppercase tracking-[-0.05em] text-black/[0.03] leading-none px-10">LUZZIO</h2>
-            </div>
-            <div className="relative text-center space-y-8 md:space-y-12 max-w-2xl px-6 md:px-10">
-               <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-[0.9] md:leading-tight">
-                  Uncompromising <br className="md:hidden" /> Modernity.
-               </h3>
-               <Link to="/products" className="inline-block text-[10px] font-black uppercase tracking-[0.3em] border-b border-black pb-2 hover:opacity-50">
-                  Discover Now
-               </Link>
-            </div>
-         </section>
 
          {/* SELECTED ARCHIVE GRID - MOVED TO TOP */}
          <section className="bg-brand-grey border-b border-black">
@@ -260,8 +246,20 @@ export function Home() {
                </Link>
             </div>
          </section>
-
-
+         {/* BRAND INTERSTITIAL - MOVED AFTER BEST SELLERS */}
+         <section className="h-[60vh] md:h-[70vh] flex items-center justify-center bg-brand-grey relative overflow-hidden border-b border-black">
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+               <h2 className="text-[25vw] md:text-[20vw] font-black uppercase tracking-[-0.05em] text-black/[0.03] leading-none px-10">LUZZIO</h2>
+            </div>
+            <div className="relative text-center space-y-8 md:space-y-12 max-w-2xl px-6 md:px-10">
+               <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-[0.9] md:leading-tight">
+                  Uncompromising <br className="md:hidden" /> Modernity.
+               </h3>
+               <Link to="/products" className="inline-block text-[10px] font-black uppercase tracking-[0.3em] border-b border-black pb-2 hover:opacity-50">
+                  Discover Now
+               </Link>
+            </div>
+         </section>
 
          {/* CATEGORY DROPDOWNS - ACCORDION STYLE */}
          <section className="bg-brand-grey-dark border-t border-black">
