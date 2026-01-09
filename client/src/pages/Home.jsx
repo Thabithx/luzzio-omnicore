@@ -213,13 +213,12 @@ export function Home() {
                </div>
             </div>
 
-            {/* Premium Custom Scroll Progress Bar */}
-            <div className="slider-progress-container">
+            <div className="slider-progress-container border-b border-black">
                <div
                   className="slider-progress-bar"
                   style={{
-                     width: `${Math.max(10, 25)}%`,
-                     transform: `translateX(${bestSellersProgress * (100 / (100 / 75))}%)`
+                     width: `25%`,
+                     transform: `translateX(${bestSellersProgress * 3}%)`
                   }}
                />
             </div>
@@ -325,14 +324,14 @@ export function Home() {
                onScroll={() => handleScroll(saleRef, setSaleProgress)}
                className="overflow-x-auto ios-slider-scrollbar"
             >
-               <div className="flex border-b border-black">
+               <div className="flex">
                   {loading ? (
                      Array(4).fill(0).map((_, i) => (
-                        <div key={i} className="min-w-[50%] md:min-w-[25%] aspect-[3/4] bg-brand-grey animate-pulse border-r border-black" />
+                        <div key={i} className="min-w-[50%] md:min-w-[25%] aspect-[3/4] bg-brand-grey animate-pulse border-r border-b border-black" />
                      ))
                   ) : saleProducts.length > 0 ? (
                      saleProducts.map((product) => (
-                        <div key={product._id} className="min-w-[50%] md:min-w-[25%] border-r border-black last:border-r-0">
+                        <div key={product._id} className="min-w-[50%] md:min-w-[25%] border-r border-b border-black md:last:border-r-0">
                            <ProductCard product={product} />
                         </div>
                      ))
@@ -346,13 +345,12 @@ export function Home() {
                </div>
             </div>
 
-            {/* Premium Custom Scroll Progress Bar */}
-            <div className="slider-progress-container">
+            <div className="slider-progress-container border-b border-black">
                <div
                   className="slider-progress-bar"
                   style={{
-                     width: `${Math.max(10, 25)}%`,
-                     transform: `translateX(${saleProgress * (100 / (100 / 75))}%)`
+                     width: `25%`,
+                     transform: `translateX(${saleProgress * 3}%)`
                   }}
                />
             </div>
