@@ -117,7 +117,6 @@ export function Home() {
                loop
                muted
                playsInline
-               playsInline
                poster={heroImg}
                className="absolute inset-0 w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000"
                key="hero-video"
@@ -171,7 +170,7 @@ export function Home() {
             </div>
             <div className="py-10 flex justify-center bg-brand-grey">
                <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
-                  View Full Archive
+                  View All Products
                </Link>
             </div>
          </section>
@@ -233,7 +232,7 @@ export function Home() {
             </div>
             <div className="relative text-center space-y-8 md:space-y-12 max-w-2xl px-6 md:px-10">
                <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-[0.9] md:leading-tight">
-                  Uncompromising <br className="md:hidden" /> Modernity.
+                  Uncompromising <br className="md:hidden" /> Designs.
                </h3>
                <Link to="/products" className="inline-block text-[10px] font-black uppercase tracking-[0.3em] border-b border-black pb-2 hover:opacity-50">
                   Discover Now
