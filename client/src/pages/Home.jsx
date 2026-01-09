@@ -309,7 +309,11 @@ export function Home() {
             </div>
 
             {/* Horizontal Scrolling Product Slider */}
-            <div className="overflow-x-auto ios-slider-scrollbar">
+            <div
+               ref={saleRef}
+               onScroll={() => handleScroll(saleRef, setSaleProgress)}
+               className="overflow-x-auto ios-slider-scrollbar"
+            >
                <div className="flex border-b border-black">
                   {loading ? (
                      Array(4).fill(0).map((_, i) => (
@@ -329,6 +333,17 @@ export function Home() {
                      </div>
                   )}
                </div>
+            </div>
+
+            {/* Premium Custom Scroll Progress Bar */}
+            <div className="slider-progress-container">
+               <div
+                  className="slider-progress-bar"
+                  style={{
+                     width: `${Math.max(10, 25)}%`,
+                     transform: `translateX(${saleProgress * (100 / (100 / 75))}%)`
+                  }}
+               />
             </div>
 
             <div className="py-10 flex justify-center bg-brand-grey">
