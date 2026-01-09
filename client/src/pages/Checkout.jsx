@@ -421,11 +421,18 @@ export function Checkout() {
                            <span className="text-gray-400">Subtotal</span>
                            <span>LKR {subtotal.toLocaleString()}.00</span>
                         </div>
-                        <div className="flex justify-between">
-                           <span className="text-gray-400">Shipping</span>
-                           <span className={cn("text-black", shippingPrice === 0 && "text-green-600 font-black")}>
-                              {shippingPrice === 0 ? "FREE" : `LKR ${shippingPrice.toLocaleString()}.00`}
-                           </span>
+                        <div className="flex flex-col">
+                           <div className="flex justify-between">
+                              <span className="text-gray-400">Shipping</span>
+                              <span className={cn("text-black", shippingPrice === 0 && "text-green-600 font-black")}>
+                                 {shippingPrice === 0 ? "FREE" : `LKR ${shippingPrice.toLocaleString()}.00`}
+                              </span>
+                           </div>
+                           {shippingPrice > 0 && (
+                              <p className="text-[9px] text-black/40 font-bold lowercase tracking-widest mt-1 text-right">
+                                 Spend LKR {(10000 - subtotal).toLocaleString()}.00 more for FREE delivery
+                              </p>
+                           )}
                         </div>
                         <div className="border-t border-black pt-6 flex justify-between items-end">
                            <span className="text-small-brand font-black">Total Due</span>
