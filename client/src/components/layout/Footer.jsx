@@ -9,14 +9,14 @@ const FooterSection = ({ title, children, id, activeSection, toggleSection }) =>
       <div className="border-b border-black lg:border-b-0 lg:border-r last:border-r-0 border-black transition-all duration-500">
          <button
             onClick={() => toggleSection(id)}
-            className="w-full flex justify-between items-center p-8 lg:hidden text-[10px] font-black uppercase tracking-[0.3em]"
+            className="w-full flex justify-between items-center px-4 py-6 lg:hidden text-[10px] font-black uppercase tracking-[0.3em]"
          >
             {title}
             <ChevronDown size={14} className={`transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
          </button>
 
          <div className={`overflow-hidden transition-all duration-500 lg:max-h-none ${isOpen ? 'max-h-[500px]' : 'max-h-0 lg:max-h-none'}`}>
-            <div className="p-8 space-y-6 lg:pt-8 lg:pb-12">
+            <div className="px-4 pb-8 space-y-6 lg:pt-8 lg:pb-12 lg:px-8">
                <h3 className="hidden lg:block text-[10px] font-black uppercase tracking-[0.3em] mb-6">{title}</h3>
                {children}
             </div>

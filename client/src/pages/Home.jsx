@@ -130,7 +130,7 @@ export function Home() {
 
          {/* SELECTED ARCHIVE GRID - MOVED TO TOP */}
          <section className="bg-brand-grey border-b border-black">
-            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
+            <div className="flex flex-col items-start text-left px-4 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
                <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">New Arrivals</h2>
                <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Explore Latest Release</p>
             </div>
@@ -162,7 +162,7 @@ export function Home() {
 
          {/* BEST SELLERS SLIDER */}
          <section className="bg-brand-grey border-b border-black">
-            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
+            <div className="flex flex-col items-start text-left px-4 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
                <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Best Sellers</h2>
                <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Most Coveted Pieces</p>
             </div>
@@ -222,7 +222,7 @@ export function Home() {
                      {/* Category Header - Clickable */}
                      <button
                         onClick={() => setActiveCategory(isOpen ? null : category._id)}
-                        className="w-full flex justify-between items-center px-5 md:px-10 py-6 md:py-8 bg-brand-grey hover:bg-black hover:text-white transition-colors group"
+                        className="w-full flex justify-between items-center px-4 md:px-10 py-6 md:py-8 bg-brand-grey hover:bg-black hover:text-white transition-colors group"
                      >
                         <h3 className="text-[10px] md:text-base font-black uppercase tracking-[0.3em] text-left">
                            {category.name}
@@ -280,7 +280,7 @@ export function Home() {
 
          {/* SALE SLIDER */}
          <section className="bg-brand-grey border-t border-b border-black">
-            <div className="flex flex-col items-start text-left px-5 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
+            <div className="flex flex-col items-start text-left px-4 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
                <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Sale</h2>
                <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Limited Time Offers</p>
             </div>
@@ -316,7 +316,7 @@ export function Home() {
          </section>
 
          {/* INTERSTITIAL SECTION */}
-         <section className="py-20 md:py-24 bg-brand-grey flex flex-col items-center justify-center space-y-8 text-center px-6 md:px-10 border-t border-black">
+         <section className="py-20 md:py-24 bg-brand-grey flex flex-col items-center justify-center space-y-8 text-center px-4 md:px-10 border-t border-black">
             <div className="space-y-3">
                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">Corporate Excellence</p>
                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter">Sustainability & Ethics</h2>

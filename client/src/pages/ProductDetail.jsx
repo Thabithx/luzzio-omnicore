@@ -121,7 +121,7 @@ export function ProductDetail() {
             </div>
 
             {/* RIGHT: STICKY PRODUCT INFO */}
-            <div className="w-full lg:w-[40%] px-6 md:px-10 lg:px-14 pt-10 md:pt-16 lg:pt-20 pb-20 lg:sticky lg:top-12 lg:h-[calc(100vh-48px)] overflow-y-auto no-scrollbar bg-white lg:border-l border-black">
+            <div className="w-full lg:w-[40%] px-4 md:px-10 lg:px-14 pt-10 md:pt-16 lg:pt-20 pb-20 lg:sticky lg:top-12 lg:h-[calc(100vh-48px)] overflow-y-auto no-scrollbar bg-white lg:border-l border-black">
                <div className="max-w-md mx-auto space-y-10">
 
                   {/* BRANDING & PRICE */}
@@ -238,8 +238,8 @@ export function ProductDetail() {
                   </div>
 
                   {/* PRODUCT DETAILS ACCORDION */}
-                  <div className="pt-16 space-y-0">
-                     <details className="group border-t border-black py-8" open>
+                  <div className="pt-16 space-y-0 text-left">
+                     <details className="group border-t border-black py-6 text-left" open>
                         <summary className="flex justify-between items-center list-none cursor-pointer">
                            <span className="text-[10px] uppercase font-black tracking-[0.2em] text-black">Product Details</span>
                            <Plus size={12} className="group-open:hidden text-black/40" />
@@ -263,7 +263,7 @@ export function ProductDetail() {
                         </div>
                      </details>
 
-                     <details className="group border-t border-black py-8">
+                     <details className="group border-t border-black py-6">
                         <summary className="flex justify-between items-center list-none cursor-pointer">
                            <span className="text-[10px] uppercase font-black tracking-[0.2em] text-black">Size & Fit</span>
                            <Plus size={12} className="group-open:hidden text-black/40" />
@@ -274,7 +274,7 @@ export function ProductDetail() {
                         </div>
                      </details>
 
-                     <details className="group border-t border-b border-black py-8">
+                     <details className="group border-t border-b border-black py-6">
                         <summary className="flex justify-between items-center list-none cursor-pointer">
                            <span className="text-[10px] uppercase font-black tracking-[0.2em] text-black">Sustainability</span>
                            <Plus size={12} className="group-open:hidden text-black/40" />

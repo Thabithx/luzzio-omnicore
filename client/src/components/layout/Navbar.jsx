@@ -61,7 +61,7 @@ export function Navbar() {
          "fixed left-0 right-0 border-b border-black bg-white transition-all duration-300",
          isMenuOpen ? "z-[400] top-0" : "z-[100] top-[28px] md:top-8"
       )}>
-         <div className="max-w-[1920px] mx-auto px-6 md:px-10 h-14 md:h-12 flex items-center justify-between relative">
+         <div className="max-w-[1920px] mx-auto px-4 md:px-10 h-14 md:h-12 flex items-center justify-between relative">
 
             {/* Left: Navigation Pages */}
             <div className="hidden lg:flex items-center space-x-12">
@@ -114,7 +114,7 @@ export function Navbar() {
 
          {/* SEARCH OVERLAY */}
          {isSearchOpen && (
-            <div className="absolute inset-x-0 top-0 h-14 md:h-12 bg-white flex items-center px-6 md:px-10 z-[120] border-b border-black animate-in fade-in slide-in-from-top duration-300">
+            <div className="absolute inset-x-0 top-0 h-14 md:h-12 bg-white flex items-center px-4 md:px-10 z-[120] border-b border-black animate-in fade-in slide-in-from-top duration-300">
                <form onSubmit={handleSearch} className="flex-1 flex items-center gap-4">
                   <Search size={18} className="text-black/30" />
                   <input
