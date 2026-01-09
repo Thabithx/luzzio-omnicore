@@ -50,6 +50,9 @@ export function Checkout() {
       return acc + (price * item.quantity);
    }, 0);
 
+   const shippingPrice = subtotal >= 10000 ? 0 : 390;
+   const totalPrice = subtotal + shippingPrice;
+
    const handleInputChange = (e) => {
       setFormData({ ...formData, [e.target.name]: e.target.value });
    };
@@ -101,8 +104,8 @@ export function Checkout() {
             },
             paymentMethod: paymentMethod,
             itemsPrice: subtotal,
-            shippingPrice: 390,
-            totalPrice: subtotal + 390
+            shippingPrice: shippingPrice,
+            totalPrice: totalPrice
          });
 
          if (res.data.success) {
@@ -212,7 +215,7 @@ export function Checkout() {
                   className="w-full p-6 bg-brand-grey border border-black flex justify-between items-center"
                >
                   <span className="text-[10px] font-black uppercase tracking-widest">
-                     {showMobileSummary ? "Hide Review" : "Show Review"} (LKR {(subtotal + 390).toLocaleString()}.00)
+                     {showMobileSummary ? "Hide Review" : "Show Review"} (LKR {totalPrice.toLocaleString()}.00)
                   </span>
                   <ChevronLeft size={16} className={cn("transition-transform", showMobileSummary ? "rotate-90" : "-rotate-90")} />
                </button>
@@ -383,7 +386,7 @@ export function Checkout() {
                      className="w-full py-6 md:py-8 bg-black text-white text-[11px] font-black uppercase tracking-[0.2em] hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                      disabled={loading}
                   >
-                     {loading ? "Authenticating Transaction..." : `Confirm & Pay LKR ${(subtotal + 390).toLocaleString()} .00`}
+                     {loading ? "Authenticating Transaction..." : `Confirm & Pay LKR ${totalPrice.toLocaleString()} .00`}
                   </button>
                </div>
 
@@ -420,11 +423,13 @@ export function Checkout() {
                         </div>
                         <div className="flex justify-between">
                            <span className="text-gray-400">Shipping</span>
-                           <span className="text-black">LKR 390.00</span>
+                           <span className={cn("text-black", shippingPrice === 0 && "text-green-600 font-black")}>
+                              {shippingPrice === 0 ? "FREE" : `LKR ${shippingPrice.toLocaleString()}.00`}
+                           </span>
                         </div>
                         <div className="border-t border-black pt-6 flex justify-between items-end">
                            <span className="text-small-brand font-black">Total Due</span>
-                           <span className="text-2xl font-black tracking-tighter">LKR {(subtotal + 390).toLocaleString()}.00</span>
+                           <span className="text-2xl font-black tracking-tighter">LKR {totalPrice.toLocaleString()}.00</span>
                         </div>
                      </div>
                   </div>
