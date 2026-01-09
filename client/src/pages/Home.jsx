@@ -191,15 +191,19 @@ export function Home() {
             </div>
 
             {/* Horizontal Scrolling Product Slider */}
-            <div className="overflow-x-auto ios-slider-scrollbar">
-               <div className="flex border-b border-black">
+            <div
+               ref={bestSellersRef}
+               onScroll={() => handleScroll(bestSellersRef, setBestSellersProgress)}
+               className="overflow-x-auto ios-slider-scrollbar"
+            >
+               <div className="flex">
                   {loading ? (
                      Array(4).fill(0).map((_, i) => (
-                        <div key={i} className="min-w-[50%] md:min-w-[25%] aspect-[3/4] bg-brand-grey animate-pulse border-r border-black" />
+                        <div key={i} className="min-w-[50%] md:min-w-[25%] aspect-[3/4] bg-brand-grey animate-pulse border-r border-b border-black" />
                      ))
                   ) : bestSellers.length > 0 ? (
                      bestSellers.map((product) => (
-                        <div key={product._id} className="min-w-[50%] md:min-w-[25%] border-r border-black last:border-r-0">
+                        <div key={product._id} className="min-w-[50%] md:min-w-[25%] border-r border-b border-black md:last:border-r-0">
                            <ProductCard product={product} />
                         </div>
                      ))
