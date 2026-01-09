@@ -168,7 +168,7 @@ export function Home() {
             </div>
 
             {/* Horizontal Scrolling Product Slider */}
-            <div className="overflow-x-auto no-scrollbar">
+            <div className="overflow-x-auto no-scrollbar ios-slider-scrollbar">
                <div className="flex border-b border-black">
                   {loading ? (
                      Array(4).fill(0).map((_, i) => (
@@ -286,7 +286,7 @@ export function Home() {
             </div>
 
             {/* Horizontal Scrolling Product Slider */}
-            <div className="overflow-x-auto no-scrollbar">
+            <div className="overflow-x-auto no-scrollbar ios-slider-scrollbar">
                <div className="flex border-b border-black">
                   {loading ? (
                      Array(4).fill(0).map((_, i) => (
