@@ -87,21 +87,27 @@
     background: black;
   }
 
-  /* Force black scrollbars for sliders on iOS/Safari */
+  /* Aggressive black scrollbars for sliders on iOS/Safari */
   .ios-slider-scrollbar::-webkit-scrollbar {
     -webkit-appearance: none;
-    height: 3px;
-    background-color: transparent;
+    height: 4px !important;
+    display: block !important;
+  }
+
+  .ios-slider-scrollbar::-webkit-scrollbar-track {
+    background: transparent !important;
   }
 
   .ios-slider-scrollbar::-webkit-scrollbar-thumb {
     background-color: #000000 !important;
-    border-radius: 0;
+    border-radius: 0 !important;
+    -webkit-box-shadow: none !important;
   }
 
   .ios-slider-scrollbar {
-    scrollbar-color: black transparent;
-    scrollbar-width: thin;
+    scrollbar-color: black transparent !important;
+    scrollbar-width: thin !important;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

@@ -216,7 +216,7 @@ export function Checkout() {
                </button>
                {showMobileSummary && (
                   <div className="mt-4 p-6 bg-white border border-black animate-in fade-in slide-in-from-top-2">
-                     <div className="space-y-6 max-h-60 overflow-y-auto pr-2 no-scrollbar">
+                     <div className="space-y-6 max-h-60 overflow-y-auto pr-2">
                         {cart.map((item, index) => (
                            <div key={index} className="flex gap-4 items-center">
                               <img src={item.product.images[0]} alt="" className="w-12 h-16 object-cover border border-black" />
@@ -382,7 +382,7 @@ export function Checkout() {
                   <div className="bg-brand-grey p-10 space-y-10 lg:sticky lg:top-24">
                      <p className="text-small-brand font-black">Archive Review</p>
 
-                     <div className="space-y-8 max-h-[50vh] overflow-y-auto pr-4 no-scrollbar">
+                     <div className="space-y-8 max-h-[50vh] overflow-y-auto pr-4">
                         {cart.map((item, index) => (
                            <div key={index} className="flex gap-6 pb-6 border-b border-black last:border-0 last:pb-0">
                               <div className="w-16 h-20 bg-white shrink-0 overflow-hidden border border-black">

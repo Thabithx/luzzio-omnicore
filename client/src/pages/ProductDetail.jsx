@@ -121,7 +121,7 @@ export function ProductDetail() {
             </div>
 
             {/* RIGHT: STICKY PRODUCT INFO */}
-            <div className="w-full lg:w-[40%] px-4 md:px-10 lg:px-14 pt-10 md:pt-16 lg:pt-20 pb-20 lg:sticky lg:top-12 lg:h-[calc(100vh-48px)] overflow-y-auto no-scrollbar bg-white lg:border-l border-black">
+            <div className="w-full lg:w-[40%] px-4 md:px-10 lg:px-14 pt-10 md:pt-16 lg:pt-20 pb-20 lg:sticky lg:top-12 lg:h-[calc(100vh-48px)] overflow-y-auto bg-white lg:border-l border-black">
                <div className="max-w-md mx-auto space-y-10">
 
                   {/* BRANDING & PRICE */}
