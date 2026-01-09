@@ -21,13 +21,17 @@ export function ProductDetail() {
    const [showSizeGuide, setShowSizeGuide] = useState(false);
 
    const [activeImageIndex, setActiveImageIndex] = useState(0);
+   const [scrollProgress, setScrollProgress] = useState(0);
    const scrollContainerRef = useRef(null);
 
    const handleScroll = () => {
       if (scrollContainerRef.current) {
-         const { scrollLeft, offsetWidth } = scrollContainerRef.current;
+         const { scrollLeft, scrollWidth, offsetWidth } = scrollContainerRef.current;
          const index = Math.round(scrollLeft / offsetWidth);
          setActiveImageIndex(index);
+
+         const progress = (scrollLeft / (scrollWidth - offsetWidth)) * 100;
+         setScrollProgress(progress);
       }
    };
 
