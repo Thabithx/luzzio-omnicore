@@ -109,18 +109,17 @@ export function ProductDetail() {
                      </div>
                   ))}
 
-                  {/* Mobile Slider Indicators (Dots) */}
-                  <div className="lg:hidden absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 z-10">
-                     {productImages.map((_, index) => (
-                        <div
-                           key={index}
-                           className={cn(
-                              "w-2 h-2 rounded-full transition-all duration-300 drop-shadow-md",
-                              activeImageIndex === index ? "bg-black scale-110" : "bg-black/20"
-                           )}
-                        />
-                     ))}
-                  </div>
+               </div>
+
+               {/* Premium Custom Scroll Progress Bar */}
+               <div className="lg:hidden slider-progress-container border-b border-black">
+                  <div
+                     className="slider-progress-bar"
+                     style={{
+                        width: `${100 / (productImages.length || 1)}%`,
+                        transform: `translateX(${scrollProgress * (productImages.length - 1)}%)`
+                     }}
+                  />
                </div>
             </div>
 
