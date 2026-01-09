@@ -126,6 +126,8 @@ export function Home() {
                loop
                muted
                playsInline
+               onPlay={() => setIsPlaying(true)}
+               onPause={() => setIsPlaying(false)}
                poster={heroImg}
                className="absolute inset-0 w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000"
                key="hero-video"
@@ -134,8 +136,8 @@ export function Home() {
                Your browser does not support the video tag.
             </video>
 
-            {/* Video Control - Top Right */}
-            <div className="absolute top-24 right-4 md:right-10 z-[110]">
+            {/* Video Control - Top Corner */}
+            <div className="absolute top-6 right-4 md:right-10 z-[110]">
                <button
                   onClick={togglePlay}
                   className="p-3 bg-black/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-all duration-500 group/btn"
@@ -155,7 +157,7 @@ export function Home() {
                </div>
                <div className="flex gap-4">
                   <Link to="/products">
-                     <button className="px-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white border border-black transition-all duration-500 rounded-md">
+                     <button className="px-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white border border-black transition-all duration-500 rounded-sm">
                         Shop
                      </button>
                   </Link>
