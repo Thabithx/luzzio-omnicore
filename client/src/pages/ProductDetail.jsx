@@ -9,6 +9,7 @@ import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { cn } from '../utils/cn';
 import { Reviews } from '../components/Reviews';
+import * as metaPixel from '../utils/metaPixel';
 
 export function ProductDetail() {
    const { id } = useParams();
@@ -78,6 +79,9 @@ export function ProductDetail() {
             if (prodData.colors?.length > 0) {
                setSelectedColor(prodData.colors[0]);
             }
+
+            // Meta Pixel Tracking
+            metaPixel.viewContent(prodData);
 
             // Fetch recommendations
             setLoadingRecommended(true);

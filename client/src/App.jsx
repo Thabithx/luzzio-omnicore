@@ -2,6 +2,8 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import ScrollToTop from './components/ScrollToTop';
+import * as metaPixel from './utils/metaPixel';
+import { useLocation } from 'react-router-dom';
 
 // Lazy load pages
 const Home = lazy(() => import('./pages/Home').then(module => ({ default: module.Home })));
@@ -44,9 +46,24 @@ const Loading = () => (
   </div>
 );
 
+function PixelTracker() {
+  const location = useLocation();
+
+  React.useEffect(() => {
+    metaPixel.init();
+  }, []);
+
+  React.useEffect(() => {
+    metaPixel.pageview();
+  }, [location]);
+
+  return null;
+}
+
 function App() {
   return (
     <Router>
+      <PixelTracker />
       <ScrollToTop />
       <Suspense fallback={<Loading />}>
         <Routes>

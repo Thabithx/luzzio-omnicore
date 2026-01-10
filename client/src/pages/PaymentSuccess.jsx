@@ -3,6 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import Meta from '../components/ui/Meta';
+import * as metaPixel from '../utils/metaPixel';
+import api from '../services/api';
 
 export function PaymentSuccess() {
    const { clearCart } = useCart();
@@ -14,7 +16,24 @@ export function PaymentSuccess() {
       clearCart();
       // Ensure we start at the top of the completion screen
       window.scrollTo(0, 0);
-   }, [clearCart]);
+
+      // Meta Pixel Purchase Tracking
+      const orderId = searchParams.get('orderId');
+      if (orderId) {
+         api.get(`/orders/myorders`).then(res => {
+            if (res.data.success) {
+               const order = res.data.data.find(o => o._id === orderId);
+               if (order) {
+                  metaPixel.purchase(order);
+               }
+            }
+         }).catch(err => {
+            // Fallback for guests: orders might not be in "myorders"
+            // We could try a specific guest endpoint if available
+            console.warn('Could not fetch order details for tracking:', err);
+         });
+      }
+   }, [clearCart, searchParams]);
 
    return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center p-10 text-center">

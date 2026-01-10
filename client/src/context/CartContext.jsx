@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
+import * as metaPixel from '../utils/metaPixel';
 
 const CartContext = createContext();
 
@@ -55,6 +56,9 @@ export const CartProvider = ({ children }) => {
    const addToCart = async (product, quantity, size, color) => {
       if (token) {
          try {
+            // Track Meta Pixel Event
+            metaPixel.addToCart(product, quantity, size, color);
+
             const res = await api.post('/cart', {
                productId: product._id,
                quantity,
@@ -66,6 +70,9 @@ export const CartProvider = ({ children }) => {
             console.error('Error adding to cart:', err);
          }
       } else {
+         // Track Meta Pixel Event
+         metaPixel.addToCart(product, quantity, size, color);
+
          const localCart = JSON.parse(localStorage.getItem('cart')) || [];
          const index = localCart.findIndex(item => item.product._id === product._id && item.size === size && item.color === color);
          if (index > -1) {

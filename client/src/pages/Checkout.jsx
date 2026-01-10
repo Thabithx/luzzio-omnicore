@@ -119,10 +119,10 @@ export function Checkout() {
             if (paymentMethod === 'PayHere') {
                // 3. Initiate PayHere Payment (Using pre-generated params for speed)
                const startPayHere = (payment) => {
-                  window.payhere.onCompleted = function onCompleted(orderId) {
-                     console.log("Payment completed. OrderID:" + orderId);
+                  window.payhere.onCompleted = function onCompleted(completedOrderId) {
+                     console.log("Payment completed. OrderID:" + completedOrderId);
                      clearCart();
-                     navigate('/payment-success');
+                     navigate(`/payment-success?orderId=${completedOrderId || orderId}`);
                   };
 
                   window.payhere.onDismissed = function onDismissed() {
