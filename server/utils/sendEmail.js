@@ -13,6 +13,8 @@ const sendEmail = async (options) => {
          user: process.env.SMTP_USER?.trim(),
          pass: process.env.SMTP_PASS?.trim(),
       },
+      debug: true, // Protocol: Detailed debug output
+      logger: true // Protocol: Log information in console
    });
 
    // Protocol Verification Handshake
@@ -26,11 +28,14 @@ const sendEmail = async (options) => {
    }
 
    const message = {
-      from: `${process.env.FROM_NAME || 'LUZZIO'} <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
+      from: `"${process.env.FROM_NAME || 'LUZZIO'}" <${process.env.SMTP_USER}>`,
       to: options.email,
       subject: options.subject,
       html: options.html,
    };
+
+   console.log(`[SMTP] Attempting dispatch to: ${options.email} | Subject: ${options.subject}`);
+   console.log(`[SMTP] Using From: ${message.from}`);
 
    try {
       const info = await transporter.sendMail(message);
