@@ -157,12 +157,17 @@ export function Checkout() {
                      setLoading(false);
                   }
                }
-            } else {
-               // Other methods (e.g. Stripe or Cocopay if impl)
-               // For now, default to success for non-integrated
+            } else if (paymentMethod === 'Koko') {
+               console.log(`[CHECKOUT] Koko Pay path selected for Order ${orderId}`);
+               // Koko Pay Integration (Immediate confirmation, pending settlement)
                clearCart();
                setLoading(false);
-               navigate('/payment-success');
+               navigate(`/payment-success?orderId=${orderId}&method=koko`);
+            } else {
+               // Fallback for Stripe or other methods
+               clearCart();
+               setLoading(false);
+               navigate(`/payment-success?orderId=${orderId}`);
             }
          } else {
             alert('Order creation failed: ' + (res.data.message || 'Unknown error'));

@@ -190,7 +190,7 @@ exports.payHereNotify = async (req, res) => {
             console.log(`Order ${order_id} verified and paid via PayHere Protocol.`);
 
             // Protocol: Strategic Settlement Notification
-            const adminEmail = 'luzzioclothing.com@gmail.com';
+            const adminEmail = process.env.ADMIN_EMAIL || 'luzzioclothing.com@gmail.com';
 
             setImmediate(() => {
                console.log(`[PAYMENT PROTOCOL] Dispatching PayHere settlement notifications for Order: ${order_id}`);
