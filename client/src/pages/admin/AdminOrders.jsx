@@ -59,6 +59,21 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                   </div>
                </div>
 
+               {order.fadar_order_id && (
+                  <div className="p-6 bg-green-50 border border-green-600">
+                     <p className="text-[9px] text-green-600 font-black uppercase tracking-[0.2em] mb-2">Fadar Integration Status: ACTIVE</p>
+                     <div className="flex justify-between items-end">
+                        <div className="space-y-1">
+                           <p className="text-small-brand text-gray-500">Fadar Sequence ID</p>
+                           <p className="text-lg font-black uppercase tracking-tighter text-black">{order.fadar_order_id}</p>
+                        </div>
+                        <div className="text-right">
+                           <p className="text-[10px] text-green-700 font-bold uppercase tracking-widest">Courier Dispatch Logic Synchronized</p>
+                        </div>
+                     </div>
+                  </div>
+               )}
+
                {/* Client Registry Info */}
                <div className="p-8 bg-brand-grey border border-black">
                   <p className="text-small-brand text-gray-400 mb-4">Client Registry Reference</p>
