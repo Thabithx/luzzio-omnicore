@@ -6,27 +6,25 @@ const nodemailer = require('nodemailer');
  */
 const sendEmail = async (options) => {
    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true, // Protocol: SSL/TLS
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.SMTP_PORT) || 465,
+      secure: parseInt(process.env.SMTP_PORT) === 465, // True if 465, false for others (like 587)
       auth: {
          user: process.env.SMTP_USER?.trim(),
          pass: process.env.SMTP_PASS?.trim(),
       },
-      debug: true, // Protocol: Enable detailed logs for verification phase
+      debug: true,
       logger: true
    });
 
    // Protocol Verification Handshake
-   if (process.env.SMTP_VERIFY === 'true') {
-      try {
-         await transporter.verify();
-      } catch (verifyErr) {
-         console.error('SMTP Verification Failure:', verifyErr.message);
-         // Don't throw here, let sendMail try anyway as verify can be flaky
+   transporter.verify((error, success) => {
+      if (error) {
+         console.error('[SMTP CONNECTION ERROR] Failed to handshake:', error.message);
+      } else {
+         console.log('[SMTP CONNECTION SUCCESS] Ready to dispatch protocols.');
       }
-   }
-
+   });
    const message = {
       from: `"${process.env.FROM_NAME || 'LUZZIO'}" <${process.env.SMTP_USER?.trim()}>`,
       to: options.email,
