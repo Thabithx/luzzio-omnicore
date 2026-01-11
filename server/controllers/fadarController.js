@@ -73,7 +73,13 @@ exports.createFadarParcel = async (req, res) => {
 
          order.fadar_order_id = response.data.fadar_order_id || 'CREATED_' + Date.now();
          order.status = 'processing';
-         await order.save();
+         const updatedOrder = await order.save();
+
+         return res.status(200).json({
+            success: true,
+            data: response.data,
+            order: updatedOrder
+         });
       }
 
       res.status(200).json({

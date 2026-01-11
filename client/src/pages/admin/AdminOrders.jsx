@@ -133,6 +133,7 @@ const AdminOrders = () => {
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [selectedIds, setSelectedIds] = useState([]);
+   const [parcelWeights, setParcelWeights] = useState({});
    const { token } = useAuth();
 
    const fetchOrders = async () => {
@@ -166,12 +167,27 @@ const AdminOrders = () => {
       }
    };
 
-   const handleStatusUpdate = async (id, status) => {
+   const handleStatusUpdate = async (id, status, oldStatus) => {
       try {
-         await api.put(`/orders/${id}/status`, { status });
+         const weight = parcelWeights[id] || 1;
+
+         if (oldStatus !== 'processing' && status === 'processing') {
+            // Call Fadar API
+            const res = await api.post('/fadar/create-parcel', {
+               orderId: id,
+               parcel_weight: weight,
+               newStatus: status,
+               oldStatus: oldStatus
+            });
+            alert(`Fadar Parcel Created: ${res.data.data.fadar_order_id || 'Success'}`);
+         } else {
+            // Normal status update
+            await api.put(`/orders/${id}/status`, { status });
+         }
          fetchOrders();
       } catch (err) {
          console.error('Error updating order status:', err);
+         alert(err.response?.data?.message || 'Error updating status');
       }
    };
 
@@ -287,20 +303,44 @@ const AdminOrders = () => {
                                  <div className="text-[9px] text-gray-400 uppercase tracking-widest mt-1 font-bold">{order.email || 'N/A'}</div>
                               </td>
                               <td className="px-8 py-8">
-                                 <select
-                                    value={order.status}
-                                    onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
-                                    className="text-[9px] font-black uppercase tracking-widest bg-white border border-black px-3 py-1.5 focus:border-black focus:ring-0 appearance-none rounded-none"
-                                 >
-                                    <option value="pending">PENDING</option>
-                                    <option value="processing">PROCESSING</option>
-                                    <option value="packaged">PACKAGED</option>
-                                    <option value="out for delivery">OUT FOR DELIVERY</option>
-                                    <option value="delivered">DELIVERED</option>
-                                    <option value="completed">COMPLETED</option>
-                                    <option value="cancelled">CANCELLED</option>
-                                    <option value="returned">RETURNED</option>
-                                 </select>
+                                 <div className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-2">
+                                       <span className="text-[9px] font-black text-gray-400">STATUS:</span>
+                                       <select
+                                          value={order.status}
+                                          onChange={(e) => handleStatusUpdate(order._id, e.target.value, order.status)}
+                                          className="text-[9px] font-black uppercase tracking-widest bg-white border border-black px-3 py-1.5 focus:border-black focus:ring-0 appearance-none rounded-none w-full"
+                                       >
+                                          <option value="pending">PENDING</option>
+                                          <option value="processing">PROCESSING</option>
+                                          <option value="packaged">PACKAGED</option>
+                                          <option value="out for delivery">OUT FOR DELIVERY</option>
+                                          <option value="delivered">DELIVERED</option>
+                                          <option value="completed">COMPLETED</option>
+                                          <option value="cancelled">CANCELLED</option>
+                                          <option value="returned">RETURNED</option>
+                                       </select>
+                                    </div>
+                                    {order.status !== 'processing' && !order.fadar_order_id && (
+                                       <div className="flex items-center gap-2">
+                                          <span className="text-[9px] font-black text-gray-400">WT (KG):</span>
+                                          <input
+                                             type="number"
+                                             step="0.1"
+                                             min="0.1"
+                                             value={parcelWeights[order._id] || 1}
+                                             onChange={(e) => setParcelWeights({ ...parcelWeights, [order._id]: e.target.value })}
+                                             className="text-[9px] font-black bg-white border border-black px-3 py-1.5 focus:outline-none w-full"
+                                             placeholder="1.0"
+                                          />
+                                       </div>
+                                    )}
+                                    {order.fadar_order_id && (
+                                       <div className="text-[8px] font-black text-green-600 uppercase tracking-tighter">
+                                          Fadar ID: {order.fadar_order_id}
+                                       </div>
+                                    )}
+                                 </div>
                               </td>
                               <td className="px-8 py-8 text-[11px] font-black uppercase tracking-widest text-gray-400">
                                  {order.orderItems?.length} Products
