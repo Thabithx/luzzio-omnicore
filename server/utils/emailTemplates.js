@@ -11,7 +11,7 @@ exports.orderConfirmationTemplate = (order, user) => {
             <span style="color: #999; font-weight: 400;">SIZE: ${item.size}</span>
          </td>
          <td style="padding: 20px 0; text-align: right; font-family: 'Helvetica', sans-serif; font-size: 10px; font-weight: 900;">
-            ${item.qty} X $${item.price}.00
+            ${item.qty} X LKR ${item.price}.00
          </td>
       </tr>
    `).join('');
@@ -57,7 +57,7 @@ exports.orderConfirmationTemplate = (order, user) => {
                            <tfoot>
                               <tr>
                                  <td style="padding: 20px 0; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">Total Selection Value</td>
-                                 <td align="right" style="padding: 20px 0; font-size: 14px; font-weight: 900;">$${order.totalPrice}.00</td>
+                                 <td align="right" style="padding: 20px 0; font-size: 14px; font-weight: 900;">LKR ${order.totalPrice}.00</td>
                               </tr>
                            </tfoot>
                         </table>

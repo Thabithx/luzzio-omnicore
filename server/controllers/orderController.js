@@ -186,21 +186,23 @@ exports.updateItemTracking = async (req, res) => {
       }
 
       // Dispatch Email Update Protocol
-      try {
-         const user = order.user ? await User.findById(order.user) : null;
-         const recipientEmail = order.email || (user ? user.email : null);
-         const recipientName = user ? user.name : `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim();
+      setImmediate(async () => {
+         try {
+            const user = order.user ? await User.findById(order.user) : null;
+            const recipientEmail = order.email || (user ? user.email : null);
+            const recipientName = user ? user.name : `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim();
 
-         if (recipientEmail) {
-            await sendEmail({
-               email: recipientEmail,
-               subject: `LUZZIO LOGISTICS: TRACKING REGISTERED FOR ${item.name.toUpperCase()}`,
-               html: trackingUpdateTemplate(order, item, trackingNumber, { name: recipientName || 'Valued Client' })
-            });
+            if (recipientEmail) {
+               await sendEmail({
+                  email: recipientEmail,
+                  subject: `LUZZIO LOGISTICS: TRACKING REGISTERED FOR ${item.name.toUpperCase()}`,
+                  html: trackingUpdateTemplate(order, item, trackingNumber, { name: recipientName || 'Valued Client' })
+               });
+            }
+         } catch (emailErr) {
+            console.error('Logistics Email Protocol Deferred:', emailErr.message);
          }
-      } catch (emailErr) {
-         console.error('Logistics Email Protocol Deferred:', emailErr.message);
-      }
+      });
 
       res.status(200).json({
          success: true,

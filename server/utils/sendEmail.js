@@ -16,22 +16,33 @@ const sendEmail = async (options) => {
    });
 
    // Protocol Verification Handshake
-   try {
-      await transporter.verify();
-   } catch (verifyErr) {
-      console.error('SMTP Verification Failure:', verifyErr.message);
-      throw verifyErr;
+   if (process.env.SMTP_VERIFY === 'true') {
+      try {
+         await transporter.verify();
+      } catch (verifyErr) {
+         console.error('SMTP Verification Failure:', verifyErr.message);
+         // Don't throw here, let sendMail try anyway as verify can be flaky
+      }
    }
 
    const message = {
-      from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
+      from: `${process.env.FROM_NAME || 'LUZZIO'} <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: options.email,
       subject: options.subject,
       html: options.html,
    };
 
-   const info = await transporter.sendMail(message);
-   console.log('Order Protocol Dispatched: %s', info.messageId);
+   try {
+      const info = await transporter.sendMail(message);
+      console.log('Order Protocol Dispatched: %s', info.messageId);
+      return info;
+   } catch (sendErr) {
+      console.error('Email Dispatch Failure:', sendErr.message);
+      if (sendErr.code === 'EAUTH') {
+         console.error('CRITICAL: SMTP Authentication Failed. Check SMTP_USER and SMTP_PASS.');
+      }
+      throw sendErr;
+   }
 };
 
 module.exports = sendEmail;
