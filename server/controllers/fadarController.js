@@ -47,7 +47,7 @@ exports.createFadarParcel = async (req, res) => {
       params.append('api_key', apiKey);
       params.append('client_id', clientId);
       params.append('order_id', order._id.toString());
-      params.append('parcel_weight', parcel_weight || '1'); // Default to 1 if not provided
+      params.append('parcel_weight', parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1'); // Default to 1kg if not provided or invalid
       params.append('parcel_description', `Order #${order._id.toString().slice(-6).toUpperCase()}`);
       params.append('recipient_name', `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim());
       params.append('recipient_contact_1', order.shippingAddress.phone || '');
