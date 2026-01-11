@@ -91,21 +91,24 @@ const Dashboard = () => {
    const [loading, setLoading] = useState(true);
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [isModalOpen, setIsModalOpen] = useState(false);
+   const [range, setRange] = useState('all');
    const { token } = useAuth();
 
+   const fetchStats = async () => {
+      setLoading(true);
+      try {
+         const res = await api.get(`/admin/stats?range=${range}`);
+         setStats(res.data.data);
+      } catch (err) {
+         console.error('Failed to fetch stats:', err);
+      } finally {
+         setLoading(false);
+      }
+   };
+
    useEffect(() => {
-      const fetchStats = async () => {
-         try {
-            const res = await api.get('/admin/stats');
-            setStats(res.data.data);
-         } catch (err) {
-            console.error('Failed to fetch stats:', err);
-         } finally {
-            setLoading(false);
-         }
-      };
       if (token) fetchStats();
-   }, [token]);
+   }, [token, range]);
 
    if (loading) return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
@@ -114,24 +117,61 @@ const Dashboard = () => {
       </div>
    );
 
+   const rangeLabels = {
+      'today': 'PROTOCOL: TODAY',
+      'week': 'PROTOCOL: 7 DAYS',
+      'month': 'PROTOCOL: 30 DAYS',
+      '6month': 'PROTOCOL: 180 DAYS',
+      'year': 'PROTOCOL: 365 DAYS',
+      'all': 'PROTOCOL: ALL TIME'
+   };
+
    const dashboardStats = [
-      { label: "Gross Revenue", value: `$${stats?.grossRevenue?.toLocaleString()}`, icon: DollarSign, trend: "TOTAL" },
+      { label: "Gross Revenue", value: `LKR ${stats?.grossRevenue?.toLocaleString()}`, icon: DollarSign, trend: rangeLabels[range] },
       { label: "Inventory Outflow", value: stats?.inventoryOutflow?.toLocaleString(), icon: ShoppingBag, trend: "VOLUME" },
       { label: "Client Registry", value: stats?.clientRegistry?.toLocaleString(), icon: Users, trend: "RECORDS" },
       { label: "Archive Momentum", value: stats?.archiveMomentum?.toLocaleString(), icon: TrendingUp, trend: "30D GAIN" },
    ];
 
+   const ranges = [
+      { id: 'today', label: 'Day' },
+      { id: 'week', label: 'Week' },
+      { id: 'month', label: 'Month' },
+      { id: '6month', label: '6 Months' },
+      { id: 'year', label: 'Year' },
+      { id: 'all', label: 'All Time' },
+   ];
+
    return (
       <div className="space-y-16">
          {/* HEADER SECTION */}
-         <div className="flex justify-between items-end border-b border-black pb-8">
+         <div className="flex flex-col md:flex-row md:justify-between md:items-end border-b border-black pb-8 gap-8">
             <div className="space-y-4">
                <p className="text-small-brand text-gray-400">System Overview</p>
                <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">Command Center</h1>
             </div>
-            <div className="text-right space-y-1">
-               <p className="text-[10px] font-black uppercase tracking-widest text-black">Synchronized</p>
-               <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Active Session: 0x{token?.slice(-4).toUpperCase() || 'SYS'}</p>
+
+            <div className="flex flex-col items-start md:items-end gap-6">
+               <div className="flex items-center bg-brand-grey border border-black p-1">
+                  {ranges.map((r) => (
+                     <button
+                        key={r.id}
+                        onClick={() => setRange(r.id)}
+                        className={cn(
+                           "px-4 py-2 text-[9px] font-black uppercase tracking-widest transition-all",
+                           range === r.id
+                              ? "bg-black text-white"
+                              : "text-black hover:bg-black/5"
+                        )}
+                     >
+                        {r.label}
+                     </button>
+                  ))}
+               </div>
+               <div className="text-left md:text-right space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-black">Synchronized</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Active Session: 0x{token?.slice(-4).toUpperCase() || 'SYS'}</p>
+               </div>
             </div>
          </div>
 
