@@ -20,6 +20,7 @@ const sendEmail = async (options) => {
             to: options.email,
             subject: options.subject,
             html: options.html,
+            reply_to: fromEmail // Protocol: Helps avoid spam filters by providing a valid return path
          }, {
             headers: {
                'Authorization': `Bearer ${resendApiKey}`,
