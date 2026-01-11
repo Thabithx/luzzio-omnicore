@@ -116,16 +116,16 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/fadar', fadarRoutes);
 
-// Protocol: SMTP Self-Diagnostic
+// Protocol: Email System Diagnostic
 const sendEmail = require('./utils/sendEmail');
-app.get('/api/admin/smtp-check', async (req, res) => {
+app.get('/api/admin/email-check', async (req, res) => {
    try {
       await sendEmail({
          email: process.env.ADMIN_EMAIL || 'cursorgrepper@gmail.com',
-         subject: 'LUZZIO: SMTP SYSTEM CHECK',
-         html: '<h1>SYSTEM ALERT</h1><p>The SMTP protocol is functional.</p>'
+         subject: 'LUZZIO: EMAIL SYSTEM CHECK',
+         html: '<h1>SYSTEM ALERT</h1><p>The Email Delivery API is functional.</p>'
       });
-      res.json({ success: true, message: 'Protocol Verified. Check index for confirmation.' });
+      res.json({ success: true, message: 'Protocol Verified. Check your inbox.' });
    } catch (err) {
       res.status(500).json({ success: false, message: err.message });
    }
