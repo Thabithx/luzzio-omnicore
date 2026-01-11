@@ -4,7 +4,7 @@ const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const { createNotification } = require('./notificationController');
 const sendEmail = require('../utils/sendEmail');
-const { orderConfirmationTemplate, trackingUpdateTemplate } = require('../utils/emailTemplates');
+const { orderConfirmationTemplate, trackingUpdateTemplate, adminOrderNotificationTemplate } = require('../utils/emailTemplates');
 const crypto = require('crypto');
 
 // @desc    Create new order
@@ -133,6 +133,14 @@ exports.createOrder = async (req, res) => {
                html: orderConfirmationTemplate(createdOrder, { name: recipientName || 'Valued Client' })
             }).catch(emailErr => console.error('Background Email Protocol Deferred:', emailErr.message));
          }
+
+         // Protocol: Admin Notification Dispatch
+         const adminEmail = 'luzzioclothing.com@gmail.com';
+         sendEmail({
+            email: adminEmail,
+            subject: `LUZZIO ADMINISTRATIVE ALERT: NEW ORDER RECEIVED #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
+            html: adminOrderNotificationTemplate(createdOrder)
+         }).catch(adminEmailErr => console.error('Admin Notification Protocol Deferred:', adminEmailErr.message));
       });
 
    } catch (err) {

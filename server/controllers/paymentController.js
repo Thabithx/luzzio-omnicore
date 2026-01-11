@@ -1,6 +1,8 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
 const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
+const { paymentSuccessTemplate } = require('../utils/emailTemplates');
 
 // Initialize Stripe lazily to prevent server crashes if keys are missing
 const getStripe = () => {
@@ -118,6 +120,23 @@ exports.stripeWebhook = async (req, res) => {
 
             await order.save();
             console.log(`Order ${orderId} verified and paid via Stripe Protocol.`);
+
+            // Protocol: Strategic Settlement Notification
+            const adminEmail = 'luzzioclothing.com@gmail.com';
+
+            // 1. Notify Client
+            sendEmail({
+               email: order.email,
+               subject: `LUZZIO SETTLEMENT VERIFIED: ORDER #${order._id.toString().slice(-6).toUpperCase()}`,
+               html: paymentSuccessTemplate(order, false)
+            }).catch(e => console.error('Stripe Client Notify Protocol Deferred:', e.message));
+
+            // 2. Notify Admin
+            sendEmail({
+               email: adminEmail,
+               subject: `LUZZIO SETTLEMENT ALERT: PAYMENT RECEIVED #${order._id.toString().slice(-6).toUpperCase()}`,
+               html: paymentSuccessTemplate(order, true)
+            }).catch(e => console.error('Stripe Admin Alert Protocol Deferred:', e.message));
          }
       } catch (err) {
          console.error('Order update failure during webhook:', err);
@@ -239,6 +258,23 @@ exports.payHereNotify = async (req, res) => {
             };
             await order.save();
             console.log(`Order ${order_id} verified and paid via PayHere Protocol.`);
+
+            // Protocol: Strategic Settlement Notification
+            const adminEmail = 'luzzioclothing.com@gmail.com';
+
+            // 1. Notify Client
+            sendEmail({
+               email: order.email,
+               subject: `LUZZIO SETTLEMENT VERIFIED: ORDER #${order._id.toString().slice(-6).toUpperCase()}`,
+               html: paymentSuccessTemplate(order, false)
+            }).catch(e => console.error('PayHere Client Notify Protocol Deferred:', e.message));
+
+            // 2. Notify Admin
+            sendEmail({
+               email: adminEmail,
+               subject: `LUZZIO SETTLEMENT ALERT: PAYMENT RECEIVED #${order._id.toString().slice(-6).toUpperCase()}`,
+               html: paymentSuccessTemplate(order, true)
+            }).catch(e => console.error('PayHere Admin Alert Protocol Deferred:', e.message));
          }
       }
 
