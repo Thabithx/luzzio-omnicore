@@ -7,12 +7,16 @@ const axios = require('axios');
 const sendEmail = async (options) => {
    const resendApiKey = process.env.RESEND_API_KEY;
 
-   // Protocol: Primary delivery via Resend API (Firewall-Proof)
+   // Protocol: Use custom FROM if domain is verified, else fallback to onboarding domain
+   const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
+   const fromName = process.env.FROM_NAME || 'LUZZIO';
+
+   // Primary delivery via Resend API (Firewall-Proof)
    if (resendApiKey) {
-      console.log(`[EMAIL API] Dispatching via Resend to: ${options.email}`);
+      console.log(`[EMAIL API] Dispatching via Resend to: ${options.email} | From: ${fromEmail}`);
       try {
          const response = await axios.post('https://api.resend.com/emails', {
-            from: `${process.env.FROM_NAME || 'LUZZIO'} <onboarding@resend.dev>`, // Note: Domain must be verified in Resend for custom FROM
+            from: `${fromName} <${fromEmail}>`,
             to: options.email,
             subject: options.subject,
             html: options.html,
@@ -25,8 +29,12 @@ const sendEmail = async (options) => {
          console.log(`[EMAIL SUCCESS] Delivered via API: ${response.data.id}`);
          return response.data;
       } catch (err) {
-         console.error(`[EMAIL API FAILURE] Resend rejected request: ${err.response?.data?.message || err.message}`);
-         // Fall through to console log to prevent server crash
+         const errorMsg = err.response?.data?.message || err.message;
+         console.error(`[EMAIL API FAILURE] Resend rejected request: ${errorMsg}`);
+
+         if (errorMsg.includes('onboarding@resend.dev') || errorMsg.includes('verify')) {
+            console.warn('[EMAIL SHIELD] ACTION REQUIRED: Your domain is likely unverified in Resend. Admin emails and external customers will be rejected until domain verification is complete.');
+         }
       }
    } else {
       console.warn('[EMAIL WARNING] No RESEND_API_KEY found. Falling back to local console log.');
