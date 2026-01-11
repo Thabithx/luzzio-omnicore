@@ -121,7 +121,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                                  </button>
                               </div>
                            </div>
-                           <p className="text-sm font-black text-black">${item.price * item.qty}.00</p>
+                           <p className="text-sm font-black text-black">LKR {(item.price * item.qty).toLocaleString()}.00</p>
                         </div>
                      ))}
                   </div>
@@ -133,7 +133,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                      <p className="text-small-brand text-gray-400">Total Settlement Value</p>
                      <p className="text-[10px] text-gray-300 font-bold uppercase">Incl. Digital VAT & Logistics</p>
                   </div>
-                  <div className="text-4xl font-black tracking-tighter text-black">${order.totalPrice}.00</div>
+                  <div className="text-4xl font-black tracking-tighter text-black">LKR {order.totalPrice.toLocaleString()}.00</div>
                </div>
             </div>
          </div>
@@ -360,7 +360,7 @@ const AdminOrders = () => {
                               <td className="px-8 py-8 text-[11px] font-black uppercase tracking-widest text-gray-400">
                                  {order.orderItems?.length} Products
                               </td>
-                              <td className="px-8 py-8 text-[11px] font-black text-black">${order.totalPrice}.00</td>
+                              <td className="px-8 py-8 text-[11px] font-black text-black">LKR {order.totalPrice.toLocaleString()}.00</td>
                               <td className="px-8 py-8 text-right">
                                  <div className="flex justify-end gap-1">
                                     <button
