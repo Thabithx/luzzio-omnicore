@@ -11,7 +11,7 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
-app.set('trust proxy', true); // Protocol: Global trust for cloud proxy chains (Railway/Vercel)
+app.set('trust proxy', 1); // Protocol: Trust first proxy (Railway/Vercel)
 const PORT = process.env.PORT || 5001;
 
 // Database Connection
@@ -45,7 +45,10 @@ const limiter = rateLimit({
    windowMs: 10 * 60 * 1000, // 10 minutes
    max: 100, // Limit each IP to 100 requests per windows
    message: 'Too many requests from this IP, please try again after 10 minutes',
-   validate: { xForwardedForHeader: false }, // Protocol: Suppress Railway-induced validation errors
+   validate: {
+      trustProxy: false,
+      xForwardedForHeader: false
+   }, // Protocol: Silence Railway-induced proxy validation errors
 });
 app.use('/api', limiter);
 

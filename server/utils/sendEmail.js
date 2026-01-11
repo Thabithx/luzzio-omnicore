@@ -1,24 +1,10 @@
 const nodemailer = require('nodemailer');
 
 /**
- * High-Level Gmail Transport.
- * Uses Nodemailer "service" shorthand to handle host/port/SSL defaults.
+ * Robust Multi-Protocol Dispatcher.
+ * Prioritizes 465 (SSL) over 587 (STARTTLS) due to cloud-specific protocol filtering.
  */
 const sendEmail = async (options) => {
-   const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-         user: process.env.SMTP_USER?.trim(),
-         pass: process.env.SMTP_PASS?.trim(), // Ensure this is an "App Password"
-      },
-      connectionTimeout: 15000,
-      greetingTimeout: 15000,
-      socketTimeout: 20000,
-      tls: {
-         rejectUnauthorized: false
-      }
-   });
-
    const message = {
       from: `"${process.env.FROM_NAME || 'LUZZIO'}" <${process.env.SMTP_USER?.trim()}>`,
       to: options.email,
@@ -26,40 +12,41 @@ const sendEmail = async (options) => {
       html: options.html,
    };
 
-   console.log(`[SMTP SERVICE] Initiating dispatch to: ${options.email}`);
+   // Link Strategy Loop
+   const configs = [
+      { host: 'smtp.gmail.com', port: 465, secure: true },
+      { host: 'smtp.gmail.com', port: 587, secure: false },
+      { host: 'smtp-relay.gmail.com', port: 587, secure: false }
+   ];
 
-   try {
-      const info = await transporter.sendMail(message);
-      console.log(`[SMTP SUCCESS] Delivered via Gmail Service: %s`, info.messageId);
-      return info;
-   } catch (err) {
-      console.error(`[SMTP FAILURE] Service Dispatch Error: ${err.message}`);
-
-      // Secondary Hail Mary: Try Port 2525 explicitly if service shorthand fails
-      if (err.code === 'ETIMEDOUT' || err.code === 'ECONNREFUSED') {
-         console.log('[SMTP FALLBACK] Attempting Port 2525...');
-         const fallbackTransporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 2525,
-            secure: false,
+   for (const config of configs) {
+      try {
+         console.log(`[SMTP LINK] Probing ${config.host}:${config.port} (Secure: ${config.secure})`);
+         const transporter = nodemailer.createTransport({
+            host: config.host,
+            port: config.port,
+            secure: config.secure,
             auth: {
                user: process.env.SMTP_USER?.trim(),
                pass: process.env.SMTP_PASS?.trim(),
             },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 15000,
             tls: { rejectUnauthorized: false }
          });
 
-         try {
-            const fallbackInfo = await fallbackTransporter.sendMail(message);
-            console.log('[SMTP SUCCESS] Delivered via Fallback Port 2525');
-            return fallbackInfo;
-         } catch (fErr) {
-            console.error('[SMTP CRITICAL] All transport methods exhausted.');
-            throw fErr;
-         }
+         const info = await transporter.sendMail(message);
+         console.log(`[SMTP SUCCESS] Protocol Handshake Verified via Port ${config.port}`);
+         return info;
+      } catch (err) {
+         console.warn(`[SMTP BLOCKED] Port ${config.port} failed: ${err.message}`);
+         // Next config
       }
-      throw err;
    }
+
+   console.error('[SMTP CRITICAL] All strategic ports blocked. Potential egress firewall active.');
+   throw new Error('All SMTP connection attempts timed out. Verify Railway Egress rules.');
 };
 
 module.exports = sendEmail;
