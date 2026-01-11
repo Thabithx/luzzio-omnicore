@@ -126,21 +126,31 @@ exports.createOrder = async (req, res) => {
 
       // 5. ASYNC BACKGROUND TASKS (Not blocking the user)
       setImmediate(() => {
+         console.log(`[ORDER PROTOCOL] Background tasks initiated for Order: ${createdOrder._id}`);
+
          if (orderEmail) {
+            console.log(`[ORDER PROTOCOL] Dispatching confirmation to client: ${orderEmail}`);
             sendEmail({
                email: orderEmail,
                subject: `LUZZIO ARCHIVE DISPATCH: ORDER #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
                html: orderConfirmationTemplate(createdOrder, { name: recipientName || 'Valued Client' })
-            }).catch(emailErr => console.error('Background Email Protocol Deferred:', emailErr.message));
+            })
+               .then(() => console.log(`[ORDER PROTOCOL] Client confirmation delivered: ${orderEmail}`))
+               .catch(emailErr => console.error('[ORDER PROTOCOL FAILURE] Client Email Deferred:', emailErr.message));
+         } else {
+            console.warn(`[ORDER PROTOCOL] No client email found for Order: ${createdOrder._id}`);
          }
 
          // Protocol: Admin Notification Dispatch
-         const adminEmail = 'luzzioclothing.com@gmail.com';
+         const adminEmail = process.env.ADMIN_EMAIL || 'luzzioclothing.com@gmail.com';
+         console.log(`[ORDER PROTOCOL] Dispatching notification to admin: ${adminEmail}`);
          sendEmail({
             email: adminEmail,
             subject: `LUZZIO ADMINISTRATIVE ALERT: NEW ORDER RECEIVED #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
             html: adminOrderNotificationTemplate(createdOrder)
-         }).catch(adminEmailErr => console.error('Admin Notification Protocol Deferred:', adminEmailErr.message));
+         })
+            .then(() => console.log(`[ORDER PROTOCOL] Admin notification delivered: ${adminEmail}`))
+            .catch(adminEmailErr => console.error('[ORDER PROTOCOL FAILURE] Admin Notification Deferred:', adminEmailErr.message));
       });
 
    } catch (err) {

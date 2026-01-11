@@ -13,8 +13,8 @@ const sendEmail = async (options) => {
          user: process.env.SMTP_USER?.trim(),
          pass: process.env.SMTP_PASS?.trim(),
       },
-      debug: false,
-      logger: false
+      debug: true, // Protocol: Enable detailed logs for verification phase
+      logger: true
    });
 
    // Protocol Verification Handshake
@@ -28,7 +28,7 @@ const sendEmail = async (options) => {
    }
 
    const message = {
-      from: `"${process.env.FROM_NAME || 'LUZZIO'}" <${process.env.SMTP_USER}>`,
+      from: `"${process.env.FROM_NAME || 'LUZZIO'}" <${process.env.SMTP_USER?.trim()}>`,
       to: options.email,
       subject: options.subject,
       html: options.html,
