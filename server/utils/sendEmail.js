@@ -1,59 +1,60 @@
 const nodemailer = require('nodemailer');
 
-// Protocol: Create transporter once at module level for maximum efficiency
-const smtpPort = parseInt(process.env.SMTP_PORT) || 587;
-const smtpSecure = smtpPort === 465;
-
-console.log(`[SMTP SYSTEM] Initializing with Port: ${smtpPort} | Secure: ${smtpSecure}`);
-
-const transporter = nodemailer.createTransport({
-   host: process.env.SMTP_HOST || 'smtp.gmail.com',
-   port: smtpPort,
-   secure: smtpSecure,
-   auth: {
-      user: process.env.SMTP_USER?.trim(),
-      pass: process.env.SMTP_PASS?.trim(),
-   },
-   debug: true,
-   logger: true,
-   tls: {
-      rejectUnauthorized: false
-   }
-});
-
-// Perform a single startup verification
-transporter.verify((error) => {
-   if (error) {
-      console.error('[SMTP SYSTEM ERROR] Startup handshake failed:', error.message);
-   } else {
-      console.log('[SMTP SYSTEM SUCCESS] Connection verified and ready.');
-   }
-});
+/**
+ * Creates a transporter for a specific port/config.
+ */
+const createPoolTransporter = (port) => {
+   const secure = port === 465;
+   return nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: port,
+      secure: secure,
+      auth: {
+         user: process.env.SMTP_USER?.trim(),
+         pass: process.env.SMTP_PASS?.trim(),
+      },
+      connectionTimeout: 20000, // 20s
+      greetingTimeout: 20000,
+      socketTimeout: 30000,
+      dnsTimeout: 10000,
+      tls: {
+         rejectUnauthorized: false
+      }
+   });
+};
 
 /**
- * Reusable SMTP transport utility for the Luzzio platform.
+ * Robust SMTP fallback utility.
+ * Tries 587, then 465, then 2525.
  */
 const sendEmail = async (options) => {
-   const message = {
-      from: `"${process.env.FROM_NAME || 'LUZZIO'}" <${process.env.SMTP_USER?.trim()}>`,
-      to: options.email,
-      subject: options.subject,
-      html: options.html,
-   };
+   const ports = [587, 465, 2525];
+   let lastError = null;
 
-   console.log(`[SMTP DISPATCH] To: ${options.email} | Subject: ${options.subject}`);
+   for (const port of ports) {
+      try {
+         console.log(`[SMTP PROTOCOL] Attempting port ${port} | To: ${options.email}`);
+         const transporter = createPoolTransporter(port);
 
-   try {
-      const info = await transporter.sendMail(message);
-      console.log('[SMTP SUCCESS] Message Delivered: %s', info.messageId);
-      return info;
-   } catch (sendErr) {
-      console.error('[SMTP FAILURE] Dispatch Error:', sendErr.message);
-      if (sendErr.code === 'EAUTH') {
-         console.error('CRITICAL: SMTP Authentication Failed. Check credentials in .env');
+         const message = {
+            from: `"${process.env.FROM_NAME || 'LUZZIO'}" <${process.env.SMTP_USER?.trim()}>`,
+            to: options.email,
+            subject: options.subject,
+            html: options.html,
+         };
+
+         const info = await transporter.sendMail(message);
+         console.log(`[SMTP SUCCESS] Delivered via port ${port}: %s`, info.messageId);
+         return info;
+      } catch (err) {
+         console.error(`[SMTP ERROR] Port ${port} failed: ${err.message}`);
+         lastError = err;
+         // Continue to next port
       }
-      throw sendErr;
    }
+
+   console.error('[SMTP CRITICAL] All ports exhausted. Message deferred.');
+   throw lastError;
 };
 
 module.exports = sendEmail;
