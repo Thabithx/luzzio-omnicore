@@ -5,16 +5,24 @@ const nodemailer = require('nodemailer');
  * Ensures all corporate communications adhere to secure protocols.
  */
 const sendEmail = async (options) => {
+   const smtpPort = parseInt(process.env.SMTP_PORT) || 587;
+   const smtpSecure = smtpPort === 465; // SSL/TLS for 465, STARTTLS for 587/25
+
+   console.log(`[SMTP CONFIG] Host: ${process.env.SMTP_HOST || 'smtp.gmail.com'} | Port: ${smtpPort} | Secure: ${smtpSecure}`);
+
    const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT) || 465,
-      secure: parseInt(process.env.SMTP_PORT) === 465, // True if 465, false for others (like 587)
+      port: smtpPort,
+      secure: smtpSecure,
       auth: {
          user: process.env.SMTP_USER?.trim(),
          pass: process.env.SMTP_PASS?.trim(),
       },
       debug: true,
-      logger: true
+      logger: true,
+      tls: {
+         rejectUnauthorized: false // Helps with some cloud environment network restrictions
+      }
    });
 
    // Protocol Verification Handshake
