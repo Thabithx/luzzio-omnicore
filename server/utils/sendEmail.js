@@ -13,8 +13,8 @@ const sendEmail = async (options) => {
          user: process.env.SMTP_USER?.trim(),
          pass: process.env.SMTP_PASS?.trim(),
       },
-      debug: true, // Protocol: Detailed debug output
-      logger: true // Protocol: Log information in console
+      debug: false,
+      logger: false
    });
 
    // Protocol Verification Handshake
