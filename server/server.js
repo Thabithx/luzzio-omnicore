@@ -14,6 +14,35 @@ const app = express();
 app.set('trust proxy', '1'); // Protocol: Explicit string for cloud proxy chains
 const PORT = process.env.PORT || 5001;
 
+// CORS Configuration (Must be before all other middleware/routes)
+const allowedOrigins = [
+   process.env.CLIENT_URL,
+   'https://luzziopremium.com',
+   'https://www.luzziopremium.com',
+   'https://luzzio.vercel.app',
+   'http://localhost:5173',
+   'http://localhost:5174'
+].filter(Boolean);
+
+const corsOptions = {
+   origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      const isAllowed = allowedOrigins.some(allowed => origin.startsWith(allowed)) ||
+         origin.includes('luzziopremium.com');
+
+      if (isAllowed || process.env.NODE_ENV !== 'production') {
+         callback(null, true);
+      } else {
+         console.warn(`CORS Blocked Origin: ${origin}`);
+         callback(new Error('Not allowed by CORS'));
+      }
+   },
+   credentials: true,
+   optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
 // Database Connection
 const connectDB = async () => {
    let mongoUri = process.env.MONGO_URI;
@@ -57,33 +86,6 @@ app.use('/api', limiter);
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10kb' })); // Body limit
 app.use(express.urlencoded({ extended: true })); // Parse application/x-www-form-urlencoded for PayHere
-
-// CORS Configuration
-const allowedOrigins = [
-   process.env.CLIENT_URL,
-   'https://luzziopremium.com',
-   'https://www.luzziopremium.com',
-   'https://luzzio.vercel.app',
-   'http://localhost:5173',
-   'http://localhost:5174'
-].filter(Boolean);
-
-const corsOptions = {
-   origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
-         callback(null, true);
-      } else {
-         console.warn(`CORS Blocked Origin: ${origin}`);
-         callback(new Error('Not allowed by CORS'));
-      }
-   },
-   credentials: true,
-   optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
