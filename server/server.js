@@ -11,7 +11,7 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
-app.set('trust proxy', 1); // Protocol: Trust first proxy (Railway/Vercel)
+app.set('trust proxy', '1'); // Protocol: Explicit string for cloud proxy chains
 const PORT = process.env.PORT || 5001;
 
 // Database Connection

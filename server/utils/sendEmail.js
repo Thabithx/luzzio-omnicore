@@ -1,8 +1,8 @@
 const nodemailer = require('nodemailer');
 
 /**
- * Robust Multi-Protocol Dispatcher.
- * Prioritizes 465 (SSL) over 587 (STARTTLS) due to cloud-specific protocol filtering.
+ * Universal SMTP Dispatcher for Restricted Environments.
+ * Cycles through hosts and ports likely to be open in cloud containers.
  */
 const sendEmail = async (options) => {
    const message = {
@@ -12,16 +12,18 @@ const sendEmail = async (options) => {
       html: options.html,
    };
 
-   // Link Strategy Loop
+   // Strategic Link Matrix
    const configs = [
+      { host: 'smtp.googlemail.com', port: 465, secure: true },
       { host: 'smtp.gmail.com', port: 465, secure: true },
       { host: 'smtp.gmail.com', port: 587, secure: false },
+      { host: 'smtp.gmail.com', port: 2525, secure: false }, // Cloud-friendly alternative
       { host: 'smtp-relay.gmail.com', port: 587, secure: false }
    ];
 
    for (const config of configs) {
       try {
-         console.log(`[SMTP LINK] Probing ${config.host}:${config.port} (Secure: ${config.secure})`);
+         console.log(`[SMTP PROBE] Link: ${config.host}:${config.port} | Secure: ${config.secure}`);
          const transporter = nodemailer.createTransport({
             host: config.host,
             port: config.port,
@@ -30,23 +32,23 @@ const sendEmail = async (options) => {
                user: process.env.SMTP_USER?.trim(),
                pass: process.env.SMTP_PASS?.trim(),
             },
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 15000,
+            connectionTimeout: 8000, // Faster failure to move through matrix
+            greetingTimeout: 8000,
+            socketTimeout: 10000,
+            family: 4, // Force IPv4 to avoid Railway IPv6 resolving issues
             tls: { rejectUnauthorized: false }
          });
 
          const info = await transporter.sendMail(message);
-         console.log(`[SMTP SUCCESS] Protocol Handshake Verified via Port ${config.port}`);
+         console.log(`[SMTP SUCCESS] Protocol Handshake Verified via ${config.host}:${config.port}`);
          return info;
       } catch (err) {
-         console.warn(`[SMTP BLOCKED] Port ${config.port} failed: ${err.message}`);
-         // Next config
+         console.warn(`[SMTP BLOCKED] ${config.host}:${config.port} -> ${err.message}`);
       }
    }
 
-   console.error('[SMTP CRITICAL] All strategic ports blocked. Potential egress firewall active.');
-   throw new Error('All SMTP connection attempts timed out. Verify Railway Egress rules.');
+   console.error('[SMTP CRITICAL] All strategic links exhausted. Egress firewall or auth failure.');
+   throw new Error('Email service currently unavailable due to network restrictions.');
 };
 
 module.exports = sendEmail;
