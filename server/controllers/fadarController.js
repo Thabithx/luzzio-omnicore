@@ -58,22 +58,25 @@ exports.createFadarParcel = async (req, res) => {
       params.append('exchange', 'no'); // Defaulting to 'no', adjust if needed
 
       // Call Fadar API
+      console.log(`[FADAR] Initiating parcel booking for Order: ${order._id}`);
       const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', params, {
          headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
          }
       });
 
-      // Expected response might contain an order ID or success message
-      // Return raw response as requested
-      if (response.data) {
-         // If Fadar returns a specific ID, we store it to prevent duplicates
-         // Assuming Fadar returns { status: 'success', fadar_order_id: '...' } or similar
-         // Adjust based on actual API behavior. For now, we store something to flag it as booked.
+      console.log(`[FADAR] Response received for Order ${order._id}:`, response.data);
 
-         order.fadar_order_id = response.data.fadar_order_id || 'CREATED_' + Date.now();
+      if (response.data) {
+         // Some APIs return status in the body even with 200 OK
+         // We'll store the ID if provided, or a fallback to mark as booked
+         const fadarId = response.data.fadar_order_id || response.data.order_id || response.data.id;
+
+         order.fadar_order_id = fadarId || 'CREATED_' + Date.now();
          order.status = 'processing';
          const updatedOrder = await order.save();
+
+         console.log(`[FADAR] Order ${order._id} updated in DB with Fadar ID: ${order.fadar_order_id}`);
 
          return res.status(200).json({
             success: true,
@@ -82,6 +85,7 @@ exports.createFadarParcel = async (req, res) => {
          });
       }
 
+      console.warn(`[FADAR] API returned empty response for Order ${order._id}`);
       res.status(200).json({
          success: true,
          data: response.data
