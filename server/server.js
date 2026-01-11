@@ -56,8 +56,10 @@ app.use(express.urlencoded({ extended: true })); // Parse application/x-www-form
 // CORS Configuration
 const allowedOrigins = [
    process.env.CLIENT_URL,
-   'https://luzziopremium.com', // Explicit production domain
-   'http://localhost:5173', // Local development
+   'https://luzziopremium.com',
+   'https://www.luzziopremium.com',
+   'https://luzzio.vercel.app',
+   'http://localhost:5173',
    'http://localhost:5174'
 ].filter(Boolean);
 
