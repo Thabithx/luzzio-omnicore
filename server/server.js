@@ -92,6 +92,7 @@ const contactRoutes = require('./routes/contactRoutes');
 const faqRoutes = require('./routes/faqRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const fadarRoutes = require('./routes/fadarRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
@@ -106,6 +107,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/faq', faqRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/fadar', fadarRoutes);
 
 // Base route
 app.get('/', (req, res) => {

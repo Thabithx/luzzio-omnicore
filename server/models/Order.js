@@ -84,6 +84,14 @@ const orderSchema = new mongoose.Schema({
       type: String,
       enum: ['pending', 'paid', 'processing', 'packaged', 'out for delivery', 'delivered', 'completed', 'cancelled', 'returned'],
       default: 'pending'
+   },
+   fadar_order_id: {
+      type: String,
+      default: ''
+   },
+   fadar_tracking_number: {
+      type: String,
+      default: ''
    }
 }, {
    timestamps: true
