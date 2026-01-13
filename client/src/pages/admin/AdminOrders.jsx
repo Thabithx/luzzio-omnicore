@@ -233,6 +233,31 @@ const AdminOrders = () => {
       window.print();
    };
 
+   const handleBulkStatusUpdate = async (status) => {
+      if (selectedIds.length === 0) return;
+
+      const confirmMsg = `Update ${selectedIds.length} orders to ${status.toUpperCase()}?`;
+      if (!window.confirm(confirmMsg)) return;
+
+      try {
+         setLoading(true);
+         const res = await api.put('/orders/batch-status', {
+            ids: selectedIds,
+            status: status,
+            weights: parcelWeights
+         });
+
+         alert(res.data.message || `Successfully updated ${selectedIds.length} orders.`);
+         setSelectedIds([]);
+         fetchOrders();
+      } catch (err) {
+         console.error('Error in bulk status update:', err);
+         alert(err.response?.data?.message || 'Failed to update orders in bulk.');
+      } finally {
+         setLoading(false);
+      }
+   };
+
    if (loading) return (
       <div className="flex items-center justify-center min-h-[400px]">
          <p className="text-small-brand text-gray-400 animate-pulse tracking-[0.5em] font-black uppercase">Syncing Order Archive...</p>
@@ -249,13 +274,34 @@ const AdminOrders = () => {
                </div>
                <div className="flex items-center justify-between md:justify-end gap-4">
                   {selectedIds.length > 0 && (
-                     <button
-                        onClick={handlePrint}
-                        className="bg-black text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest border border-black hover:bg-white hover:text-black transition-all flex items-center gap-3"
-                     >
-                        <Printer size={14} />
-                        Print Selected ({selectedIds.length})
-                     </button>
+                     <div className="flex items-center gap-3">
+                        <select
+                           onChange={(e) => {
+                              if (e.target.value) {
+                                 handleBulkStatusUpdate(e.target.value);
+                                 e.target.value = ''; // Reset select
+                              }
+                           }}
+                           className="bg-white text-black px-4 py-4 text-[10px] font-black uppercase tracking-widest border border-black focus:outline-none cursor-pointer appearance-none min-w-[180px]"
+                        >
+                           <option value="">BATCH ACTION</option>
+                           <option value="pending">PENDING</option>
+                           <option value="processing">PROCESSING</option>
+                           <option value="packaged">PACKAGED</option>
+                           <option value="out for delivery">OUT FOR DELIVERY</option>
+                           <option value="delivered">DELIVERED</option>
+                           <option value="completed">COMPLETED</option>
+                           <option value="cancelled">CANCELLED</option>
+                           <option value="returned">RETURNED</option>
+                        </select>
+                        <button
+                           onClick={handlePrint}
+                           className="bg-black text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest border border-black hover:bg-white hover:text-black transition-all flex items-center gap-3"
+                        >
+                           <Printer size={14} />
+                           Print ({selectedIds.length})
+                        </button>
+                     </div>
                   )}
                   <div className="text-right space-y-1">
                      <p className="text-[10px] font-black uppercase tracking-widest text-black">{orders.length} Sequences</p>

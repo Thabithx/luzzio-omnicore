@@ -6,7 +6,8 @@ const {
    getGuestOrders,
    syncMyOrders,
    updateOrderStatus,
-   updateItemTracking
+   updateItemTracking,
+   batchUpdateOrderStatus
 } = require('../controllers/orderController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
@@ -24,6 +25,7 @@ router.route('/')
 router.route('/myorders').get(getMyOrders);
 
 router.route('/:id/status').put(admin, updateOrderStatus);
+router.route('/batch-status').put(admin, batchUpdateOrderStatus);
 router.route('/:id/item/:itemId/tracking').put(admin, updateItemTracking);
 
 module.exports = router;

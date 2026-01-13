@@ -375,3 +375,139 @@ exports.updateOrderStatus = async (req, res) => {
       res.status(500).json({ success: false, message: err.message });
    }
 };
+
+// @desc    Update status for multiple orders
+// @route   PUT /api/orders/batch-status
+// @access  Private/Admin
+exports.batchUpdateOrderStatus = async (req, res) => {
+   try {
+      const { ids, status, weights } = req.body;
+
+      if (!ids || !Array.isArray(ids) || ids.length === 0) {
+         return res.status(400).json({ success: false, message: 'No order IDs provided' });
+      }
+
+      const orders = await Order.find({ _id: { $in: ids } });
+      const results = [];
+
+      for (const order of orders) {
+         const oldStatus = order.status;
+         order.status = status;
+
+         if (status === 'delivered') {
+            order.isDelivered = true;
+            order.deliveredAt = Date.now();
+         }
+
+         if (status === 'completed') {
+            order.isDelivered = true;
+            if (!order.deliveredAt) order.deliveredAt = Date.now();
+         }
+
+         if (status === 'paid') {
+            order.isPaid = true;
+            order.paidAt = Date.now();
+         }
+
+         // Fadar Integration Logic
+         let fadarSuccess = false;
+         let fadarMessage = '';
+
+         if (oldStatus !== 'processing' && status === 'processing' && !order.fadar_order_id) {
+            try {
+               const weight = (weights && weights[order._id]) || 1;
+               const { createFadarParcelInternal } = require('./fadarController');
+               
+               // We need an internal version or just refactor fadarController to be more reusable
+               // For now, let's keep it simple and just update status if Fadar fails or skip complex logic in batch
+               // Actually, it's better to support it.
+               const fadarResult = await triggerFadarInternal(order, weight);
+               if (fadarResult.success) {
+                  order.fadar_order_id = fadarResult.fadar_order_id;
+                  fadarSuccess = true;
+               } else {
+                  fadarMessage = fadarResult.message;
+               }
+            } catch (fadarErr) {
+               fadarMessage = fadarErr.message;
+            }
+         }
+
+         await order.save();
+
+         // Create notification for user
+         if (order.user) {
+            const statusMessages = {
+               'processing': 'Your order is being processed',
+               'shipped': 'Your order has been shipped',
+               'delivered': 'Your order has been delivered',
+               'completed': 'Your order is complete',
+               'cancelled': 'Your order has been cancelled'
+            };
+
+            await createNotification(
+               order.user,
+               'order_status',
+               'Order Status Update',
+               statusMessages[status] || `Your order status has been updated to ${status}`,
+               order._id,
+               'Order'
+            ).catch(err => console.error(`Notification failed for order ${order._id}:`, err.message));
+         }
+
+         results.push({
+            id: order._id,
+            status: 'success',
+            fadar: fadarSuccess ? 'created' : (fadarMessage || 'not_triggered')
+         });
+      }
+
+      res.status(200).json({
+         success: true,
+         message: `Successfully updated ${results.length} orders`,
+         results
+      });
+
+   } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+   }
+};
+
+// Helper to trigger Fadar without a req/res cycle
+async function triggerFadarInternal(order, weight) {
+   const axios = require('axios');
+   const apiKey = process.env.FADAR_API_KEY;
+   const clientId = process.env.FADAR_CLIENT_ID;
+
+   if (!apiKey || !clientId) {
+      return { success: false, message: 'Fadar API configuration missing' };
+   }
+
+   const params = new URLSearchParams();
+   params.append('api_key', apiKey);
+   params.append('client_id', clientId);
+   params.append('order_id', order._id.toString());
+   params.append('parcel_weight', weight && weight > 0 ? weight.toString() : '1');
+   params.append('parcel_description', `Order #${order._id.toString().slice(-6).toUpperCase()}`);
+   params.append('recipient_name', `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim());
+   params.append('recipient_contact_1', order.shippingAddress.phone || '');
+   params.append('recipient_contact_2', order.shippingAddress.phone2 || '');
+   params.append('recipient_address', order.shippingAddress.address || '');
+   params.append('recipient_city', order.shippingAddress.city || '');
+   params.append('amount', order.totalPrice.toString());
+   params.append('exchange', 'no');
+
+   try {
+      const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', params, {
+         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
+
+      if (response.data) {
+         const fadarId = response.data.fadar_order_id || response.data.order_id || response.data.id;
+         return { success: true, fadar_order_id: fadarId || 'CREATED_' + Date.now() };
+      }
+      return { success: false, message: 'Empty response from Fadar' };
+   } catch (err) {
+      return { success: false, message: err.message };
+   }
+}
