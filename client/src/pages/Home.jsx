@@ -68,7 +68,7 @@ export function Home() {
                return false;
             };
 
-            setNewProducts(products.filter(isNew).slice(0, 4));
+            setNewProducts(products.filter(isNew).slice(0, 8));
             setBestSellers(products.filter(isBestSeller));
             setSaleProducts(products.filter(isSale));
          } catch (err) {
@@ -152,7 +152,7 @@ export function Home() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-black">
                {loading ? (
-                  Array(4).fill(0).map((_, i) => (
+                  Array(8).fill(0).map((_, i) => (
                      <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
                   ))
                ) : (
