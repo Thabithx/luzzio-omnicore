@@ -68,7 +68,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order }) => {
                               <p className="text-sm font-black uppercase tracking-tight truncate">{item.name}</p>
                               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">VOL: {item.size} <span className="mx-2 text-gray-200">|</span> QTY: {item.qty} UNITS</p>
                            </div>
-                           <p className="text-sm font-black text-black">${item.price * item.qty}.00</p>
+                           <p className="text-sm font-black text-black">LKR {(item.price * item.qty).toLocaleString()}.00</p>
                         </div>
                      ))}
                   </div>
@@ -78,7 +78,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order }) => {
                   <div className="space-y-1">
                      <p className="text-small-brand text-gray-400 font-black uppercase">Total Settlement Value</p>
                   </div>
-                  <div className="text-4xl font-black tracking-tighter text-black">${order.totalPrice}.00</div>
+                  <div className="text-4xl font-black tracking-tighter text-black">LKR {order.totalPrice.toLocaleString()}.00</div>
                </div>
             </div>
          </div>
@@ -216,7 +216,7 @@ const Dashboard = () => {
                            <td className="px-8 py-6 text-[11px] font-bold text-gray-400 uppercase">
                               {new Date(order.createdAt).toLocaleDateString()}
                            </td>
-                           <td className="px-8 py-6 text-[11px] font-black">${order.totalPrice}.00</td>
+                           <td className="px-8 py-6 text-[11px] font-black">LKR {order.totalPrice.toLocaleString()}.00</td>
                            <td className="px-8 py-6 text-right">
                               <button
                                  onClick={() => {

@@ -154,7 +154,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-small-brand text-gray-400">Acquisition Price ($)</label>
+                     <label className="text-small-brand text-gray-400">Acquisition Price (LKR)</label>
                      <Input
                         type="number"
                         value={formData.price}
@@ -232,7 +232,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-small-brand text-gray-400">Market Value / Sale Price ($)</label>
+                     <label className="text-small-brand text-gray-400">Market Value / Sale Price (LKR)</label>
                      <Input
                         type="number"
                         value={formData.salePrice}
@@ -584,7 +584,7 @@ const AdminProducts = () => {
    return (
       <div className="space-y-12 pb-40">
          {/* HEADER SECTION */}
-         <div className="flex justify-between items-end border-b border-black pb-8">
+         <div className="flex flex-col md:flex-row md:justify-between md:items-end border-b border-black pb-8 gap-6">
             <div className="space-y-4">
                <p className="text-small-brand text-gray-400">Digital Archive</p>
                <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">Inventory Registry</h1>
@@ -667,11 +667,11 @@ const AdminProducts = () => {
                            <td className="px-8 py-6 text-[11px] font-black text-black">
                               {product.salePrice > 0 ? (
                                  <div className="flex flex-col">
-                                    <span className="text-black">${product.salePrice}.00</span>
-                                    <span className="text-[9px] text-gray-400 line-through">${product.price}.00</span>
+                                    <span className="text-black">LKR {product.salePrice.toLocaleString()}.00</span>
+                                    <span className="text-[9px] text-gray-400 line-through">LKR {product.price.toLocaleString()}.00</span>
                                  </div>
                               ) : (
-                                 <span>${product.price}.00</span>
+                                 <span>LKR {product.price.toLocaleString()}.00</span>
                               )}
                            </td>
                            <td className="px-8 py-6">

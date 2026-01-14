@@ -61,7 +61,7 @@ const AdminLayout = ({ children }) => {
    ];
 
    return (
-      <div className="flex min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+      <div className="flex min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white max-w-full overflow-x-hidden">
          {/* Sidebar */}
          <aside className="fixed left-0 top-0 h-full w-72 bg-white border-r border-black z-50 print:hidden">
             <div className="p-10 border-b border-black">
@@ -95,8 +95,8 @@ const AdminLayout = ({ children }) => {
          </aside>
 
          {/* Main Content */}
-         <main className="flex-1 ml-72 min-h-screen relative print:ml-0 print:min-h-0">
-            <header className="px-12 py-10 border-b border-black flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-40 print:hidden">
+         <main className="flex-1 ml-0 md:ml-72 min-h-screen relative print:ml-0 print:min-h-0 overflow-x-hidden">
+            <header className="px-6 md:px-12 py-10 border-b border-black flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-40 print:hidden">
                <div>
                   <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">
                      Luzzio / {menuItems.find(i => i.to === location.pathname)?.label || "Protocol"}
@@ -113,7 +113,7 @@ const AdminLayout = ({ children }) => {
                </div>
             </header>
 
-            <div className="p-12 max-w-[1600px] mx-auto print:p-0 print:max-w-none">
+            <div className="p-6 md:p-12 w-full mx-auto print:p-0">
                {children}
             </div>
          </main>
