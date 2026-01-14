@@ -69,6 +69,9 @@ export function Navbar() {
                <Link to="/faq" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">FAQ</Link>
                <Link to="/shipping-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Shipping</Link>
                <Link to="/return-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Returns</Link>
+               <Link to="/exchange-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Exchange</Link>
+               <Link to="/refund-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Refund</Link>
+               <Link to="/privacy-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Privacy</Link>
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -214,7 +217,10 @@ export function Navbar() {
                      { name: 'Contact', link: '/contact' },
                      { name: 'FAQ', link: '/faq' },
                      { name: 'Shipping', link: '/shipping-policy' },
-                     { name: 'Returns', link: '/return-policy' }
+                     { name: 'Returns', link: '/return-policy' },
+                     { name: 'Exchange Policy', link: '/exchange-policy' },
+                     { name: 'Refund Policy', link: '/refund-policy' },
+                     { name: 'Privacy Policy', link: '/privacy-policy' }
                   ].map((item, idx) => (
                      <Link
                         key={idx}
