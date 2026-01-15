@@ -61,17 +61,16 @@ export function Navbar() {
          "fixed left-0 right-0 border-b border-black bg-white transition-all duration-300",
          isMenuOpen ? "z-[400] top-0" : "z-[100] top-[28px] md:top-8"
       )}>
-         <div className="max-w-[1920px] mx-auto px-4 md:px-10 h-14 md:h-12 flex items-center justify-between relative">
-
+         <div className="max-w-[1920px] mx-auto px-4 md:px-10 h-14 md:h-12 flex items-center justify-between">
             {/* Left: Navigation Pages */}
-            <div className="hidden lg:flex items-center space-x-12">
-               <Link to="/contact" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Contact</Link>
-               <Link to="/faq" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">FAQ</Link>
-               <Link to="/shipping-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Shipping</Link>
-               <Link to="/return-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Returns</Link>
-               <Link to="/exchange-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Exchange</Link>
-               <Link to="/refund-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Refund</Link>
-               <Link to="/privacy-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity">Privacy</Link>
+            <div className="hidden lg:flex flex-1 items-center space-x-6 min-w-0">
+               <Link to="/contact" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Contact</Link>
+               <Link to="/faq" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">FAQ</Link>
+               <Link to="/shipping-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Shipping</Link>
+               <Link to="/return-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Returns</Link>
+               <Link to="/exchange-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Exchange</Link>
+               <Link to="/refund-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Refund</Link>
+               <Link to="/privacy-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Privacy</Link>
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -80,15 +79,17 @@ export function Navbar() {
             </button>
 
             {/* Center: Branding */}
-            <Link
-               to="/"
-               className="absolute left-1/2 -translate-x-1/2 text-xl md:text-2xl font-black uppercase tracking-[0.4em] text-black"
-            >
-               Luzzio
-            </Link>
+            <div className="flex-none flex justify-center">
+               <Link
+                  to="/"
+                  className="text-xl md:text-2xl font-black uppercase tracking-[0.4em] text-black"
+               >
+                  Luzzio
+               </Link>
+            </div>
 
             {/* Right: Tools & Bag */}
-            <div className="flex items-center space-x-6 md:space-x-8">
+            <div className="flex-1 flex items-center justify-end space-x-6 md:space-x-8 min-w-0">
                <div className="hidden md:flex items-center space-x-8">
                   <Link to={user?.role === 'admin' ? '/admin' : '/profile'} className="flex items-center text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50">
                      <User size={16} strokeWidth={2} />
