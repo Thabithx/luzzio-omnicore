@@ -68,9 +68,18 @@ export function Navbar() {
                <Link to="/faq" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">FAQ</Link>
                <Link to="/shipping-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Shipping</Link>
                <Link to="/return-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Returns</Link>
-               <Link to="/exchange-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Exchange</Link>
-               <Link to="/refund-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Refund</Link>
-               <Link to="/privacy-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Privacy</Link>
+
+               {/* Overflow Dropdown */}
+               <div className="relative group flex items-center h-full">
+                  <button className="text-[10px] font-black uppercase tracking-widest text-black group-hover:opacity-50 transition-opacity whitespace-nowrap flex items-center gap-1">
+                     More +
+                  </button>
+                  <div className="absolute top-full left-0 w-48 bg-white border border-black opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[200] py-2 shadow-xl translate-y-2 group-hover:translate-y-0">
+                     <Link to="/exchange-policy" className="block px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors">Exchange</Link>
+                     <Link to="/refund-policy" className="block px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors">Refund</Link>
+                     <Link to="/privacy-policy" className="block px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors">Privacy</Link>
+                  </div>
+               </div>
             </div>
 
             {/* Mobile Menu Toggle */}
