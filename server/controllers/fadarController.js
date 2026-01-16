@@ -61,9 +61,11 @@ exports.createFadarParcel = async (req, res) => {
       params.append('recipient_city', fadarCity);
 
       const isCod = order.paymentMethod === 'COD' || order.paymentMethod === 'Cash on Delivery';
-      const codAmount = isCod ? order.totalPrice.toString() : '0';
+      if (isCod) {
+         params.append('amount', order.totalPrice.toString());
+      }
+      // If not COD, we DO NOT append 'amount' at all, to avoid "Invalid Amount" errors from API
 
-      params.append('amount', codAmount);
       params.append('exchange', 'no'); // Defaulting to 'no', adjust if needed
 
       // Log the payload for debugging (Redact API Key)
