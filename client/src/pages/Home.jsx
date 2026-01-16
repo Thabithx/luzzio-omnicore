@@ -156,17 +156,22 @@ export function Home() {
                      <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
                   ))
                ) : (
-                  newProducts.map((product, idx) => (
-                     <div key={product._id} className={cn(
-                        "border-black",
-                        idx < newProducts.length - 2 ? "border-b" : "border-b-0",
-                        idx < newProducts.length - 4 ? "md:border-b" : "md:border-b-0",
-                        idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
-                        idx % 4 === 3 ? "md:border-r-0" : ""
-                     )}>
-                        <ProductCard product={product} />
-                     </div>
-                  ))
+                  newProducts.map((product, idx) => {
+                     const isLastRowMobile = idx >= (Math.ceil(newProducts.length / 2) - 1) * 2;
+                     const isLastRowDesktop = idx >= (Math.ceil(newProducts.length / 4) - 1) * 4;
+
+                     return (
+                        <div key={product._id} className={cn(
+                           "border-black",
+                           !isLastRowMobile ? "border-b" : "border-b-0",
+                           !isLastRowDesktop ? "md:border-b" : "md:border-b-0",
+                           idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
+                           idx % 4 === 3 ? "md:border-r-0" : ""
+                        )}>
+                           <ProductCard product={product} />
+                        </div>
+                     );
+                  })
                )}
             </div>
             <div className="py-10 flex justify-center bg-brand-grey">
