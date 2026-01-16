@@ -455,43 +455,43 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                   <div className="space-y-4">
                      <label className="text-small-brand text-gray-400">Archive Assets (Visual) - Max 10 Documents</label>
 
-                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        <div className="relative border border-dashed border-black/20 hover:border-black transition-colors aspect-[3/4] flex flex-col items-center justify-center gap-3 bg-brand-grey/30 group">
-                           {uploading ? (
-                              <Loader2 size={20} className="animate-spin text-black" />
-                           ) : (
-                              <Upload size={20} className="text-black/40 group-hover:text-black transition-colors" />
-                           )}
-                           <p className="text-[8px] font-black uppercase tracking-widest text-center px-2">
-                              {uploading ? 'Synchronizing...' : 'Upload Sequence Assets'}
-                           </p>
-                           <input
-                              type="file"
-                              multiple
-                              className="absolute inset-0 opacity-0 cursor-pointer"
-                              onChange={handleUpload}
-                              disabled={uploading}
-                              accept="image/*"
-                           />
-                        </div>
-
+                     <div className="space-y-4">
                         <Reorder.Group
                            values={formData.images.filter(img => img !== '')}
                            onReorder={(newImages) => setFormData({ ...formData, images: newImages })}
-                           className="contents"
+                           className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"
                         >
+                           {/* Static Upload Card */}
+                           <div className="relative border border-dashed border-black/20 hover:border-black transition-colors aspect-[3/4] flex flex-col items-center justify-center gap-3 bg-brand-grey/30 group cursor-pointer">
+                              {uploading ? (
+                                 <Loader2 size={20} className="animate-spin text-black" />
+                              ) : (
+                                 <Upload size={20} className="text-black/40 group-hover:text-black transition-colors" />
+                              )}
+                              <p className="text-[8px] font-black uppercase tracking-widest text-center px-2">
+                                 {uploading ? 'Synchronizing...' : 'Upload Sequence Assets'}
+                              </p>
+                              <input
+                                 type="file"
+                                 multiple
+                                 className="absolute inset-0 opacity-0 cursor-pointer"
+                                 onChange={handleUpload}
+                                 disabled={uploading}
+                                 accept="image/*"
+                              />
+                           </div>
+
+                           {/* Draggable Items */}
                            {formData.images.filter(img => img !== '').map((img, index) => (
                               <Reorder.Item
                                  key={img}
                                  value={img}
-                                 layout
-                                 whileDrag={{ scale: 1.05, boxShadow: "0px 10px 30px rgba(0,0,0,0.2)" }}
-                                 className="w-full aspect-[3/4] bg-white border border-black overflow-hidden relative group cursor-grab active:cursor-grabbing z-50"
+                                 className="w-full aspect-[3/4] bg-white border border-black overflow-hidden relative group cursor-grab active:cursor-grabbing z-0 hover:z-50"
                               >
                                  <img
                                     src={img}
                                     alt={`Asset ${index + 1}`}
-                                    className="w-full h-full object-cover transition-all duration-500"
+                                    className="w-full h-full object-cover pointer-events-none select-none"
                                     draggable={false}
                                  />
 
@@ -505,7 +505,9 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                                     <div className="flex gap-2">
                                        <button
                                           type="button"
-                                          onClick={() => {
+                                          onPointerDown={(e) => e.stopPropagation()} // Prevent drag start on click
+                                          onClick={(e) => {
+                                             e.stopPropagation();
                                              const newImages = formData.images.filter((_, i) => i !== index);
                                              setFormData({ ...formData, images: newImages.length > 0 ? newImages : [''] });
                                           }}
