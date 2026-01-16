@@ -46,12 +46,21 @@ exports.createFadarParcel = async (req, res) => {
       const params = new URLSearchParams();
       params.append('api_key', apiKey);
       params.append('client_id', clientId);
-      params.append('order_id', order._id.toString());
+      params.append('client_id', clientId);
+      // Truncate Order ID to last 12 chars to avoid "Value too long" errors (common in legacy APIs)
+      const shortOrderId = order._id.toString().slice(-12);
+      params.append('order_id', shortOrderId);
+
       params.append('parcel_weight', parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1'); // Default to 1kg if not provided or invalid
       params.append('parcel_description', `Order #${order._id.toString().slice(-6).toUpperCase()}`);
       params.append('recipient_name', `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim());
-      params.append('recipient_contact_1', order.shippingAddress.phone || '');
-      params.append('recipient_contact_2', order.shippingAddress.phone2 || '');
+
+      // Remove leading zero from phone numbers (e.g. 0771234567 -> 771234567)
+      const cleanPhone1 = (order.shippingAddress.phone || '').replace(/^0/, '');
+      const cleanPhone2 = (order.shippingAddress.phone2 || '').replace(/^0/, '');
+
+      params.append('recipient_contact_1', cleanPhone1);
+      params.append('recipient_contact_2', cleanPhone2);
       params.append('recipient_address', order.shippingAddress.address || '');
       params.append('recipient_city', order.shippingAddress.city || '');
 

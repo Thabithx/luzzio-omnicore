@@ -324,7 +324,7 @@ const AdminOrders = () => {
                const detailStr = typeof apiDetail === 'object' ? JSON.stringify(apiDetail) : apiDetail;
 
                const debugInfo = fadarErr.response?.data?.debugParams
-                  ? `\n\n[DEBUG INFO]\nCITY: "${fadarErr.response.data.debugParams.recipient_city}"\nAMT: ${fadarErr.response.data.debugParams.amount}\nTEL: ${fadarErr.response.data.debugParams.recipient_contact_1}\nNAME: ${fadarErr.response.data.debugParams.recipient_name}`
+                  ? `\n\n[DEBUG INFO]\nOID: ${fadarErr.response.data.debugParams.order_id}\nCITY: "${fadarErr.response.data.debugParams.recipient_city}"\nAMT: ${fadarErr.response.data.debugParams.amount}\nTEL: ${fadarErr.response.data.debugParams.recipient_contact_1}\nNAME: ${fadarErr.response.data.debugParams.recipient_name}`
                   : '';
 
                alert(`COURIER SYNC FAILED: ${errorMsg} ${detailStr ? `(${detailStr})` : ''}${debugInfo}`);
