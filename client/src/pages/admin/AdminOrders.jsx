@@ -100,7 +100,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                      {order.orderItems.map((item, i) => (
                         <div key={i} className="flex p-6 gap-6 items-center hover:bg-brand-grey transition-colors">
                            <div className="w-16 aspect-[3/4] bg-white border border-black overflow-hidden shrink-0 shadow-sm">
-                              <img src={item.image} alt="" className="w-full h-full object-cover" />
+                              <img src={item.image} alt="" className="w-full h-full object-cover" style={{ filter: 'none' }} />
                            </div>
                            <div className="flex-1 min-w-0">
                               <p className="text-sm font-black uppercase tracking-tight truncate">{item.name}</p>
@@ -149,13 +149,19 @@ const AdminOrders = () => {
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [selectedIds, setSelectedIds] = useState([]);
    const [parcelWeights, setParcelWeights] = useState({});
+   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
    const { token } = useAuth();
 
-   const fetchOrders = async () => {
+   const fetchOrders = async (page = 1) => {
       try {
          setLoading(true);
-         const res = await api.get('/orders');
+         const res = await api.get(`/orders?page=${page}&limit=20`);
          setOrders(res.data.data);
+         setPagination({
+            page: res.data.page,
+            pages: res.data.pages,
+            total: res.data.count
+         });
       } catch (err) {
          console.error('Error fetching orders:', err);
       } finally {
@@ -170,10 +176,9 @@ const AdminOrders = () => {
    const handleTrackingUpdate = async (orderId, itemId, trackingNumber) => {
       try {
          await api.put(`/orders/${orderId}/item/${itemId}/tracking`, { trackingNumber });
-         fetchOrders();
-         // Optionally update the selected order state to reflect changes without closing modal if needed, 
-         // but fetchOrders + re-selecting might be complex. Let's just update local state if we want persistence in modal.
-         const res = await api.get('/orders');
+         fetchOrders(pagination.page);
+         // Optionally update the selected order state to reflect changes without closing modal if needed
+         const res = await api.get(`/orders?page=${pagination.page}&limit=20`);
          const updatedOrder = res.data.data.find(o => o._id === orderId);
          setSelectedOrder(updatedOrder);
       } catch (err) {
@@ -206,7 +211,7 @@ const AdminOrders = () => {
             // Normal status update
             await api.put(`/orders/${id}/status`, { status });
          }
-         fetchOrders();
+         fetchOrders(pagination.page);
       } catch (err) {
          console.error('Error updating order status:', err);
          alert(err.response?.data?.message || 'Error updating status');
@@ -256,7 +261,7 @@ const AdminOrders = () => {
 
          alert(res.data.message || `Successfully updated ${selectedIds.length} orders.`);
          setSelectedIds([]);
-         fetchOrders();
+         fetchOrders(pagination.page);
       } catch (err) {
          console.error('Error in bulk status update:', err);
          alert(err.response?.data?.message || 'Failed to update orders in bulk.');
@@ -311,8 +316,8 @@ const AdminOrders = () => {
                      </div>
                   )}
                   <div className="text-right space-y-1">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-black">{orders.length} Sequences</p>
-                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Real-Time Refresh Active</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-black">{pagination.total} Sequences</p>
+                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Page {pagination.page} of {pagination.pages}</p>
                   </div>
                </div>
             </div>
@@ -431,6 +436,32 @@ const AdminOrders = () => {
                         ))}
                      </tbody>
                   </table>
+               </div>
+
+               {/* PAGINATION CONTROLS */}
+               <div className="flex justify-between items-center p-6 border-t border-black bg-white">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                     Showing {orders.length} of {pagination.total} Sequences
+                  </div>
+                  <div className="flex gap-4">
+                     <button
+                        onClick={() => fetchOrders(Math.max(1, pagination.page - 1))}
+                        disabled={pagination.page === 1}
+                        className="px-6 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-black"
+                     >
+                        Previous
+                     </button>
+                     <div className="flex items-center px-4">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-black">Page {pagination.page}</span>
+                     </div>
+                     <button
+                        onClick={() => fetchOrders(Math.min(pagination.pages, pagination.page + 1))}
+                        disabled={pagination.page === pagination.pages}
+                        className="px-6 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-black"
+                     >
+                        Next
+                     </button>
+                  </div>
                </div>
             </div>
          </div>

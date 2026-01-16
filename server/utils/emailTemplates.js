@@ -1,6 +1,6 @@
 /**
  * Luzzio Architectural Email Templates
- * Premium Dark Theme - Optimized for Inbox Delivery & High Fidelity Visuals.
+ * Premium Light Theme - High Reliability & Clean Aesthetic
  */
 
 const baseTemplate = (content, title, preheader) => `
@@ -11,57 +11,91 @@ const baseTemplate = (content, title, preheader) => `
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>${title}</title>
    <style>
-      body { margin: 0; padding: 0; background-color: #000000; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+      body { margin: 0; padding: 0; background-color: #F4F4F4; color: #000000; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
       table { border-collapse: collapse; width: 100%; }
-      .container { max-width: 600px; margin: 0 auto; background-color: #111111; }
+      .wrapper { width: 100%; table-layout: fixed; background-color: #F4F4F4; padding-bottom: 40px; }
+      .container { max-width: 600px; margin: 0 auto; background-color: #FFFFFF; }
       .content { padding: 40px; }
-      .header { border-bottom: 1px solid #333333; padding-bottom: 20px; }
-      .footer { border-top: 1px solid #333333; padding-top: 20px; text-align: center; color: #666666; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
-      .btn { display: inline-block; padding: 12px 24px; background-color: #2b7a5a; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; }
-      .text-dim { color: #999999; }
-      .divider { border-bottom: 1px solid #333333; margin: 20px 0; }
-      .item-row td { padding: 15px 0; border-bottom: 1px solid #222222; }
-      .summary-row td { padding: 5px 0; }
-      .total-row td { padding: 15px 0; font-size: 18px; font-weight: bold; }
-      .address-box { font-size: 13px; line-height: 1.6; color: #cccccc; }
-      h1, h2, h3, h4 { margin: 0; text-transform: uppercase; letter-spacing: 2px; }
-      img { max-width: 100%; height: auto; display: block; }
+      .header { border-bottom: 2px solid #000000; padding: 30px 40px; text-align: center; }
+      .footer { padding: 30px 40px; text-align: center; background-color: #F9F9F9; border-top: 1px solid #E5E5E5; }
+      
+      /* Typography */
+      h1 { font-size: 24px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 0; color: #000000; }
+      h2 { font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0; color: #000000; }
+      p { margin: 0 0 15px 0; font-size: 14px; line-height: 1.6; color: #333333; }
+      .text-small { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666666; font-weight: 600; }
+      .text-bold { font-weight: 700; color: #000000; }
+      
+      /* Components */
+      .btn { display: inline-block; padding: 14px 28px; background-color: #000000; color: #FFFFFF; text-decoration: none; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+      .divider { border-bottom: 1px solid #E5E5E5; margin: 20px 0; }
+      
+      /* Tables */
+      .item-row td { padding: 15px 0; border-bottom: 1px solid #E5E5E5; vertical-align: top; }
+      .total-row td { padding: 15px 0; font-size: 16px; font-weight: 700; border-top: 2px solid #000000; color: #000000; }
+      
+      /* Utilities */
+      .mb-20 { margin-bottom: 20px; }
+      .mb-30 { margin-bottom: 30px; }
+      .text-right { text-align: right; }
+      .text-center { text-align: center; }
    </style>
 </head>
 <body>
    ${preheader ? `<div style="display:none; font-size:1px; line-height:1px; max-height:0px; max-width:0px; opacity:0; overflow:hidden;">${preheader}</div>` : ''}
-   <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-      <tr>
-         <td align="center" style="padding: 20px;">
-            <table role="presentation" class="container" cellspacing="0" cellpadding="0">
-               <tr>
-                  <td class="content">
-                     ${content}
-                     <div class="footer">
-                        <div style="margin-bottom: 10px;">LUZZIO</div>
-                        &copy; ${new Date().getFullYear()} LUZZIO | ALL RIGHTS RESERVED
-                     </div>
-                  </td>
-               </tr>
-            </table>
-         </td>
-      </tr>
-   </table>
+   <div class="wrapper">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+         <tr>
+            <td align="center" style="padding-top: 20px; padding-bottom: 20px;">
+               <table role="presentation" class="container" cellspacing="0" cellpadding="0">
+                  <!-- BRAND HEADER -->
+                  <tr>
+                     <td class="header">
+                        <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}" style="text-decoration: none; color: #000000;">
+                           <h1>LUZZIO</h1>
+                        </a>
+                     </td>
+                  </tr>
+                  
+                  <!-- MAIN CONTENT -->
+                  <tr>
+                     <td class="content">
+                        ${content}
+                     </td>
+                  </tr>
+
+                  <!-- FOOTER -->
+                  <tr>
+                     <td class="footer">
+                        <p class="text-small" style="margin-bottom: 10px;">
+                           &copy; ${new Date().getFullYear()} Luzzio | Sri Lanka
+                        </p>
+                        <div style="margin-bottom: 10px;">
+                           <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}" style="color: #666666; text-decoration: none; font-size: 11px; margin: 0 5px;">Shop</a>
+                           <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/profile" style="color: #666666; text-decoration: none; font-size: 11px; margin: 0 5px;">Account</a>
+                        </div>
+                     </td>
+                  </tr>
+               </table>
+            </td>
+         </tr>
+      </table>
+   </div>
 </body>
 </html>
 `;
 
 const renderItems = (items) => items.map(item => `
    <tr class="item-row">
-      <td width="80" style="vertical-align: top; padding-right: 15px;">
-         <img src="${item.image}" width="70" style="border-radius: 4px; border: 1px solid #333;">
+      <td width="70" style="padding-right: 15px;">
+         <img src="${item.image}" width="60" style="border: 1px solid #E5E5E5; display: block;">
       </td>
-      <td style="vertical-align: top;">
-         <div style="font-size: 14px; font-weight: bold;">${item.name}</div>
-         <div style="font-size: 12px; color: #999; margin-top: 4px;">${item.price.toLocaleString()} x ${item.qty}</div>
-         <div style="font-size: 11px; color: #666; margin-top: 2px;">SIZE: ${item.size}</div>
+      <td>
+         <div class="text-bold" style="font-size: 13px; margin-bottom: 4px;">${item.name}</div>
+         <div class="text-small">Size: ${item.size}</div>
+         <div class="text-small" style="margin-top: 2px;">Qty: ${item.qty}</div>
       </td>
-      <td align="right" style="vertical-align: top; font-size: 14px; font-weight: bold;">
+      <td class="text-right" style="font-size: 13px; font-weight: 700;">
          Rs ${(item.price * item.qty).toLocaleString()}.00
       </td>
    </tr>
@@ -69,153 +103,150 @@ const renderItems = (items) => items.map(item => `
 
 exports.orderConfirmationTemplate = (order, user) => {
    const orderIdShort = order._id.toString().slice(-6).toUpperCase();
-   const dateStr = new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-   const timeStr = new Date(order.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
+   const dateStr = new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
    const content = `
-      <div class="header" style="text-align: left; margin-bottom: 30px;">
-         <div style="margin-bottom: 20px;">
-            <h2 style="font-size: 16px; color: #ffffff;">${user.name} placed order #${orderIdShort} on ${dateStr} at ${timeStr}</h2>
-         </div>
-         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/profile" class="btn">View order</a>
+      <div class="mb-30 text-center">
+         <h2 style="font-size: 20px; margin-bottom: 10px;">Order Confirmed</h2>
+         <p style="color: #666666;">Thank you for your purchase, ${user.name}.</p>
+         <div class="text-small" style="margin-top: 5px;">Order #${orderIdShort} • ${dateStr}</div>
       </div>
 
-      <div style="margin-bottom: 30px;">
-         <h4 style="font-size: 12px; margin-bottom: 20px;">Order summary</h4>
+      <div class="mb-30">
          <table role="presentation">
             ${renderItems(order.orderItems)}
          </table>
       </div>
 
-      <div style="margin-bottom: 30px;">
+      <div class="mb-30">
          <table role="presentation">
-            <tr class="summary-row">
-               <td class="text-dim" style="font-size: 14px;">Subtotal</td>
-               <td align="right" style="font-size: 14px;">Rs ${order.itemsPrice.toLocaleString()}.00</td>
+            <tr>
+               <td style="padding: 5px 0; color: #666666;">Subtotal</td>
+               <td class="text-right" style="padding: 5px 0;">Rs ${order.itemsPrice.toLocaleString()}.00</td>
             </tr>
-            <tr class="summary-row">
-               <td class="text-dim" style="font-size: 14px;">Shipping <span style="font-size: 11px;">(DELIVERY FEE)</span></td>
-               <td align="right" style="font-size: 14px;">Rs ${order.shippingPrice.toLocaleString()}.00</td>
+            <tr>
+               <td style="padding: 5px 0; color: #666666;">Shipping</td>
+               <td class="text-right" style="padding: 5px 0;">Rs ${order.shippingPrice.toLocaleString()}.00</td>
             </tr>
             <tr class="total-row">
-               <td style="border-top: 1px solid #333;">Total</td>
-               <td align="right" style="border-top: 1px solid #333;">Rs ${order.totalPrice.toLocaleString()}.00 LKR</td>
+               <td>Total</td>
+               <td class="text-right">Rs ${order.totalPrice.toLocaleString()}.00 LKR</td>
             </tr>
          </table>
       </div>
 
-      <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
-         <div style="margin-bottom: 20px;">
-            <h4 style="font-size: 11px; margin-bottom: 8px;">Payment processing method</h4>
-            <div style="font-size: 13px; color: #ccc;">${order.paymentMethod}</div>
-         </div>
-         <div style="margin-bottom: 20px;">
-            <h4 style="font-size: 11px; margin-bottom: 8px;">Delivery method</h4>
-            <div style="font-size: 13px; color: #ccc;">DELIVERY FEE</div>
-         </div>
-         <div style="margin-bottom: 20px;">
-            <h4 style="font-size: 11px; margin-bottom: 8px;">Shipping address</h4>
-            <div class="address-box">
-               ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}<br>
-               ${order.shippingAddress.address}<br>
-               ${order.shippingAddress.city}, ${order.shippingAddress.postalCode || ''}<br>
-               Sri Lanka<br>
-               ${order.shippingAddress.phone}
-            </div>
-         </div>
+      <div class="mb-30" style="border-top: 1px solid #E5E5E5; padding-top: 20px;">
+         <h3 style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px;">Customer Details</h3>
+         <table role="presentation">
+            <tr>
+               <td width="50%" style="vertical-align: top; padding-right: 10px;">
+                  <div class="text-small mb-20">Shipping Address</div>
+                  <div style="font-size: 13px; line-height: 1.5; color: #333;">
+                     ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}<br>
+                     ${order.shippingAddress.address}<br>
+                     ${order.shippingAddress.city}<br>
+                     ${order.shippingAddress.phone}
+                  </div>
+               </td>
+               <td width="50%" style="vertical-align: top;">
+                  <div class="text-small mb-20">Payment</div>
+                  <div style="font-size: 13px; line-height: 1.5; color: #333;">
+                     ${order.paymentMethod}<br>
+                     Total: Rs ${order.totalPrice.toLocaleString()}
+                  </div>
+               </td>
+            </tr>
+         </table>
+      </div>
+
+      <div class="text-center">
+         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/profile" class="btn">View Order</a>
       </div>
    `;
 
-   return baseTemplate(content, `Order Confirmation #${orderIdShort}`, `Thank you for your purchase. Order #${orderIdShort} has been received.`);
+   return baseTemplate(content, `Order Confirmed #${orderIdShort}`, `Your order #${orderIdShort} has been received.`);
 };
 
 exports.trackingUpdateTemplate = (order, item, trackingNumber, user) => {
    const orderIdShort = order._id.toString().slice(-6).toUpperCase();
 
    const content = `
-      <div class="header" style="text-align: left; margin-bottom: 30px;">
-         <h1 style="font-size: 24px; margin-bottom: 10px;">LUZZIO</h1>
-         <div style="font-size: 12px; color: #999; letter-spacing: 4px;">LOGISTICS UPDATE</div>
+      <div class="mb-30 text-center">
+         <h2 style="font-size: 20px; margin-bottom: 10px;">Shipment On The Way</h2>
+         <p style="color: #666666;">Good news ${user.name}, your item has been dispatched.</p>
       </div>
 
-      <div style="margin-bottom: 30px;">
-         <p style="font-size: 14px; line-height: 1.6; color: #cccccc;">
-            Hello ${user.name}, your shipment is on the way. A tracking number has been registered for an item in your selection.
-         </p>
-      </div>
-
-      <div style="padding: 25px; background-color: #1a1a1a; border: 1px solid #333; border-radius: 4px; margin-bottom: 30px;">
+      <div class="mb-30" style="background-color: #F9F9F9; padding: 20px; border: 1px solid #E5E5E5;">
          <table role="presentation">
             <tr>
-               <td>
-                  <div style="font-size: 11px; color: #666; text-transform: uppercase;">Item</div>
-                  <div style="font-size: 15px; font-weight: bold; margin-top: 5px;">${item.name}</div>
+               <td style="vertical-align: middle;">
+                  <div class="text-small" style="margin-bottom: 5px;">Item</div>
+                  <div class="text-bold">${item.name}</div>
                </td>
-               <td align="right">
-                  <div style="font-size: 11px; color: #666; text-transform: uppercase;">Tracking Number</div>
-                  <div style="font-size: 15px; font-weight: bold; margin-top: 5px; color: #ffffff;">${trackingNumber}</div>
+               <td class="text-right" style="vertical-align: middle;">
+                  <div class="text-small" style="margin-bottom: 5px;">Tracking Number</div>
+                  <div style="font-size: 16px; font-weight: 700; color: #000;">${trackingNumber}</div>
                </td>
             </tr>
          </table>
       </div>
 
-      <div style="text-align: center; margin-bottom: 40px;">
-         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/profile" class="btn">Track Order Registry</a>
+      <div class="text-center">
+         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/profile" class="btn">Track Package</a>
       </div>
    `;
 
-   return baseTemplate(content, "Shipment Update", `Tracking updated for your order selection.`);
+   return baseTemplate(content, `Shipment Update #${orderIdShort}`, `Tracking number available for your order.`);
 };
 
 exports.adminOrderNotificationTemplate = (order) => {
    const orderIdShort = order._id.toString().slice(-6).toUpperCase();
 
    const content = `
-      <div class="header" style="margin-bottom: 30px; border-bottom: 2px solid #2b7a5a;">
-         <h1 style="font-size: 20px; color: #ffffff;">NEW ORDER RECEIVED</h1>
-         <div style="font-size: 9px; color: #2b7a5a; font-weight: bold; margin-top: 5px;">PROTOCOL: ACTION REQUIRED</div>
+      <div class="mb-30">
+         <div style="background-color: #000000; color: #FFFFFF; padding: 10px 15px; display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+            New Order Received
+         </div>
       </div>
 
-      <div style="margin-bottom: 30px;">
+      <div class="mb-30">
          <table role="presentation">
             <tr>
-               <td style="padding: 10px 0; font-size: 13px; color: #999;">Order ID</td>
-               <td align="right" style="padding: 10px 0; font-size: 13px; font-weight: bold;">${order._id}</td>
+               <td style="padding-bottom: 10px; font-size: 14px; color: #666;">Order ID</td>
+               <td class="text-right" style="font-size: 14px; font-weight: 700;">#${orderIdShort}</td>
             </tr>
             <tr>
-               <td style="padding: 10px 0; font-size: 13px; color: #999;">Customer</td>
-               <td align="right" style="padding: 10px 0; font-size: 13px; font-weight: bold;">${order.shippingAddress.firstName} ${order.shippingAddress.lastName}</td>
+               <td style="padding-bottom: 10px; font-size: 14px; color: #666;">Customer</td>
+               <td class="text-right" style="font-size: 14px; font-weight: 700;">${order.shippingAddress.firstName} ${order.shippingAddress.lastName}</td>
             </tr>
             <tr>
-               <td style="padding: 10px 0; font-size: 13px; color: #999;">Value</td>
-               <td align="right" style="padding: 10px 0; font-size: 13px; font-weight: bold; color: #2b7a5a;">Rs ${order.totalPrice.toLocaleString()}.00</td>
+               <td style="padding-bottom: 10px; font-size: 14px; color: #666;">Total Value</td>
+               <td class="text-right" style="font-size: 14px; font-weight: 700;">Rs ${order.totalPrice.toLocaleString()}</td>
             </tr>
          </table>
       </div>
 
-      <div style="margin-bottom: 30px;">
-         <h4 style="font-size: 11px; margin-bottom: 15px; color: #666;">Items to pack</h4>
+      <div class="mb-30">
+         <div class="text-small" style="margin-bottom: 15px; border-bottom: 1px solid #E5E5E5; padding-bottom: 10px;">Items to Pack</div>
          <table role="presentation">
-            ${order.orderItems.map(item => `
+             ${order.orderItems.map(item => `
                <tr>
-                  <td style="padding: 8px 0; font-size: 13px; border-bottom: 1px solid #222;">${item.name} (${item.size})</td>
-                  <td align="right" style="padding: 8px 0; font-size: 13px; font-weight: bold; border-bottom: 1px solid #222;">${item.qty} UNITS</td>
+                  <td style="padding: 5px 0; font-size: 13px;">${item.name} (${item.size})</td>
+                  <td class="text-right" style="padding: 5px 0; font-size: 13px; font-weight: 700;">x${item.qty}</td>
                </tr>
-            `).join('')}
+             `).join('')}
          </table>
       </div>
 
-      <div style="text-align: center; margin-top: 20px;">
-         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/admin/orders" class="btn" style="background-color: #ffffff; color: #000000;">Manage in Admin Panel</a>
+      <div class="text-center">
+         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/admin/orders" class="btn">Manage Order</a>
       </div>
    `;
 
-   return baseTemplate(content, "Admin: New Order Notification", `Order #${orderIdShort} has been received and is pending processing.`);
+   return baseTemplate(content, `New Order #${orderIdShort}`, `New order received from ${order.shippingAddress.firstName}.`);
 };
 
 exports.paymentSuccessTemplate = (order, is_admin = false) => {
-   // Protocol: Re-use the high-fidelity confirmation template for both initial recording and payment success
-   // This ensures the customer gets the detailed receipt they expect.
    if (!is_admin) {
       return exports.orderConfirmationTemplate(order, { name: order.shippingAddress.firstName });
    }

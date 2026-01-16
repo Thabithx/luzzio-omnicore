@@ -306,9 +306,22 @@ exports.syncMyOrders = async (req, res) => {
 // @access  Private/Admin
 exports.getOrders = async (req, res) => {
    try {
-      const orders = await Order.find({}).populate('user', 'id name').sort('-createdAt');
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 20;
+      const skip = (page - 1) * limit;
+
+      const count = await Order.countDocuments({});
+      const orders = await Order.find({})
+         .populate('user', 'id name')
+         .sort('-createdAt')
+         .skip(skip)
+         .limit(limit);
+
       res.status(200).json({
          success: true,
+         count,
+         pages: Math.ceil(count / limit),
+         page,
          data: orders
       });
    } catch (err) {
