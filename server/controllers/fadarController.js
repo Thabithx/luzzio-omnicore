@@ -46,7 +46,6 @@ exports.createFadarParcel = async (req, res) => {
       const params = new URLSearchParams();
       params.append('api_key', apiKey);
       params.append('client_id', clientId);
-      params.append('client_id', clientId);
       // Truncate Order ID to last 12 chars to avoid "Value too long" errors (common in legacy APIs)
       const shortOrderId = order._id.toString().slice(-12);
       params.append('order_id', shortOrderId);
