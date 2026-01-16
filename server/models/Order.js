@@ -92,6 +92,10 @@ const orderSchema = new mongoose.Schema({
    fadar_tracking_number: {
       type: String,
       default: ''
+   },
+   trackingNumber: {
+      type: String,
+      default: ''
    }
 }, {
    timestamps: true

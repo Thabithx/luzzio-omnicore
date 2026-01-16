@@ -167,36 +167,42 @@ exports.orderConfirmationTemplate = (order, user) => {
    return baseTemplate(content, `Order Confirmed #${orderIdShort}`, `Your order #${orderIdShort} has been received.`);
 };
 
-exports.trackingUpdateTemplate = (order, item, trackingNumber, user) => {
+exports.trackingUpdateTemplate = (order, trackingNumber, user) => {
    const orderIdShort = order._id.toString().slice(-6).toUpperCase();
 
    const content = `
       <div class="mb-30 text-center">
-         <h2 style="font-size: 20px; margin-bottom: 10px;">Shipment On The Way</h2>
-         <p style="color: #666666;">Good news ${user.name}, your item has been dispatched.</p>
+         <h2 style="font-size: 20px; margin-bottom: 10px;">Shipment Dispatched</h2>
+         <p style="color: #666666;">Good news ${user.name}, your order has been handed over to our courier partner.</p>
       </div>
 
       <div class="mb-30" style="background-color: #F9F9F9; padding: 20px; border: 1px solid #E5E5E5;">
+         <div class="text-center mb-20">
+            <div class="text-small" style="margin-bottom: 5px;">Tracking Reference</div>
+            <div style="font-size: 24px; font-weight: 900; color: #000; letter-spacing: 2px;">${trackingNumber}</div>
+         </div>
+         
+         <div class="divider"></div>
+         
+         <div class="text-small" style="margin-bottom: 10px; color: #666;">Shipment Content</div>
          <table role="presentation">
-            <tr>
-               <td style="vertical-align: middle;">
-                  <div class="text-small" style="margin-bottom: 5px;">Item</div>
-                  <div class="text-bold">${item.name}</div>
-               </td>
-               <td class="text-right" style="vertical-align: middle;">
-                  <div class="text-small" style="margin-bottom: 5px;">Tracking Number</div>
-                  <div style="font-size: 16px; font-weight: 700; color: #000;">${trackingNumber}</div>
-               </td>
-            </tr>
+             ${order.orderItems.map(item => `
+               <tr>
+                  <td style="padding: 5px 0;">
+                     <div class="text-bold" style="font-size: 13px;">${item.name}</div>
+                     <div class="text-small">Size: ${item.size} | Qty: ${item.qty}</div>
+                  </td>
+               </tr>
+             `).join('')}
          </table>
       </div>
 
       <div class="text-center">
-         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/profile" class="btn">Track Package</a>
+         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/profile" class="btn">Track Shipment</a>
       </div>
    `;
 
-   return baseTemplate(content, `Shipment Update #${orderIdShort}`, `Tracking number available for your order.`);
+   return baseTemplate(content, `Shipment Dispatched #${orderIdShort}`, `Your tracking number is now available.`);
 };
 
 exports.adminOrderNotificationTemplate = (order) => {

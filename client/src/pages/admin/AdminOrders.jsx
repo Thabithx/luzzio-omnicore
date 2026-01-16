@@ -6,15 +6,11 @@ import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
-   const [trackingNums, setTrackingNums] = useState({});
+   const [trackingNum, setTrackingNum] = useState('');
 
    useEffect(() => {
       if (order) {
-         const initial = {};
-         order.orderItems.forEach(item => {
-            initial[item._id] = item.trackingNumber || '';
-         });
-         setTrackingNums(initial);
+         setTrackingNum(order.trackingNumber || '');
       }
    }, [order]);
 
@@ -57,6 +53,29 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                         {order.shippingAddress.city}
                      </p>
                   </div>
+               </div>
+
+               {/* TRACKING MANAGEMENT (ORDER LEVEL) */}
+               <div className="p-6 bg-brand-grey border border-black space-y-4">
+                  <p className="text-small-brand text-gray-400">Logistics Tracking Protocol</p>
+                  <div className="flex gap-2">
+                     <input
+                        type="text"
+                        placeholder="ENTER MASTER TRACKING SEQUENCE..."
+                        value={trackingNum}
+                        onChange={(e) => setTrackingNum(e.target.value)}
+                        className="flex-1 text-[11px] font-black tracking-widest bg-white border border-black px-4 py-3 focus:outline-none uppercase"
+                     />
+                     <button
+                        onClick={() => onTrackingUpdate(order._id, trackingNum)}
+                        className="px-6 py-3 bg-black text-white text-[10px] font-black uppercase tracking-widest border border-black hover:bg-white hover:text-black transition-all"
+                     >
+                        Register Sequence
+                     </button>
+                  </div>
+                  <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest italic">
+                     * Assigning a tracking sequence will dispatch a notification protocol to the client.
+                  </p>
                </div>
 
                {order.fadar_order_id && (
@@ -104,21 +123,10 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                            </div>
                            <div className="flex-1 min-w-0">
                               <p className="text-sm font-black uppercase tracking-tight truncate">{item.name}</p>
-                              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">VOL: {item.size} <span className="mx-2 text-gray-200">|</span> QTY: {item.qty} UNITS</p>
-                              <div className="mt-4 flex gap-2">
-                                 <input
-                                    type="text"
-                                    placeholder="Tracking #"
-                                    value={trackingNums[item._id] || ''}
-                                    onChange={(e) => setTrackingNums({ ...trackingNums, [item._id]: e.target.value })}
-                                    className="text-[9px] font-black tracking-widest bg-brand-grey border border-black px-3 py-1.5 w-full max-w-[200px] focus:outline-none"
-                                 />
-                                 <button
-                                    onClick={() => onTrackingUpdate(order._id, item._id, trackingNums[item._id])}
-                                    className="px-4 py-1.5 bg-black text-white text-[9px] font-black uppercase tracking-widest border border-black hover:bg-white hover:text-black transition-all"
-                                 >
-                                    Register
-                                 </button>
+                              <div className="flex items-center gap-4 mt-1">
+                                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">VOL: {item.size}</p>
+                                 <span className="text-gray-300">|</span>
+                                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">QTY: {item.qty} UNITS</p>
                               </div>
                            </div>
                            <p className="text-sm font-black text-black">LKR {(item.price * item.qty).toLocaleString()}.00</p>
@@ -173,9 +181,9 @@ const AdminOrders = () => {
       if (token) fetchOrders();
    }, [token]);
 
-   const handleTrackingUpdate = async (orderId, itemId, trackingNumber) => {
+   const handleTrackingUpdate = async (orderId, trackingNumber) => {
       try {
-         await api.put(`/orders/${orderId}/item/${itemId}/tracking`, { trackingNumber });
+         await api.put(`/orders/${orderId}/tracking`, { trackingNumber });
          fetchOrders(pagination.page);
          // Optionally update the selected order state to reflect changes without closing modal if needed
          const res = await api.get(`/orders?page=${pagination.page}&limit=20`);

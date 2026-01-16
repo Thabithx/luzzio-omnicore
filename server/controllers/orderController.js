@@ -159,10 +159,10 @@ exports.createOrder = async (req, res) => {
    }
 };
 
-// @desc    Update order item tracking number
-// @route   PUT /api/orders/:id/item/:itemId/tracking
+// @desc    Update order tracking number (Order Level)
+// @route   PUT /api/orders/:id/tracking
 // @access  Private/Admin
-exports.updateItemTracking = async (req, res) => {
+exports.updateOrderTracking = async (req, res) => {
    try {
       const { trackingNumber } = req.body;
       const order = await Order.findById(req.params.id);
@@ -171,12 +171,7 @@ exports.updateItemTracking = async (req, res) => {
          return res.status(404).json({ success: false, message: 'Order not found' });
       }
 
-      const item = order.orderItems.id(req.params.itemId);
-      if (!item) {
-         return res.status(404).json({ success: false, message: 'Item not found in order' });
-      }
-
-      item.trackingNumber = trackingNumber;
+      order.trackingNumber = trackingNumber;
       await order.save();
 
       // Notify User
@@ -185,8 +180,8 @@ exports.updateItemTracking = async (req, res) => {
             await createNotification(
                order.user,
                'order_status',
-               'SHIPMENT UPDATED',
-               `A tracking number (${trackingNumber}) has been registered for your item: ${item.name}.`,
+               'SHIPMENT DISPATCHED',
+               `Tracking number (${trackingNumber}) has been assigned to your order.`,
                order._id,
                'Order'
             );
@@ -205,8 +200,8 @@ exports.updateItemTracking = async (req, res) => {
             if (recipientEmail) {
                await sendEmail({
                   email: recipientEmail,
-                  subject: `LUZZIO LOGISTICS: TRACKING REGISTERED FOR ${item.name.toUpperCase()}`,
-                  html: trackingUpdateTemplate(order, item, trackingNumber, { name: recipientName || 'Valued Client' })
+                  subject: `LUZZIO LOGISTICS: SHIPMENT DISPATCHED #${order._id.toString().slice(-6).toUpperCase()}`,
+                  html: trackingUpdateTemplate(order, trackingNumber, { name: recipientName || 'Valued Client' })
                });
             }
          } catch (emailErr) {
