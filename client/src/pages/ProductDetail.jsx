@@ -122,6 +122,30 @@ export function ProductDetail() {
       window.scrollTo(0, 0);
    }, [id]);
 
+   // Handle Default Gallery Selection (2nd Image Protocol)
+   useEffect(() => {
+      if (!loading && product && product.images?.length > 1 && scrollContainerRef.current) {
+         // Protocol requires a short delay for DOM stabilization
+         const timer = setTimeout(() => {
+            const container = scrollContainerRef.current;
+            const isMobile = window.innerWidth < 1024;
+
+            if (isMobile) {
+               // Horizontal Scroll to the 2nd item
+               container.scrollLeft = container.offsetWidth;
+            } else {
+               // Vertical Scroll - Identify 2nd image position
+               const items = container.children;
+               if (items[1]) {
+                  container.scrollTop = items[1].offsetTop;
+               }
+            }
+            setActiveImageIndex(1);
+         }, 100);
+         return () => clearTimeout(timer);
+      }
+   }, [loading, product, id]);
+
    if (loading) return <div className="min-h-screen flex items-center justify-center text-small-brand animate-pulse">Retrieving Product Details...</div>;
    if (!product) return <div className="min-h-screen flex items-center justify-center text-small-brand">Product not found in archive.</div>;
 
