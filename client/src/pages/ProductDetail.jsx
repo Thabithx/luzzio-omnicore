@@ -76,8 +76,18 @@ export function ProductDetail() {
             const res = await api.get(`/products/${id}`);
             const prodData = res.data.data;
             setProduct(prodData);
+            // Default Selection Logic: Smart Pre-selection
             if (prodData.colors?.length > 0) {
                setSelectedColor(prodData.colors[0]);
+            }
+
+            if (prodData.sizes?.length > 0) {
+               // Protocol: Identify smallest available stock variant
+               const firstInStock = prodData.sizes.find(size => {
+                  const variant = prodData.variants?.find(v => v.size === size);
+                  return variant ? variant.stock > 0 : true;
+               });
+               setSelectedSize(firstInStock || prodData.sizes[0]);
             }
 
             // Meta Pixel Tracking
