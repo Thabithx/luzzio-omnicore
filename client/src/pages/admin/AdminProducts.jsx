@@ -476,7 +476,6 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                         </div>
 
                         <Reorder.Group
-                           axis="x"
                            values={formData.images.filter(img => img !== '')}
                            onReorder={(newImages) => setFormData({ ...formData, images: newImages })}
                            className="contents"
@@ -485,7 +484,9 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                               <Reorder.Item
                                  key={img}
                                  value={img}
-                                 className="w-full aspect-[3/4] bg-white border border-black overflow-hidden relative group cursor-grab active:cursor-grabbing"
+                                 layout
+                                 whileDrag={{ scale: 1.05, boxShadow: "0px 10px 30px rgba(0,0,0,0.2)" }}
+                                 className="w-full aspect-[3/4] bg-white border border-black overflow-hidden relative group cursor-grab active:cursor-grabbing z-50"
                               >
                                  <img
                                     src={img}

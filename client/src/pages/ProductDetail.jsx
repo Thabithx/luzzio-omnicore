@@ -381,16 +381,7 @@ export function ProductDetail() {
                         </div>
                      </details>
 
-                     <details className="group border-t border-black py-6">
-                        <summary className="flex justify-between items-center list-none cursor-pointer">
-                           <span className="text-[10px] uppercase font-black tracking-[0.2em] text-black">Size & Fit</span>
-                           <Plus size={12} className="group-open:hidden text-black/40" />
-                           <Minus size={12} className="hidden group-open:block text-black/40" />
-                        </summary>
-                        <div className="mt-10 text-[10px] leading-[2] font-medium text-black/60 uppercase tracking-[0.15em]">
-                           <p>The model is wearing a size M. Height: 188 cm. Oversized fit recommended to take your normal size.</p>
-                        </div>
-                     </details>
+
 
                      <details className="group border-t border-b border-black py-6">
                         <summary className="flex justify-between items-center list-none cursor-pointer">

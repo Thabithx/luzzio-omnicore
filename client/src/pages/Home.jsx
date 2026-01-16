@@ -159,7 +159,8 @@ export function Home() {
                   newProducts.map((product, idx) => (
                      <div key={product._id} className={cn(
                         "border-black",
-                        "border-b md:border-b-0",
+                        idx < newProducts.length - 2 ? "border-b" : "border-b-0",
+                        idx < newProducts.length - 4 ? "md:border-b" : "md:border-b-0",
                         idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
                         idx % 4 === 3 ? "md:border-r-0" : ""
                      )}>
