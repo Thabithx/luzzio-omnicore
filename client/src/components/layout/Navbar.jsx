@@ -62,36 +62,39 @@ export function Navbar() {
          isMenuOpen ? "z-[400] top-0" : "z-[100] top-[28px] md:top-8"
       )}>
          <div className="max-w-[1920px] mx-auto px-4 md:px-10 h-14 md:h-12 flex items-center justify-between">
-            {/* Left: Navigation Pages */}
-            <div className="hidden lg:flex flex-1 items-center space-x-6 min-w-0">
-               <Link to="/contact" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Contact</Link>
-               <Link to="/faq" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">FAQ</Link>
-               <Link to="/shipping-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Shipping</Link>
-               <Link to="/return-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Returns</Link>
+            {/* Left: Navigation Pages & Mobile Toggle */}
+            <div className="flex-1 flex items-center min-w-0">
+               {/* Mobile Menu Toggle */}
+               <button className="lg:hidden p-1 mr-4" onClick={() => setIsMenuOpen(true)}>
+                  <Menu size={20} />
+               </button>
 
-               {/* Overflow Dropdown */}
-               <div className="relative group flex items-center h-full">
-                  <button className="text-[10px] font-black uppercase tracking-widest text-black group-hover:opacity-50 transition-opacity whitespace-nowrap flex items-center gap-1">
-                     More +
-                  </button>
-                  <div className="absolute top-full left-0 w-48 bg-white border border-black opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[200] py-2 shadow-xl translate-y-2 group-hover:translate-y-0">
-                     <Link to="/exchange-policy" className="block px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors">Exchange</Link>
-                     <Link to="/refund-policy" className="block px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors">Refund</Link>
-                     <Link to="/privacy-policy" className="block px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors">Privacy</Link>
+               {/* Desktop Navigation */}
+               <div className="hidden lg:flex items-center space-x-6">
+                  <Link to="/contact" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Contact</Link>
+                  <Link to="/faq" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">FAQ</Link>
+                  <Link to="/shipping-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Shipping</Link>
+                  <Link to="/return-policy" className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-50 transition-opacity whitespace-nowrap">Returns</Link>
+
+                  {/* Overflow Dropdown */}
+                  <div className="relative group flex items-center h-full">
+                     <button className="text-[10px] font-black uppercase tracking-widest text-black group-hover:opacity-50 transition-opacity whitespace-nowrap flex items-center gap-1">
+                        More +
+                     </button>
+                     <div className="absolute top-full left-0 w-48 bg-white border border-black opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[200] py-2 shadow-xl translate-y-2 group-hover:translate-y-0">
+                        <Link to="/exchange-policy" className="block px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors">Exchange</Link>
+                        <Link to="/refund-policy" className="block px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors">Refund</Link>
+                        <Link to="/privacy-policy" className="block px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors">Privacy</Link>
+                     </div>
                   </div>
                </div>
             </div>
 
-            {/* Mobile Menu Toggle */}
-            <button className="lg:hidden" onClick={() => setIsMenuOpen(true)}>
-               <Menu size={20} />
-            </button>
-
             {/* Center: Branding */}
-            <div className="flex-none flex justify-center">
+            <div className="flex-none flex justify-center px-4">
                <Link
                   to="/"
-                  className="text-xl md:text-2xl font-black uppercase tracking-[0.4em] text-black"
+                  className="text-xl md:text-2xl font-black uppercase tracking-[0.4em] text-black whitespace-nowrap"
                >
                   Luzzio
                </Link>
@@ -213,9 +216,9 @@ export function Navbar() {
          {isMenuOpen && (
             <div className="fixed inset-0 bg-white z-[300] flex flex-col animate-in fade-in slide-in-from-left duration-500 overflow-y-auto">
                {/* Menu Header */}
-               <div className="flex justify-between items-center px-6 h-14 border-b border-black">
+               <div className="relative flex justify-center items-center px-6 h-14 border-b border-black">
                   <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-xl font-black uppercase tracking-[0.4em]">Luzzio</Link>
-                  <button onClick={() => setIsMenuOpen(false)}>
+                  <button onClick={() => setIsMenuOpen(false)} className="absolute right-6">
                      <X size={24} strokeWidth={1} />
                   </button>
                </div>
