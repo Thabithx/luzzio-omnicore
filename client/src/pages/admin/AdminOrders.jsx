@@ -188,13 +188,20 @@ const AdminOrders = () => {
 
          if (oldStatus !== 'processing' && status === 'processing') {
             // Call Fadar API
-            const res = await api.post('/fadar/create-parcel', {
-               orderId: id,
-               parcel_weight: weight,
-               newStatus: status,
-               oldStatus: oldStatus
-            });
-            alert(`Fadar Parcel Created: ${res.data.data.fadar_order_id || 'Success'}`);
+            try {
+               const res = await api.post('/fadar/create-parcel', {
+                  orderId: id,
+                  parcel_weight: weight,
+                  newStatus: status,
+                  oldStatus: oldStatus
+               });
+               alert(`Fadar Parcel Created: ${res.data.data.fadar_order_id || 'Success'}`);
+            } catch (fadarErr) {
+               const errorMsg = fadarErr.response?.data?.message || 'Fadar API Connection Failed.';
+               const apiDetail = fadarErr.response?.data?.error?.message || '';
+               alert(`COURIER SYNC FAILED: ${errorMsg} ${apiDetail ? `(${apiDetail})` : ''}`);
+               return; // Halt status update if courier sync fails
+            }
          } else {
             // Normal status update
             await api.put(`/orders/${id}/status`, { status });

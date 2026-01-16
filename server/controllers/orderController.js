@@ -498,16 +498,26 @@ async function triggerFadarInternal(order, weight) {
    params.append('exchange', 'no');
 
    try {
+      console.log(`[FADAR BATCH] Initiating request for Order: ${order._id}`);
       const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', params, {
          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
 
+      console.log(`[FADAR BATCH] API RESPONSE:`, response.data);
+
       if (response.data) {
          const fadarId = response.data.fadar_order_id || response.data.order_id || response.data.id;
-         return { success: true, fadar_order_id: fadarId || 'CREATED_' + Date.now() };
+         if (fadarId) {
+            return { success: true, fadar_order_id: fadarId };
+         }
+         return {
+            success: false,
+            message: response.data.message || 'API accepted request but returned no sequence ID. Check Fadar credentials.'
+         };
       }
-      return { success: false, message: 'Empty response from Fadar' };
+      return { success: false, message: 'Empty payload received from Courier API.' };
    } catch (err) {
+      console.error(`[FADAR BATCH ERROR] Order ${order._id}:`, err.response?.data || err.message);
       return { success: false, message: err.message };
    }
 }

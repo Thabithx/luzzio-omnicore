@@ -65,18 +65,26 @@ exports.createFadarParcel = async (req, res) => {
          }
       });
 
-      console.log(`[FADAR] Response received for Order ${order._id}:`, response.data);
+      console.log(`[FADAR] API RAW RESPONSE:`, response.data);
 
       if (response.data) {
-         // Some APIs return status in the body even with 200 OK
-         // We'll store the ID if provided, or a fallback to mark as booked
+         // The Fadar API response structure can vary; we check for known ID fields
          const fadarId = response.data.fadar_order_id || response.data.order_id || response.data.id;
 
-         order.fadar_order_id = fadarId || 'CREATED_' + Date.now();
+         if (!fadarId) {
+            console.error(`[FADAR FAILURE] No Order ID in response for Order ${order._id}:`, response.data);
+            return res.status(400).json({
+               success: false,
+               message: response.data.message || 'Courier API accepted the request but did not return a tracking ID. Check Fadar credentials.',
+               error: response.data
+            });
+         }
+
+         order.fadar_order_id = fadarId;
          order.status = 'processing';
          const updatedOrder = await order.save();
 
-         console.log(`[FADAR] Order ${order._id} updated in DB with Fadar ID: ${order.fadar_order_id}`);
+         console.log(`[FADAR SUCCESS] Order ${order._id} synchronized with Fadar ID: ${order.fadar_order_id}`);
 
          return res.status(200).json({
             success: true,
@@ -85,17 +93,17 @@ exports.createFadarParcel = async (req, res) => {
          });
       }
 
-      console.warn(`[FADAR] API returned empty response for Order ${order._id}`);
-      res.status(200).json({
-         success: true,
-         data: response.data
+      console.warn(`[FADAR] API returned empty payload for Order ${order._id}`);
+      return res.status(500).json({
+         success: false,
+         message: 'Courier API returned an empty response. Connection might be unstable.'
       });
 
    } catch (err) {
-      console.error('Fadar API Error:', err.response?.data || err.message);
+      console.error('[FADAR PROTOCOL ERROR]:', err.response?.data || err.message);
       res.status(err.response?.status || 500).json({
          success: false,
-         message: 'Failed to book parcel with Fadar',
+         message: 'Critical failure during Fadar synchronization.',
          error: err.response?.data || err.message
       });
    }
