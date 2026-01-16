@@ -323,7 +323,11 @@ const AdminOrders = () => {
                // If error object is passed, try to stringify it if it's an object
                const detailStr = typeof apiDetail === 'object' ? JSON.stringify(apiDetail) : apiDetail;
 
-               alert(`COURIER SYNC FAILED: ${errorMsg} ${detailStr ? `(${detailStr})` : ''}`);
+               const debugInfo = fadarErr.response?.data?.debugParams
+                  ? `\n\n[DEBUG INFO]\nCITY SENT: "${fadarErr.response.data.debugParams.recipient_city}"\nAMOUNT: ${fadarErr.response.data.debugParams.amount}`
+                  : '';
+
+               alert(`COURIER SYNC FAILED: ${errorMsg} ${detailStr ? `(${detailStr})` : ''}${debugInfo}`);
                return; // Halt status update if courier sync fails
             }
          } else {

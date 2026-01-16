@@ -54,12 +54,16 @@ exports.createFadarParcel = async (req, res) => {
       params.append('recipient_contact_2', order.shippingAddress.phone2 || '');
       params.append('recipient_address', order.shippingAddress.address || '');
       params.append('recipient_city', order.shippingAddress.city || '');
-      params.append('amount', order.totalPrice.toString());
+      const isCod = order.paymentMethod === 'COD' || order.paymentMethod === 'Cash on Delivery';
+      const codAmount = isCod ? order.totalPrice.toString() : '0';
+
+      params.append('amount', codAmount);
       params.append('exchange', 'no'); // Defaulting to 'no', adjust if needed
 
       // Log the payload for debugging (Redact API Key)
       const debugParams = new URLSearchParams(params);
       debugParams.set('api_key', 'REDACTED');
+      const debugParamsObj = Object.fromEntries(debugParams.entries());
       console.log(`[FADAR PARAMETERS]`, debugParams.toString());
 
       const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', params, {
@@ -100,7 +104,8 @@ exports.createFadarParcel = async (req, res) => {
             return res.status(400).json({
                success: false,
                message: `FADAR REJECTED: ${upstreamError}`,
-               error: response.data
+               error: response.data,
+               debugParams: debugParamsObj
             });
          }
 
