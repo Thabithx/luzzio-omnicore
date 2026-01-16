@@ -5,16 +5,31 @@ import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
-const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
+const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddressUpdate }) => {
    const [trackingNum, setTrackingNum] = useState('');
+   const [editingAddress, setEditingAddress] = useState(false);
+   const [addressData, setAddressData] = useState({});
 
    useEffect(() => {
       if (order) {
          setTrackingNum(order.trackingNumber || '');
+         setAddressData({
+            firstName: order.shippingAddress.firstName || '',
+            lastName: order.shippingAddress.lastName || '',
+            address: order.shippingAddress.address || '',
+            city: order.shippingAddress.city || '',
+            phone: order.shippingAddress.phone || '',
+            phone2: order.shippingAddress.phone2 || ''
+         });
       }
    }, [order]);
 
    if (!isOpen || !order) return null;
+
+   const handleSaveAddress = () => {
+      onAddressUpdate(order._id, addressData);
+      setEditingAddress(false);
+   };
 
    return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -93,23 +108,99 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate }) => {
                   </div>
                )}
 
-               {/* Client Registry Info */}
-               <div className="p-8 bg-brand-grey border border-black">
-                  <p className="text-small-brand text-gray-400 mb-4">Client Registry Reference</p>
-                  <div className="flex flex-col md:flex-row md:items-center gap-10">
-                     <div>
-                        <p className="text-sm font-black uppercase tracking-tighter">{order.shippingAddress?.firstName && order.shippingAddress?.lastName ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 'GUEST CLIENT'}</p>
-                        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest mt-1">{order.email || 'UNIDENTIFIED'}</p>
-                     </div>
-                     <div className="md:border-l border-black md:pl-10">
-                        <p className="text-[11px] text-gray-400 font-medium uppercase tracking-widest leading-relaxed">
-                           {order.shippingAddress.address}
-                        </p>
-                        {order.shippingAddress.phone2 && (
-                           <p className="text-[10px] text-black font-black uppercase tracking-widest mt-2 bg-yellow-400 inline-block px-2">Secondary: {order.shippingAddress.phone2}</p>
-                        )}
-                     </div>
+               {/* Client Registry Info (EDITABLE) */}
+               <div className="p-8 bg-brand-grey border border-black relative">
+                  <div className="flex justify-between items-center mb-4">
+                     <p className="text-small-brand text-gray-400">Client Registry Reference</p>
+                     <button
+                        onClick={() => setEditingAddress(!editingAddress)}
+                        className="text-[9px] font-black uppercase tracking-widest text-black underline hover:text-gray-600"
+                     >
+                        {editingAddress ? 'Cancel Protocol' : 'Edit Protocol'}
+                     </button>
                   </div>
+
+                  {editingAddress ? (
+                     <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                           <Input
+                              placeholder="First Name"
+                              value={addressData.firstName}
+                              onChange={(e) => setAddressData({ ...addressData, firstName: e.target.value })}
+                              className="rounded-none border-black focus:border-black bg-white"
+                           />
+                           <Input
+                              placeholder="Last Name"
+                              value={addressData.lastName}
+                              onChange={(e) => setAddressData({ ...addressData, lastName: e.target.value })}
+                              className="rounded-none border-black focus:border-black bg-white"
+                           />
+                        </div>
+                        <Input
+                           placeholder="Address Line"
+                           value={addressData.address}
+                           onChange={(e) => setAddressData({ ...addressData, address: e.target.value })}
+                           className="rounded-none border-black focus:border-black bg-white"
+                        />
+                        <Input
+                           placeholder="City (Must match Fadar list)"
+                           value={addressData.city}
+                           onChange={(e) => setAddressData({ ...addressData, city: e.target.value })}
+                           className="rounded-none border-black focus:border-black bg-white"
+                        />
+                        <div className="grid grid-cols-2 gap-4">
+                           <Input
+                              placeholder="Primary Phone"
+                              value={addressData.phone}
+                              onChange={(e) => setAddressData({ ...addressData, phone: e.target.value })}
+                              className="rounded-none border-black focus:border-black bg-white"
+                           />
+                           <Input
+                              placeholder="Secondary Phone"
+                              value={addressData.phone2}
+                              onChange={(e) => setAddressData({ ...addressData, phone2: e.target.value })}
+                              className="rounded-none border-black focus:border-black bg-white"
+                           />
+                        </div>
+                        <div className="flex justify-end pt-2">
+                           <button
+                              onClick={handleSaveAddress}
+                              className="px-6 py-2 bg-black text-white text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-black border border-black transition-all"
+                           >
+                              Update Registry
+                           </button>
+                        </div>
+                     </div>
+                  ) : (
+                     <div className="flex flex-col md:flex-row md:items-center gap-10 transition-all">
+                        <div>
+                           <p className="text-sm font-black uppercase tracking-tighter">
+                              {order.shippingAddress?.firstName && order.shippingAddress?.lastName
+                                 ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
+                                 : 'GUEST CLIENT'}
+                           </p>
+                           <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest mt-1">
+                              {order.email || 'UNIDENTIFIED'}
+                           </p>
+                        </div>
+                        <div className="md:border-l border-black md:pl-10">
+                           <p className="text-[11px] text-gray-400 font-medium uppercase tracking-widest leading-relaxed">
+                              {order.shippingAddress.address} <br />
+                              <span className="text-black font-bold">{order.shippingAddress.city}</span>
+                           </p>
+                           <div className="flex flex-col gap-1 mt-2">
+                              <p className="text-[10px] text-black font-black uppercase tracking-widest">
+                                 Phone: {order.shippingAddress.phone}
+                              </p>
+                              {order.shippingAddress.phone2 && (
+                                 <p className="text-[10px] text-black font-black uppercase tracking-widest bg-yellow-400 inline-block px-1 w-fit">
+                                    Alt: {order.shippingAddress.phone2}
+                                 </p>
+                              )}
+                           </div>
+                        </div>
+                     </div>
+                  )}
                </div>
 
                {/* Archive Items */}
@@ -195,6 +286,23 @@ const AdminOrders = () => {
       }
    };
 
+   const handleAddressUpdate = async (orderId, addressData) => {
+      try {
+         await api.put(`/orders/${orderId}/address`, addressData);
+         fetchOrders(pagination.page);
+
+         // Update local selectedOrder to reflect changes immediately
+         const res = await api.get(`/orders?page=${pagination.page}&limit=20`);
+         const updatedOrder = res.data.data.find(o => o._id === orderId);
+         setSelectedOrder(updatedOrder);
+
+         alert('Address protocol updated successfully.');
+      } catch (err) {
+         console.error('Error updating address:', err);
+         alert('FAILED TO UPDATE REGISTRY: ' + (err.response?.data?.message || err.message));
+      }
+   };
+
    const handleStatusUpdate = async (id, status, oldStatus) => {
       try {
          const weight = parcelWeights[id] || 1;
@@ -212,7 +320,10 @@ const AdminOrders = () => {
             } catch (fadarErr) {
                const errorMsg = fadarErr.response?.data?.message || 'Fadar API Connection Failed.';
                const apiDetail = fadarErr.response?.data?.error?.message || '';
-               alert(`COURIER SYNC FAILED: ${errorMsg} ${apiDetail ? `(${apiDetail})` : ''}`);
+               // If error object is passed, try to stringify it if it's an object
+               const detailStr = typeof apiDetail === 'object' ? JSON.stringify(apiDetail) : apiDetail;
+
+               alert(`COURIER SYNC FAILED: ${errorMsg} ${detailStr ? `(${detailStr})` : ''}`);
                return; // Halt status update if courier sync fails
             }
          } else {
@@ -482,8 +593,8 @@ const AdminOrders = () => {
             }}
             order={selectedOrder}
             onTrackingUpdate={handleTrackingUpdate}
+            onAddressUpdate={handleAddressUpdate}
          />
-
          {/* PRINTABLE AREA - SHOPIFY STYLE */}
          <div className="hidden print:block">
             <style>

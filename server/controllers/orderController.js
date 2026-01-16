@@ -218,6 +218,40 @@ exports.updateOrderTracking = async (req, res) => {
    }
 };
 
+// @desc    Update order shipping address
+// @route   PUT /api/orders/:id/address
+// @access  Private/Admin
+exports.updateOrderAddress = async (req, res) => {
+   try {
+      const { address, city, phone, phone2, firstName, lastName } = req.body;
+      const order = await Order.findById(req.params.id);
+
+      if (!order) {
+         return res.status(404).json({ success: false, message: 'Order not found' });
+      }
+
+      order.shippingAddress = {
+         ...order.shippingAddress,
+         address: address || order.shippingAddress.address,
+         city: city || order.shippingAddress.city,
+         phone: phone || order.shippingAddress.phone,
+         phone2: phone2 || order.shippingAddress.phone2,
+         firstName: firstName || order.shippingAddress.firstName,
+         lastName: lastName || order.shippingAddress.lastName
+      };
+
+      const updatedOrder = await order.save();
+
+      res.status(200).json({
+         success: true,
+         data: updatedOrder,
+         message: 'Address protocol updated successfully.'
+      });
+   } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+   }
+};
+
 // @desc    Get orders by email (Guest access)
 // @route   GET /api/orders/guest/:email
 // @access  Public
