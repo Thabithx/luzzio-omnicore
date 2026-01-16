@@ -43,42 +43,43 @@ exports.createFadarParcel = async (req, res) => {
 
       // Prepare Fadar API Request Body
       // Use application/x-www-form-urlencoded
-      const params = new URLSearchParams();
-      params.append('api_key', apiKey);
-      params.append('client_id', clientId);
+      const FormData = require('form-data');
+      const form = new FormData();
+
+      form.append('api_key', apiKey);
+      form.append('client_id', clientId);
+
       // Truncate Order ID logic:
       // Fadar likely expects a NUMERIC ID (e.g. 124578 from sample)
       // We take the last 7 hex chars of the ObjectId and convert to decimal integer to ensure it's numeric and safe
       const hexId = order._id.toString().slice(-7);
       const numericOrderId = parseInt(hexId, 16).toString();
-      params.append('order_id', numericOrderId);
+      form.append('order_id', numericOrderId);
 
-      params.append('parcel_weight', parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1'); // Default to 1kg if not provided or invalid
-      params.append('parcel_description', `Order #${order._id.toString().slice(-6).toUpperCase()}`);
-      params.append('recipient_name', `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim());
+      form.append('parcel_weight', parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1'); // Default to 1kg if not provided or invalid
+      form.append('parcel_description', `Order #${order._id.toString().slice(-6).toUpperCase()}`);
+      form.append('recipient_name', `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim());
 
       // Sending Phone Number AS IS (expecting 10 digits with leading 0, e.g., 077...)
       // User confirmed "we need the 0"
-      params.append('recipient_contact_1', order.shippingAddress.phone || '');
-      params.append('recipient_contact_2', order.shippingAddress.phone2 || '');
-      params.append('recipient_address', order.shippingAddress.address || '');
-      params.append('recipient_city', order.shippingAddress.city || '');
+      form.append('recipient_contact_1', order.shippingAddress.phone || '');
+      form.append('recipient_contact_2', order.shippingAddress.phone2 || '');
+      form.append('recipient_address', order.shippingAddress.address || '');
+      form.append('recipient_city', order.shippingAddress.city || '');
 
       const isCod = order.paymentMethod === 'COD' || order.paymentMethod === 'Cash on Delivery';
       const codAmount = isCod ? order.totalPrice.toString() : '0';
 
-      params.append('amount', codAmount);
-      params.append('exchange', '0'); // CHANGED: 'no' -> '0' to match working PHP sample
+      form.append('amount', codAmount);
+      form.append('exchange', '0'); // CHANGED: 'no' -> '0' to match working PHP sample
 
       // Log the payload for debugging (Redact API Key)
-      const debugParams = new URLSearchParams(params);
-      debugParams.set('api_key', 'REDACTED');
-      const debugParamsObj = Object.fromEntries(debugParams.entries());
-      console.log(`[FADAR PARAMETERS]`, debugParams.toString());
+      // Note: FormData check requires iterating headers/getBuffer usually, simplifying log for now
+      console.log(`[FADAR PARAMETERS] Form Data Created for Order ${numericOrderId}`);
 
-      const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', params, {
+      const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', form, {
          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            ...form.getHeaders()
          }
       });
 
