@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, ExternalLink, X, Upload, Loader2 } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, ExternalLink, X, Upload, Loader2, GripVertical } from 'lucide-react';
+import { Reorder } from 'framer-motion';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { cn } from '../../utils/cn';
@@ -474,29 +475,49 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                            />
                         </div>
 
-                        {formData.images.filter(img => img !== '').map((img, index) => (
-                           <div key={index} className="w-full aspect-[3/4] bg-white border border-black overflow-hidden relative group">
-                              <img
-                                 src={img}
-                                 alt={`Asset ${index + 1}`}
-                                 className="w-full h-full object-cover transition-all duration-500"
-                              />
-                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-4">
-                                 <p className="text-[7px] text-white/60 font-black uppercase tracking-widest">Asset {index + 1}</p>
-                                 <button
-                                    type="button"
-                                    onClick={() => {
-                                       const newImages = formData.images.filter((_, i) => i !== index);
-                                       setFormData({ ...formData, images: newImages.length > 0 ? newImages : [''] });
-                                    }}
-                                    className="p-2.5 bg-white text-black hover:bg-red-600 hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0"
-                                    title="Release Asset"
-                                 >
-                                    <Trash2 size={14} />
-                                 </button>
-                              </div>
-                           </div>
-                        ))}
+                        <Reorder.Group
+                           axis="x"
+                           values={formData.images.filter(img => img !== '')}
+                           onReorder={(newImages) => setFormData({ ...formData, images: newImages })}
+                           className="contents"
+                        >
+                           {formData.images.filter(img => img !== '').map((img, index) => (
+                              <Reorder.Item
+                                 key={img}
+                                 value={img}
+                                 className="w-full aspect-[3/4] bg-white border border-black overflow-hidden relative group cursor-grab active:cursor-grabbing"
+                              >
+                                 <img
+                                    src={img}
+                                    alt={`Asset ${index + 1}`}
+                                    className="w-full h-full object-cover transition-all duration-500"
+                                    draggable={false}
+                                 />
+
+                                 {/* Drag Handle Indicator */}
+                                 <div className="absolute top-2 left-2 p-1 bg-black/50 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <GripVertical size={12} />
+                                 </div>
+
+                                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-4">
+                                    <p className="text-[7px] text-white/60 font-black uppercase tracking-widest">Asset {index + 1}</p>
+                                    <div className="flex gap-2">
+                                       <button
+                                          type="button"
+                                          onClick={() => {
+                                             const newImages = formData.images.filter((_, i) => i !== index);
+                                             setFormData({ ...formData, images: newImages.length > 0 ? newImages : [''] });
+                                          }}
+                                          className="p-2.5 bg-white text-black hover:bg-red-600 hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0"
+                                          title="Release Asset"
+                                       >
+                                          <Trash2 size={14} />
+                                       </button>
+                                    </div>
+                                 </div>
+                              </Reorder.Item>
+                           ))}
+                        </Reorder.Group>
                      </div>
                   </div>
                </div>
