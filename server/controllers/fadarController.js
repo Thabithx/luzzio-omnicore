@@ -50,10 +50,16 @@ exports.createFadarParcel = async (req, res) => {
       params.append('parcel_weight', parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1'); // Default to 1kg if not provided or invalid
       params.append('parcel_description', `Order #${order._id.toString().slice(-6).toUpperCase()}`);
       params.append('recipient_name', `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim());
-      params.append('recipient_contact_1', order.shippingAddress.phone || '');
-      params.append('recipient_contact_2', order.shippingAddress.phone2 || '');
       params.append('recipient_address', order.shippingAddress.address || '');
-      params.append('recipient_city', order.shippingAddress.city || '');
+
+      // City Sanitization Map for Fadar
+      // Fadar rejects "Colombo 01". Mapping to "Colombo 1".
+      let fadarCity = order.shippingAddress.city || '';
+      if (fadarCity.toLowerCase().startsWith('colombo 0')) {
+         fadarCity = fadarCity.replace(/Colombo 0/i, 'Colombo ');
+      }
+      params.append('recipient_city', fadarCity);
+
       const isCod = order.paymentMethod === 'COD' || order.paymentMethod === 'Cash on Delivery';
       const codAmount = isCod ? order.totalPrice.toString() : '0';
 
