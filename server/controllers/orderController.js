@@ -132,8 +132,8 @@ exports.createOrder = async (req, res) => {
             console.log(`[ORDER PROTOCOL] Dispatching confirmation to client: ${orderEmail}`);
             sendEmail({
                email: orderEmail,
-               subject: `LUZZIO ARCHIVE DISPATCH: ORDER #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
-               html: orderConfirmationTemplate(createdOrder, { name: recipientName || 'Valued Client' })
+               subject: `Order Confirmation #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
+               html: orderConfirmationTemplate(createdOrder, { name: recipientName || 'Valued Customer' })
             })
                .then(() => console.log(`[ORDER PROTOCOL] Client confirmation delivered: ${orderEmail}`))
                .catch(emailErr => console.error('[ORDER PROTOCOL FAILURE] Client Email Deferred:', emailErr.message));
@@ -146,7 +146,7 @@ exports.createOrder = async (req, res) => {
          console.log(`[ORDER PROTOCOL] Dispatching notification to admin: ${adminEmail}`);
          sendEmail({
             email: adminEmail,
-            subject: `LUZZIO ADMINISTRATIVE ALERT: NEW ORDER RECEIVED #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
+            subject: `New Order Received #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
             html: adminOrderNotificationTemplate(createdOrder)
          })
             .then(() => console.log(`[ORDER PROTOCOL] Admin notification delivered: ${adminEmail}`))
@@ -417,7 +417,7 @@ exports.batchUpdateOrderStatus = async (req, res) => {
             try {
                const weight = (weights && weights[order._id]) || 1;
                const { createFadarParcelInternal } = require('./fadarController');
-               
+
                // We need an internal version or just refactor fadarController to be more reusable
                // For now, let's keep it simple and just update status if Fadar fails or skip complex logic in batch
                // Actually, it's better to support it.

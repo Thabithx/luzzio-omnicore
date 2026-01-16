@@ -197,7 +197,7 @@ exports.payHereNotify = async (req, res) => {
                // 1. Notify Client
                sendEmail({
                   email: order.email,
-                  subject: `LUZZIO SETTLEMENT VERIFIED: ORDER #${order._id.toString().slice(-6).toUpperCase()}`,
+                  subject: `Order Confirmation #${order._id.toString().slice(-6).toUpperCase()}`,
                   html: paymentSuccessTemplate(order, false)
                })
                   .then(() => console.log(`[PAYMENT PROTOCOL] PayHere client notification delivered: ${order.email}`))
@@ -206,7 +206,7 @@ exports.payHereNotify = async (req, res) => {
                // 2. Notify Admin
                sendEmail({
                   email: adminEmail,
-                  subject: `LUZZIO SETTLEMENT ALERT: PAYMENT RECEIVED #${order._id.toString().slice(-6).toUpperCase()}`,
+                  subject: `New Order Received (Paid) #${order._id.toString().slice(-6).toUpperCase()}`,
                   html: paymentSuccessTemplate(order, true)
                })
                   .then(() => console.log(`[PAYMENT PROTOCOL] PayHere admin notification delivered: ${adminEmail}`))
