@@ -46,20 +46,21 @@ exports.createFadarParcel = async (req, res) => {
       const params = new URLSearchParams();
       params.append('api_key', apiKey);
       params.append('client_id', clientId);
-      // Truncate Order ID to last 12 chars to avoid "Value too long" errors (common in legacy APIs)
-      const shortOrderId = order._id.toString().slice(-12);
-      params.append('order_id', shortOrderId);
+      // Truncate Order ID logic:
+      // Fadar likely expects a NUMERIC ID (e.g. 124578 from sample)
+      // We take the last 7 hex chars of the ObjectId and convert to decimal integer to ensure it's numeric and safe
+      const hexId = order._id.toString().slice(-7);
+      const numericOrderId = parseInt(hexId, 16).toString();
+      params.append('order_id', numericOrderId);
 
       params.append('parcel_weight', parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1'); // Default to 1kg if not provided or invalid
       params.append('parcel_description', `Order #${order._id.toString().slice(-6).toUpperCase()}`);
       params.append('recipient_name', `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim());
 
-      // Remove leading zero from phone numbers (e.g. 0771234567 -> 771234567)
-      const cleanPhone1 = (order.shippingAddress.phone || '').replace(/^0/, '');
-      const cleanPhone2 = (order.shippingAddress.phone2 || '').replace(/^0/, '');
-
-      params.append('recipient_contact_1', cleanPhone1);
-      params.append('recipient_contact_2', cleanPhone2);
+      // Sending Phone Number AS IS (expecting 10 digits with leading 0, e.g., 077...)
+      // User confirmed "we need the 0"
+      params.append('recipient_contact_1', order.shippingAddress.phone || '');
+      params.append('recipient_contact_2', order.shippingAddress.phone2 || '');
       params.append('recipient_address', order.shippingAddress.address || '');
       params.append('recipient_city', order.shippingAddress.city || '');
 
