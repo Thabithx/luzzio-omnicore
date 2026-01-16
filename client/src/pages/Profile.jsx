@@ -112,7 +112,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, user }) => {
                      {order.orderItems.map((item, i) => (
                         <div key={i} className="flex p-6 gap-6 items-center">
                            <div className="w-20 aspect-[3/4] bg-brand-grey border border-black overflow-hidden shrink-0">
-                              <img src={item.image} alt="" className="w-full h-full object-cover grayscale" />
+                              <img src={item.image} alt="" className="w-full h-full object-cover" />
                            </div>
                            <div className="flex-1 min-w-0">
                               <p className="text-sm font-black uppercase tracking-tight truncate">{item.name}</p>
@@ -151,36 +151,45 @@ export function Profile() {
    const [updating, setUpdating] = useState(false);
    const [manualEmail, setManualEmail] = useState('');
 
-   useEffect(() => {
-      const fetchOrders = async () => {
-         try {
-            if (token) {
-               // 1. Check if we need to sync guest orders first
-               if (guestEmail) {
-                  try {
-                     const syncRes = await api.put('/orders/sync', { email: guestEmail });
-                     if (syncRes.data.success && syncRes.data.count > 0) {
-                        console.log(`[SYNC] Automatically linked ${syncRes.data.count} guest orders.`);
-                     }
-                     // Clear guest identification once sync is attempted/confirmed
-                     clearGuestProfile();
-                  } catch (syncErr) {
-                     console.error('[SYNC ERROR] Automatic order sync failed:', syncErr);
-                  }
-               }
+   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
 
-               const res = await api.get('/orders/myorders');
-               setOrders(res.data.data);
-            } else if (guestEmail) {
-               const res = await api.get(`/orders/guest/${guestEmail}`);
-               setOrders(res.data.data);
+   const fetchOrders = async (page = 1) => {
+      setLoading(true);
+      try {
+         if (token) {
+            // 1. Check if we need to sync guest orders first
+            if (guestEmail) {
+               try {
+                  const syncRes = await api.put('/orders/sync', { email: guestEmail });
+                  if (syncRes.data.success && syncRes.data.count > 0) {
+                     console.log(`[SYNC] Automatically linked ${syncRes.data.count} guest orders.`);
+                  }
+                  // Clear guest identification once sync is attempted/confirmed
+                  clearGuestProfile();
+               } catch (syncErr) {
+                  console.error('[SYNC ERROR] Automatic order sync failed:', syncErr);
+               }
             }
-         } catch (err) {
-            console.error('Error fetching orders:', err);
-         } finally {
-            setLoading(false);
+
+            const res = await api.get(`/orders/myorders?page=${page}&limit=10`);
+            setOrders(res.data.data);
+            setPagination({
+               page: res.data.page,
+               pages: res.data.pages,
+               total: res.data.count
+            });
+         } else if (guestEmail) {
+            const res = await api.get(`/orders/guest/${guestEmail}`);
+            setOrders(res.data.data);
          }
-      };
+      } catch (err) {
+         console.error('Error fetching orders:', err);
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   useEffect(() => {
       fetchOrders();
    }, [token, guestEmail]);
 
@@ -307,7 +316,7 @@ export function Profile() {
                      <>
                         <div className="flex justify-between items-end border-b border-black pb-4">
                            <h2 className="text-4xl font-black uppercase tracking-tighter">Order Archive</h2>
-                           <span className="text-small-brand text-gray-400">{orders.length} Sequences Recorded</span>
+                           <span className="text-small-brand text-gray-400">{pagination.total || orders.length} Sequences Recorded</span>
                         </div>
 
                         {loading ? (
@@ -318,41 +327,64 @@ export function Profile() {
                               <Link to="/products" className="inline-block text-small-brand border-b border-black pb-1">Start New Selection</Link>
                            </div>
                         ) : (
-                           <div className="grid grid-cols-1 gap-1">
-                              {orders.map((order) => (
-                                 <div
-                                    key={order._id}
-                                    onClick={() => {
-                                       setSelectedOrder(order);
-                                       setIsModalOpen(true);
-                                    }}
-                                    className="group border border-black p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-10 hover:bg-brand-grey transition-all cursor-pointer"
-                                 >
-                                    <div className="flex gap-8 items-center">
-                                       <div className="flex -space-x-8">
-                                          {order.orderItems.slice(0, 3).map((item, i) => (
-                                             <div key={i} className="w-16 aspect-[3/4] bg-white border border-black relative z-[i] overflow-hidden transition-colors shadow-sm">
-                                                <img src={item.image} alt="" className="w-full h-full object-cover grayscale" />
-                                             </div>
-                                          ))}
+                           <div className="space-y-8">
+                              <div className="grid grid-cols-1 gap-1">
+                                 {orders.map((order) => (
+                                    <div
+                                       key={order._id}
+                                       onClick={() => {
+                                          setSelectedOrder(order);
+                                          setIsModalOpen(true);
+                                       }}
+                                       className="group border border-black p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-10 hover:bg-brand-grey transition-all cursor-pointer"
+                                    >
+                                       <div className="flex gap-8 items-center">
+                                          <div className="flex -space-x-8">
+                                             {order.orderItems.slice(0, 3).map((item, i) => (
+                                                <div key={i} className="w-16 aspect-[3/4] bg-white border border-black relative z-[i] overflow-hidden transition-colors shadow-sm">
+                                                   <img src={item.image} alt="" className="w-full h-full object-cover" />
+                                                </div>
+                                             ))}
+                                          </div>
+                                          <div className="space-y-2">
+                                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">ID: LU-{order._id.slice(-8).toUpperCase()}</p>
+                                             <p className="text-lg font-black uppercase tracking-tight text-black">
+                                                {order.orderItems.length} Products <span className="text-gray-300 mx-2">/</span> ${order.totalPrice}.00
+                                             </p>
+                                          </div>
                                        </div>
-                                       <div className="space-y-2">
-                                          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">ID: LU-{order._id.slice(-8).toUpperCase()}</p>
-                                          <p className="text-lg font-black uppercase tracking-tight text-black">
-                                             {order.orderItems.length} Products <span className="text-gray-300 mx-2">/</span> ${order.totalPrice}.00
-                                          </p>
-                                       </div>
-                                    </div>
 
-                                    <div className="flex items-center gap-10 w-full md:w-auto justify-between md:justify-end">
-                                       <div className={`px-5 py-2 text-[9px] font-black uppercase tracking-widest rounded-none border
-                                          ${order.status.toLowerCase() === 'delivered' ? 'bg-black text-white border-black' : 'bg-white text-black border-black'}`}>
-                                          {order.status}
+                                       <div className="flex items-center gap-10 w-full md:w-auto justify-between md:justify-end">
+                                          <div className={`px-5 py-2 text-[9px] font-black uppercase tracking-widest rounded-none border
+                                             ${order.status.toLowerCase() === 'delivered' ? 'bg-black text-white border-black' : 'bg-white text-black border-black'}`}>
+                                             {order.status}
+                                          </div>
+                                          <ChevronRight size={18} className="text-gray-300 group-hover:text-black transition-colors translate-x-0 group-hover:translate-x-1 duration-300" />
                                        </div>
-                                       <ChevronRight size={18} className="text-gray-300 group-hover:text-black transition-colors translate-x-0 group-hover:translate-x-1 duration-300" />
                                     </div>
-                                 </div>
-                              ))}
+                                 ))}
+                              </div>
+
+                              {/* PAGINATION CONTROLS */}
+                              <div className="flex justify-between items-center pt-8 border-t border-black">
+                                 <button
+                                    onClick={() => fetchOrders(Math.max(1, pagination.page - 1))}
+                                    disabled={pagination.page === 1}
+                                    className="px-6 py-3 text-[10px] font-black uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black"
+                                 >
+                                    Previous
+                                 </button>
+                                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                    Page {pagination.page} of {pagination.pages}
+                                 </span>
+                                 <button
+                                    onClick={() => fetchOrders(Math.min(pagination.pages, pagination.page + 1))}
+                                    disabled={pagination.page === pagination.pages}
+                                    className="px-6 py-3 text-[10px] font-black uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black"
+                                 >
+                                    Next
+                                 </button>
+                              </div>
                            </div>
                         )}
                      </>
