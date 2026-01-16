@@ -57,8 +57,11 @@ exports.createFadarParcel = async (req, res) => {
       params.append('amount', order.totalPrice.toString());
       params.append('exchange', 'no'); // Defaulting to 'no', adjust if needed
 
-      // Call Fadar API
-      console.log(`[FADAR] Initiating parcel booking for Order: ${order._id}`);
+      // Log the payload for debugging (Redact API Key)
+      const debugParams = new URLSearchParams(params);
+      debugParams.set('api_key', 'REDACTED');
+      console.log(`[FADAR PARAMETERS]`, debugParams.toString());
+
       const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', params, {
          headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -73,6 +76,10 @@ exports.createFadarParcel = async (req, res) => {
 
          if (!fadarId) {
             console.error(`[FADAR FAILURE] No Order ID in response for Order ${order._id}:`, response.data);
+
+            if (response.data.status === '212' || response.data.status === 212) {
+               console.warn('[FADAR HINT] Status 212 usually indicates an Invalid City. Please verify the city name against the Fadar approved list.');
+            }
 
             // Extract specific error reason from upstream API
             // Fadar might return error in various fields depending on the failure type

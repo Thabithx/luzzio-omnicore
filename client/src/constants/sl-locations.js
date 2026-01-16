@@ -1,7 +1,7 @@
 export const SRI_LANKA_LOCATIONS = [
    "Abayapura", "Agalawatta", "Ahungalla", "Akarella", "Akkaraipattu", "Akmeemana", "Akuregoda", "Akuressa", "Alawatura", "Alawwa", "Alubomulla", "Aludeniya", "Aluthgama", "Ambalangoda", "Ambalantota", "Ambatenna", "Ampara", "Anamaduwa", "Angoda", "Angulana", "Anuradhapura", "Aranayaka", "Arrawwala", "Athethgama", "Aththanayala", "Attidiya", "Avissawella",
    "Badulla", "Bakamoona", "Bakkiella", "Balangoda", "Ballapana", "Bambalapitiya", "Bandaragama", "Bandarawela", "Bangadeniya", "Batapola", "Battaramulla", "Batticaloa", "Beliatta", "Belihuloya", "Belummahara", "Bemmulla", "Bentota", "Beruwala", "Bibile", "Bingiriya", "Biyagama", "Bombuwala", "Boralesgamuwa", "Borella", "Bulathkohupitiya", "Bulathsinhala",
-   "Chankanai", "Chavakachcheri", "Cheddikulam", "Chilaw", "Chunnakam", "Colombo 01", "Colombo 02", "Colombo 03", "Colombo 04", "Colombo 05", "Colombo 06", "Colombo 07", "Colombo 08", "Colombo 09", "Colombo 10", "Colombo 11", "Colombo 12", "Colombo 13", "Colombo 14", "Colombo 15",
+   "Chankanai", "Chavakachcheri", "Cheddikulam", "Chilaw", "Chunnakam", "Colombo 1", "Colombo 2", "Colombo 3", "Colombo 4", "Colombo 5", "Colombo 6", "Colombo 7", "Colombo 8", "Colombo 9", "Colombo 10", "Colombo 11", "Colombo 12", "Colombo 13", "Colombo 14", "Colombo 15",
    "Dambulla", "Dankootuwa", "Dapiligoda", "Dehiattakandiya", "Dehiowita", "Dehiwala", "Deltota", "Deraniyagala", "Devinuwara", "Digana", "Dikwella", "Diyatalawa", "Dodangoda", "Dompe", "Dumbara", "Dunagaha",
    "Eheliyagoda", "Ekala", "Elpitiya", "Embilipitiya", "Eppawala", "Eravur", "Ethul Kotte",
    "Galagedara", "Galgamuwa", "Galle", "Galnewa", "Gampaha", "Gampola", "Ganemulla", "Gantuna", "Gelioya", "Ginigathena", "Giriulla", "Gonawala", "Gothatuwa",

@@ -232,12 +232,12 @@ exports.updateOrderAddress = async (req, res) => {
 
       order.shippingAddress = {
          ...order.shippingAddress,
-         address: address || order.shippingAddress.address,
-         city: city || order.shippingAddress.city,
-         phone: phone || order.shippingAddress.phone,
-         phone2: phone2 || order.shippingAddress.phone2,
-         firstName: firstName || order.shippingAddress.firstName,
-         lastName: lastName || order.shippingAddress.lastName
+         address: (address || order.shippingAddress.address).trim(),
+         city: (city || order.shippingAddress.city).trim(),
+         phone: (phone || order.shippingAddress.phone).trim(),
+         phone2: (phone2 || order.shippingAddress.phone2 || '').trim(),
+         firstName: (firstName || order.shippingAddress.firstName).trim(),
+         lastName: (lastName || order.shippingAddress.lastName).trim()
       };
 
       const updatedOrder = await order.save();
