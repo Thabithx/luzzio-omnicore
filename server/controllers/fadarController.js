@@ -73,9 +73,26 @@ exports.createFadarParcel = async (req, res) => {
 
          if (!fadarId) {
             console.error(`[FADAR FAILURE] No Order ID in response for Order ${order._id}:`, response.data);
+
+            // Extract specific error reason from upstream API
+            // Fadar might return error in various fields depending on the failure type
+            let upstreamError = 'Courier API accepted the request but did not return a tracking ID.';
+
+            if (response.data) {
+               if (typeof response.data === 'string') {
+                  upstreamError = response.data;
+               } else {
+                  upstreamError = response.data.msg ||
+                     response.data.message ||
+                     response.data.error ||
+                     response.data.description ||
+                     JSON.stringify(response.data);
+               }
+            }
+
             return res.status(400).json({
                success: false,
-               message: response.data.message || 'Courier API accepted the request but did not return a tracking ID. Check Fadar credentials.',
+               message: `FADAR REJECTED: ${upstreamError}`,
                error: response.data
             });
          }
