@@ -51,22 +51,13 @@ exports.createFadarParcel = async (req, res) => {
       params.append('parcel_description', `Order #${order._id.toString().slice(-6).toUpperCase()}`);
       params.append('recipient_name', `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim());
       params.append('recipient_address', order.shippingAddress.address || '');
-
-      // City Sanitization Map for Fadar
-      // Fadar rejects "Colombo 01". Mapping to "Colombo 1".
-      let fadarCity = order.shippingAddress.city || '';
-      if (fadarCity.toLowerCase().startsWith('colombo 0')) {
-         fadarCity = fadarCity.replace(/Colombo 0/i, 'Colombo ');
-      }
-      params.append('recipient_city', fadarCity);
+      params.append('recipient_city', order.shippingAddress.city || '');
 
       const isCod = order.paymentMethod === 'COD' || order.paymentMethod === 'Cash on Delivery';
-      if (isCod) {
-         params.append('amount', order.totalPrice.toString());
-      }
-      // If not COD, we DO NOT append 'amount' at all, to avoid "Invalid Amount" errors from API
+      const codAmount = isCod ? order.totalPrice.toString() : '0';
 
-      params.append('exchange', 'no'); // Defaulting to 'no', adjust if needed
+      params.append('amount', codAmount);
+      params.append('exchange', '0'); // CHANGED: 'no' -> '0' to match working PHP sample
 
       // Log the payload for debugging (Redact API Key)
       const debugParams = new URLSearchParams(params);
