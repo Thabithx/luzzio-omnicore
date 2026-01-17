@@ -1,11 +1,74 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, ExternalLink, X, Upload, Loader2, GripVertical } from 'lucide-react';
-import { Reorder } from 'framer-motion';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { cn } from '../../utils/cn';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { DndContext, closestCenter, MouseSensor, TouchSensor, useSensor, useSensors, DragOverlay } from '@dnd-kit/core';
+import { SortableContext, rectSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+const SortableImage = ({ url, index, onRemove }) => {
+   const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging
+   } = useSortable({ id: url });
+
+   const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      zIndex: isDragging ? 100 : 0,
+      opacity: isDragging ? 0.5 : 1
+   };
+
+   return (
+      <div
+         ref={setNodeRef}
+         style={style}
+         className="w-full aspect-[3/4] bg-white border border-black overflow-hidden relative group"
+      >
+         <img
+            src={url}
+            alt={`Asset ${index + 1}`}
+            className="w-full h-full object-cover pointer-events-none select-none"
+            draggable={false}
+         />
+
+         {/* Drag Handle Indicator */}
+         <div
+            className="absolute top-2 left-2 p-1 bg-black/50 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+            {...attributes}
+            {...listeners}
+         >
+            <GripVertical size={12} />
+         </div>
+
+         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-4 pointer-events-none">
+            {/* Note: pointer-events-none on the overlay container to let clicks pass through, 
+                 but we need pointer-events-auto on the buttons/handles */}
+            <p className="text-[7px] text-white/60 font-black uppercase tracking-widest">Asset {index + 1}</p>
+            <div className="flex gap-2 pointer-events-auto">
+               <button
+                  type="button"
+                  onClick={(e) => {
+                     e.stopPropagation();
+                     onRemove();
+                  }}
+                  className="p-2.5 bg-white text-black hover:bg-red-600 hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0"
+                  title="Release Asset"
+               >
+                  <Trash2 size={14} />
+               </button>
+            </div>
+         </div>
+      </div>
+   );
+};
 
 const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
    const [formData, setFormData] = useState({
@@ -28,6 +91,21 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
    });
    const [uploading, setUploading] = useState(false);
    const { token } = useAuth();
+
+   // dnd-kit sensors
+   const sensors = useSensors(
+      useSensor(MouseSensor, {
+         activationConstraint: {
+            distance: 10,
+         },
+      }),
+      useSensor(TouchSensor, {
+         activationConstraint: {
+            delay: 250,
+            tolerance: 5,
+         },
+      })
+   );
 
    useEffect(() => {
       if (product) {
@@ -106,6 +184,22 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
          alert('FAILED TO UPLOAD ARCHIVE ASSET: ' + (err.response?.data?.message || err.message));
       } finally {
          setUploading(false);
+      }
+   };
+
+   const handleDragEnd = (event) => {
+      const { active, over } = event;
+
+      if (active.id !== over.id) {
+         setFormData((items) => {
+            const oldIndex = items.images.indexOf(active.id);
+            const newIndex = items.images.indexOf(over.id);
+
+            return {
+               ...items,
+               images: arrayMove(items.images, oldIndex, newIndex)
+            };
+         });
       }
    };
 
@@ -456,71 +550,51 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                      <label className="text-small-brand text-gray-400">Archive Assets (Visual) - Max 10 Documents</label>
 
                      <div className="space-y-4">
-                        <Reorder.Group
-                           values={formData.images.filter(img => img !== '')}
-                           onReorder={(newImages) => setFormData({ ...formData, images: newImages })}
-                           className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"
+                        {/* Dnd Context for Sorting */}
+                        <DndContext
+                           sensors={sensors}
+                           collisionDetection={closestCenter}
+                           onDragEnd={handleDragEnd}
                         >
-                           {/* Static Upload Card */}
-                           <div className="relative border border-dashed border-black/20 hover:border-black transition-colors aspect-[3/4] flex flex-col items-center justify-center gap-3 bg-brand-grey/30 group cursor-pointer">
-                              {uploading ? (
-                                 <Loader2 size={20} className="animate-spin text-black" />
-                              ) : (
-                                 <Upload size={20} className="text-black/40 group-hover:text-black transition-colors" />
-                              )}
-                              <p className="text-[8px] font-black uppercase tracking-widest text-center px-2">
-                                 {uploading ? 'Synchronizing...' : 'Upload Sequence Assets'}
-                              </p>
-                              <input
-                                 type="file"
-                                 multiple
-                                 className="absolute inset-0 opacity-0 cursor-pointer"
-                                 onChange={handleUpload}
-                                 disabled={uploading}
-                                 accept="image/*"
-                              />
-                           </div>
-
-                           {/* Draggable Items */}
-                           {formData.images.filter(img => img !== '').map((img, index) => (
-                              <Reorder.Item
-                                 key={img}
-                                 value={img}
-                                 className="w-full aspect-[3/4] bg-white border border-black overflow-hidden relative group cursor-grab active:cursor-grabbing z-0 hover:z-50"
-                              >
-                                 <img
-                                    src={img}
-                                    alt={`Asset ${index + 1}`}
-                                    className="w-full h-full object-cover pointer-events-none select-none"
-                                    draggable={false}
+                           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                              {/* Static Upload Card - Always First */}
+                              <div className="relative border border-dashed border-black/20 hover:border-black transition-colors aspect-[3/4] flex flex-col items-center justify-center gap-3 bg-brand-grey/30 group cursor-pointer">
+                                 {uploading ? (
+                                    <Loader2 size={20} className="animate-spin text-black" />
+                                 ) : (
+                                    <Upload size={20} className="text-black/40 group-hover:text-black transition-colors" />
+                                 )}
+                                 <p className="text-[8px] font-black uppercase tracking-widest text-center px-2">
+                                    {uploading ? 'Synchronizing...' : 'Upload Sequence Assets'}
+                                 </p>
+                                 <input
+                                    type="file"
+                                    multiple
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                    onChange={handleUpload}
+                                    disabled={uploading}
+                                    accept="image/*"
                                  />
+                              </div>
 
-                                 {/* Drag Handle Indicator */}
-                                 <div className="absolute top-2 left-2 p-1 bg-black/50 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <GripVertical size={12} />
-                                 </div>
-
-                                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-4">
-                                    <p className="text-[7px] text-white/60 font-black uppercase tracking-widest">Asset {index + 1}</p>
-                                    <div className="flex gap-2">
-                                       <button
-                                          type="button"
-                                          onPointerDown={(e) => e.stopPropagation()} // Prevent drag start on click
-                                          onClick={(e) => {
-                                             e.stopPropagation();
-                                             const newImages = formData.images.filter((_, i) => i !== index);
-                                             setFormData({ ...formData, images: newImages.length > 0 ? newImages : [''] });
-                                          }}
-                                          className="p-2.5 bg-white text-black hover:bg-red-600 hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0"
-                                          title="Release Asset"
-                                       >
-                                          <Trash2 size={14} />
-                                       </button>
-                                    </div>
-                                 </div>
-                              </Reorder.Item>
-                           ))}
-                        </Reorder.Group>
+                              <SortableContext
+                                 items={formData.images.filter(img => img !== '')}
+                                 strategy={rectSortingStrategy}
+                              >
+                                 {formData.images.filter(img => img !== '').map((img, index) => (
+                                    <SortableImage
+                                       key={img}
+                                       url={img}
+                                       index={index}
+                                       onRemove={() => {
+                                          const newImages = formData.images.filter((_, i) => _.valueOf() !== img);
+                                          setFormData({ ...formData, images: newImages.length > 0 ? newImages : [''] });
+                                       }}
+                                    />
+                                 ))}
+                              </SortableContext>
+                           </div>
+                        </DndContext>
                      </div>
                   </div>
                </div>
