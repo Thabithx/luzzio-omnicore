@@ -194,8 +194,8 @@ exports.testConnection = async (req, res) => {
       form.append('parcel_description', 'TEST PARCEL');
       form.append('recipient_name', 'Test System');
       form.append('recipient_contact_1', '0771234567');
-      form.append('recipient_address', '123 Test Street');
-      form.append('recipient_city', 'Colombo 1'); // Intentionally using "Colombo 1" to see if it triggers 212 or success
+      form.append('recipient_address', '123 Kandy Road');
+      form.append('recipient_city', 'Kandy'); // specific change to "Kandy" to test a safe city
       form.append('amount', '0');
       form.append('exchange', '0');
 
