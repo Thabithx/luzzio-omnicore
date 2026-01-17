@@ -115,7 +115,9 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
                      onClick={async () => {
                         try {
                            const res = await api.post('/fadar/test-connection');
-                           alert(`CONNECTION SUCCESSFUL!\nAPI Response: ${JSON.stringify(res.data.data)}`);
+                           const debugInfo = JSON.stringify(res.data.data, null, 2);
+                           const authInfo = JSON.stringify(res.data.auth_check, null, 2);
+                           alert(`CONNECTION RESULT:\n\nAPI RESPONSE: ${debugInfo}\n\nAUTH CHECK:\n${authInfo}\n\n(If Status is 212, check if Client ID matches strict Fadar requirements)`);
                         } catch (err) {
                            alert(`CONNECTION FAILED:\n${err.response?.data?.message || err.message}`);
                         }

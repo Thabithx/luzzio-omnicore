@@ -187,34 +187,44 @@ exports.testConnection = async (req, res) => {
       form.append('api_key', apiKey);
       form.append('client_id', clientId);
 
-      // Dummy Data for Logic Check
-      // Mimic PHP Sample Payload EXACTLY to establish baseline
-      const dummyId = Math.floor(Math.random() * 100000);
-      form.append('order_id', dummyId.toString());
-      form.append('parcel_weight', '3'); // Match PHP '3'
-      form.append('parcel_description', 'api sample'); // Match PHP
-      form.append('recipient_name', 'Sudeshi Perera'); // Match PHP
-      form.append('recipient_contact_1', ''); // Match PHP (Empty!)
-      form.append('recipient_contact_2', ''); // Match PHP (Included and Empty!)
-      form.append('recipient_address', '1st lane, Samudu Road'); // Match PHP
-      form.append('recipient_city', 'Matara'); // Match PHP
-      form.append('amount', '1500'); // Match PHP
-      form.append('exchange', '0'); // Match PHP
+      // 3. SECURE & VALID DATA TEST
+      // Use "Kandy" + Valid Phone + Unique ID to rule out data errors
+      const uniqueId = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+      form.append('order_id', uniqueId);
+      form.append('parcel_weight', '1');
+      form.append('parcel_description', 'DIAGNOSTIC TEST');
+      form.append('recipient_name', 'Fadar Test User');
+      form.append('recipient_contact_1', '0771234567'); // Valid Phone
+      form.append('recipient_contact_2', '');
+      form.append('recipient_address', '123 Kandy Road');
+      form.append('recipient_city', 'Kandy');
+      form.append('amount', '0');
+      form.append('exchange', '0');
 
-      console.log('[FADAR TEST] Sending test request...');
+      console.log(`[FADAR TEST] Sending request with OID: ${uniqueId}`);
 
       const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', form, {
-         headers: { ...form.getHeaders() }
+         headers: {
+            ...form.getHeaders()
+         }
       });
 
-      console.log('[FADAR TEST] Response:', response.data);
+      // Verification Data to show User
+      const authDebug = {
+         using_api_key_start: apiKey ? apiKey.substring(0, 4) + '...' : 'MISSING',
+         using_client_id: clientId
+      };
 
       res.status(200).json({
          success: true,
          data: response.data,
-         message: 'Test request sent to Fadar.'
+         sent_params: {
+            order_id: uniqueId,
+            city: 'Kandy',
+            phone: '0771234567'
+         },
+         auth_check: authDebug
       });
-
    } catch (err) {
       console.error('[FADAR TEST ERROR]:', err.message);
       res.status(500).json({
