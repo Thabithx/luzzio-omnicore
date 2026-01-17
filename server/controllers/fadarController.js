@@ -196,9 +196,9 @@ exports.testConnection = async (req, res) => {
       form.append('recipient_name', 'Fadar Test User');
       form.append('recipient_contact_1', '0771234567'); // Valid Phone
       form.append('recipient_contact_2', '');
-      form.append('recipient_address', '123 Kandy Road');
-      form.append('recipient_city', 'Kandy');
-      form.append('amount', '0');
+      form.append('recipient_address', '1st lane, Samudu Road');
+      form.append('recipient_city', 'Matara');
+      form.append('amount', '1500'); // Changed from 0 to 1500 to match working sample/avoid validation error
       form.append('exchange', '0');
 
       console.log(`[FADAR TEST] Sending request with OID: ${uniqueId}`);
