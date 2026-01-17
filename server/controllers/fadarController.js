@@ -115,8 +115,7 @@ exports.createFadarParcel = async (req, res) => {
             return res.status(400).json({
                success: false,
                message: `FADAR REJECTED: ${upstreamError}`,
-               error: response.data,
-               debugParams: debugParamsObj
+               error: response.data
             });
          }
 
