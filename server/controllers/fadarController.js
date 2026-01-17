@@ -188,16 +188,18 @@ exports.testConnection = async (req, res) => {
       form.append('client_id', clientId);
 
       // Dummy Data for Logic Check
+      // Mimic PHP Sample Payload EXACTLY to establish baseline
       const dummyId = Math.floor(Math.random() * 100000);
       form.append('order_id', dummyId.toString());
-      form.append('parcel_weight', '1');
-      form.append('parcel_description', 'TEST PARCEL');
-      form.append('recipient_name', 'Test System');
-      form.append('recipient_contact_1', '0771234567');
-      form.append('recipient_address', '123 Kandy Road');
-      form.append('recipient_city', 'Kandy'); // specific change to "Kandy" to test a safe city
-      form.append('amount', '0');
-      form.append('exchange', '0');
+      form.append('parcel_weight', '3'); // Match PHP '3'
+      form.append('parcel_description', 'api sample'); // Match PHP
+      form.append('recipient_name', 'Sudeshi Perera'); // Match PHP
+      form.append('recipient_contact_1', ''); // Match PHP (Empty!)
+      form.append('recipient_contact_2', ''); // Match PHP (Included and Empty!)
+      form.append('recipient_address', '1st lane, Samudu Road'); // Match PHP
+      form.append('recipient_city', 'Matara'); // Match PHP
+      form.append('amount', '1500'); // Match PHP
+      form.append('exchange', '0'); // Match PHP
 
       console.log('[FADAR TEST] Sending test request...');
 
