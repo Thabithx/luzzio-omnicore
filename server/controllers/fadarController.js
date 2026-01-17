@@ -192,9 +192,9 @@ exports.testConnection = async (req, res) => {
       const uniqueId = Date.now().toString().slice(-6); // Last 6 digits of timestamp
       form.append('order_id', uniqueId);
       form.append('parcel_weight', '1');
-      form.append('parcel_description', 'DIAGNOSTIC TEST');
-      form.append('recipient_name', 'Fadar Test User');
-      form.append('recipient_contact_1', '0771234567'); // Valid Phone
+      form.append('parcel_description', 'api sample');
+      form.append('recipient_name', 'Sudeshi Perera'); // Reverting to PHP Sample Name
+      form.append('recipient_contact_1', ''); // Reverting to PHP Sample (Empty)
       form.append('recipient_contact_2', '');
       form.append('recipient_address', '1st lane, Samudu Road');
       form.append('recipient_city', 'Matara');
