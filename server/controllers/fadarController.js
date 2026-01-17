@@ -62,7 +62,12 @@ exports.createFadarParcel = async (req, res) => {
 
       // Sending Phone Number AS IS (expecting 10 digits with leading 0, e.g., 077...)
       // User confirmed "we need the 0"
-      form.append('recipient_contact_1', order.shippingAddress.phone || '');
+      // SANITIZATION: Remove spaces/dashes, ensure it starts with 0
+      let rawPhone = order.shippingAddress.phone || '';
+      rawPhone = rawPhone.replace(/\D/g, ''); // Remove non-digits
+      if (rawPhone.length === 9) rawPhone = '0' + rawPhone; // Add leading 0 if missing
+
+      form.append('recipient_contact_1', rawPhone);
       form.append('recipient_contact_2', order.shippingAddress.phone2 || '');
       form.append('recipient_address', order.shippingAddress.address || '');
       form.append('recipient_city', order.shippingAddress.city || '');
@@ -73,9 +78,21 @@ exports.createFadarParcel = async (req, res) => {
       form.append('amount', codAmount);
       form.append('exchange', '0'); // CHANGED: 'no' -> '0' to match working PHP sample
 
+      // Construct Debug Object (Safe for Client)
+      const debugParamsObj = {
+         order_id: numericOrderId,
+         recipient_city: order.shippingAddress.city || '',
+         parcel_weight: parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1',
+         amount: codAmount,
+         recipient_name: `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim(),
+         recipient_contact_1: rawPhone,
+         recipient_address: order.shippingAddress.address || '',
+         exchange: '0'
+      };
+
       // Log the payload for debugging (Redact API Key)
       // Note: FormData check requires iterating headers/getBuffer usually, simplifying log for now
-      console.log(`[FADAR PARAMETERS] Form Data Created for Order ${numericOrderId}`);
+      console.log(`[FADAR PARAMETERS] Form Data Created for Order ${numericOrderId}`, debugParamsObj);
 
       const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', form, {
          headers: {
@@ -115,7 +132,8 @@ exports.createFadarParcel = async (req, res) => {
             return res.status(400).json({
                success: false,
                message: `FADAR REJECTED: ${upstreamError}`,
-               error: response.data
+               error: response.data,
+               debugParams: debugParamsObj // Include debug info for frontend
             });
          }
 
