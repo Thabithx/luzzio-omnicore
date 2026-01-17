@@ -147,3 +147,60 @@ exports.createFadarParcel = async (req, res) => {
       });
    }
 };
+
+// @desc    Test Fadar API Connection
+// @route   POST /api/fadar/test-connection
+// @access  Private/Admin
+exports.testConnection = async (req, res) => {
+   try {
+      const apiKey = process.env.FADAR_API_KEY;
+      const clientId = process.env.FADAR_CLIENT_ID;
+
+      if (!apiKey || !clientId) {
+         return res.status(400).json({
+            success: false,
+            message: 'API Key or Client ID missing in server environment.'
+         });
+      }
+
+      const FormData = require('form-data');
+      const form = new FormData();
+
+      form.append('api_key', apiKey);
+      form.append('client_id', clientId);
+
+      // Dummy Data for Logic Check
+      const dummyId = Math.floor(Math.random() * 100000);
+      form.append('order_id', dummyId.toString());
+      form.append('parcel_weight', '1');
+      form.append('parcel_description', 'TEST PARCEL');
+      form.append('recipient_name', 'Test System');
+      form.append('recipient_contact_1', '0771234567');
+      form.append('recipient_address', '123 Test Street');
+      form.append('recipient_city', 'Colombo 1'); // Intentionally using "Colombo 1" to see if it triggers 212 or success
+      form.append('amount', '0');
+      form.append('exchange', '0');
+
+      console.log('[FADAR TEST] Sending test request...');
+
+      const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', form, {
+         headers: { ...form.getHeaders() }
+      });
+
+      console.log('[FADAR TEST] Response:', response.data);
+
+      res.status(200).json({
+         success: true,
+         data: response.data,
+         message: 'Test request sent to Fadar.'
+      });
+
+   } catch (err) {
+      console.error('[FADAR TEST ERROR]:', err.message);
+      res.status(500).json({
+         success: false,
+         message: 'Connection test failed',
+         error: err.response?.data || err.message
+      });
+   }
+};

@@ -4,6 +4,7 @@ import { cn } from '../../utils/cn';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { SRI_LANKA_LOCATIONS } from '../../constants/sl-locations';
 
 const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddressUpdate }) => {
    const [trackingNum, setTrackingNum] = useState('');
@@ -108,6 +109,23 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
                   </div>
                )}
 
+               {/* ADMIN UTILS: Connection Test */}
+               <div className="flex justify-end">
+                  <button
+                     onClick={async () => {
+                        try {
+                           const res = await api.post('/fadar/test-connection');
+                           alert(`CONNECTION SUCCESSFUL!\nAPI Response: ${JSON.stringify(res.data.data)}`);
+                        } catch (err) {
+                           alert(`CONNECTION FAILED:\n${err.response?.data?.message || err.message}`);
+                        }
+                     }}
+                     className="text-[9px] font-black uppercase tracking-widest text-black/40 hover:text-black hover:underline transition-colors"
+                  >
+                     [Run Fadar Connection Diagnostic]
+                  </button>
+               </div>
+
                {/* Client Registry Info (EDITABLE) */}
                <div className="p-8 bg-brand-grey border border-black relative">
                   <div className="flex justify-between items-center mb-4">
@@ -142,12 +160,24 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
                            onChange={(e) => setAddressData({ ...addressData, address: e.target.value })}
                            className="rounded-none border-black focus:border-black bg-white"
                         />
-                        <Input
-                           placeholder="City (Must match Fadar list)"
-                           value={addressData.city}
-                           onChange={(e) => setAddressData({ ...addressData, city: e.target.value })}
-                           className="rounded-none border-black focus:border-black bg-white"
-                        />
+
+                        {/* REPLACEMENT: City Dropdown */}
+                        <div className="relative">
+                           <select
+                              value={addressData.city}
+                              onChange={(e) => setAddressData({ ...addressData, city: e.target.value })}
+                              className="w-full text-sm p-3 border border-black bg-white focus:outline-none appearance-none rounded-none font-medium"
+                           >
+                              <option value="">Select City (Required for Courier)</option>
+                              {SRI_LANKA_LOCATIONS.sort().map((city) => (
+                                 <option key={city} value={city}>{city}</option>
+                              ))}
+                           </select>
+                           <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                              <MapPin size={14} className="text-gray-400" />
+                           </div>
+                        </div>
+
                         <div className="grid grid-cols-2 gap-4">
                            <Input
                               placeholder="Primary Phone"
@@ -236,7 +266,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
                </div>
             </div>
          </div>
-      </div>
+      </div >
    );
 };
 
