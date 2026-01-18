@@ -101,47 +101,6 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
 
    return (
       <div className="space-y-6 max-w-2xl mx-auto">
-         {/* HEADER DASHBOARD */}
-         <div className="flex flex-col items-center space-y-4 pb-4">
-            <div className="flex justify-center gap-8 md:gap-16">
-               {/* Authenticity Badge */}
-               <div className="flex flex-col items-center gap-2">
-                  <div className="relative w-16 h-16 md:w-20 md:h-20 flex items-center justify-center p-2">
-                     <Award className="w-full h-full text-black stroke-[0.8px] opacity-100" />
-                     <div className="absolute inset-0 flex items-center justify-center pt-2">
-                        <span className="text-[9px] md:text-[10px] font-black tracking-tighter">89.5</span>
-                     </div>
-                  </div>
-                  <div className="text-center space-y-0.5">
-                     <span className="block text-[7px] md:text-[8px] uppercase font-bold tracking-[0.2em] text-black/40">Bronze</span>
-                     <span className="block text-[7px] md:text-[8px] uppercase font-bold tracking-[0.2em] text-black">Authenticity</span>
-                  </div>
-               </div>
-
-               {/* Transparency Badge */}
-               <div className="flex flex-col items-center gap-2">
-                  <div className="relative w-16 h-16 md:w-20 md:h-20 flex items-center justify-center p-2">
-                     <ShieldCheck className="w-full h-full text-black stroke-[0.8px] opacity-100" />
-                     <div className="absolute inset-0 flex items-center justify-center pt-1">
-                        <span className="text-[9px] md:text-[10px] font-black tracking-tighter">94.4</span>
-                     </div>
-                  </div>
-                  <div className="text-center space-y-0.5">
-                     <span className="block text-[7px] md:text-[8px] uppercase font-bold tracking-[0.2em] text-black/40">Silver</span>
-                     <span className="block text-[7px] md:text-[8px] uppercase font-bold tracking-[0.2em] text-black">Transparency</span>
-                  </div>
-               </div>
-            </div>
-
-            {/* Overall Verified Status */}
-            <div className="flex items-center gap-1.5 text-black">
-               <span className="text-[10px] md:text-xs font-semibold tracking-tight text-black">Verified</span>
-               <div className="bg-black text-white p-[1px] rounded-[1px]">
-                  <Check size={8} strokeWidth={4} />
-               </div>
-            </div>
-         </div>
-
          {/* CONTROLS & WRITE REVIEW TOGGLE */}
          <div className="flex justify-between items-center border-b border-black/10 pb-2">
             <div className="relative group">
