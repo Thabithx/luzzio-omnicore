@@ -164,6 +164,7 @@ exports.createProductReview = async (req, res) => {
          comment,
          images: images || [],
          user: req.user ? req.user._id : null,
+         isVerified: req.user ? req.user.role === 'admin' : false,
          createdAt: new Date()
       };
 

@@ -103,19 +103,20 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
       <div className="space-y-6 max-w-2xl mx-auto">
          {/* CONTROLS & WRITE REVIEW TOGGLE */}
          <div className="flex justify-between items-center border-b border-black/10 pb-2">
-            <div className="relative group">
+            <div className="relative flex items-center gap-1 cursor-pointer group">
+               <span className="text-[10px] md:text-xs font-bold text-black uppercase tracking-widest leading-none">
+                  {sortBy === 'newest' ? 'Most Recent' : sortBy === 'highest' ? 'Highest Rating' : 'Lowest Rating'}
+               </span>
+               <ChevronDown size={12} className="text-black" />
                <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-transparent pr-8 py-1 text-[10px] md:text-xs font-bold text-black focus:outline-none cursor-pointer"
+                  className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
                >
                   <option value="newest">Most Recent</option>
                   <option value="highest">Highest Rating</option>
                   <option value="lowest">Lowest Rating</option>
                </select>
-               <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <ChevronDown size={12} className="text-black" />
-               </div>
             </div>
             <button
                onClick={() => setIsWritingReview(!isWritingReview)}
@@ -239,10 +240,15 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
                   {/* User Info Line */}
                   <div className="flex items-center gap-2">
                      <span className="text-[11px] md:text-[12px] font-bold text-black tracking-tight">{review.name || "Anonymous"}</span>
-                     <div className="flex items-center gap-0.5 bg-black text-white px-1 py-[1px] rounded-[1px]">
-                        <Check size={8} strokeWidth={4} />
-                        <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest leading-none">Verified</span>
-                     </div>
+                     {review.isVerified && (
+                        <div className="flex items-center gap-0.5 bg-black text-white px-1 py-[1px] rounded-[1px]">
+                           <Check size={8} strokeWidth={4} />
+                           <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest leading-none">Verified</span>
+                        </div>
+                     )}
+                     <span className="text-[9px] text-gray-400 font-medium tracking-tight ml-auto">
+                        {new Date(review.createdAt).toLocaleDateString()}
+                     </span>
                   </div>
 
                   {/* Comment */}
@@ -261,11 +267,6 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
                            ))}
                         </div>
                      )}
-                     <div className="flex justify-between items-center">
-                        <span className="text-[9px] text-gray-400 font-medium tracking-wide">
-                           {new Date(review.createdAt).toLocaleDateString()}
-                        </span>
-                     </div>
                   </div>
                </div>
             ))}
