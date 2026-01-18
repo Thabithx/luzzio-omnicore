@@ -38,6 +38,12 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
       const files = Array.from(e.target.files);
       if (files.length === 0) return;
 
+      const totalImages = formData.images.length + files.length;
+      if (totalImages > 8) {
+         alert(`Maximum 8 images allowed. You can only add ${8 - formData.images.length} more.`);
+         return;
+      }
+
       const uploadData = new FormData();
       files.forEach(file => {
          uploadData.append('images', file);
@@ -48,15 +54,21 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
          const res = await api.post('/upload/public', uploadData, {
             headers: { 'Content-Type': 'multipart/form-data' }
          });
-         setFormData(prev => ({
-            ...prev,
-            images: [...prev.images, ...res.data.files.map(f => f.url)]
-         }));
+
+         if (res.data.success) {
+            setFormData(prev => ({
+               ...prev,
+               images: [...prev.images, ...res.data.files.map(f => f.url)]
+            }));
+         }
       } catch (err) {
          console.error('Upload failed:', err);
-         alert('Failed to upload images');
+         const errorMsg = err.response?.data?.message || 'Failed to upload images. Check file sizes or format.';
+         alert(errorMsg);
       } finally {
          setUploading(false);
+         // Reset file input so same file can be selected again if needed
+         e.target.value = '';
       }
    };
 
@@ -246,13 +258,6 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
                            <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest leading-none">Verified</span>
                         </div>
                      )}
-                  </div>
-
-                  {/* Date Line */}
-                  <div className="mt-[-2px] mb-1">
-                     <span className="text-[10px] text-black/40 font-medium tracking-tight">
-                        {new Date(review.createdAt).toLocaleDateString()}
-                     </span>
                   </div>
 
                   {/* Comment */}

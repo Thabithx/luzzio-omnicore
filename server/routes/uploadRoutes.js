@@ -41,7 +41,7 @@ router.post('/', protect, admin, (req, res) => {
 
 // Route for public uploads (Reviews) - No Auth Required
 router.post('/public', (req, res) => {
-   upload.array('images', 5)(req, res, (err) => {
+   upload.array('images', 8)(req, res, (err) => {
       if (err) {
          console.error('Multer public upload error:', err);
          return res.status(500).json({
