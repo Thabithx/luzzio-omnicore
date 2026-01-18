@@ -411,6 +411,16 @@ export function ProductDetail() {
                      rating: ((prev.rating * prev.numReviews) + newReview.rating) / (prev.numReviews + 1)
                   }));
                }}
+               onReviewDeleted={(deletedReviewId) => {
+                  setProduct(prev => {
+                     const updatedReviews = prev.reviews.filter(r => r._id !== deletedReviewId);
+                     const numReviews = updatedReviews.length;
+                     const rating = numReviews > 0
+                        ? updatedReviews.reduce((acc, r) => acc + r.rating, 0) / numReviews
+                        : 0;
+                     return { ...prev, reviews: updatedReviews, numReviews, rating };
+                  });
+               }}
             />
          </div >
 

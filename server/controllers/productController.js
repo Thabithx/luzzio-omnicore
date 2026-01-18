@@ -182,3 +182,43 @@ exports.createProductReview = async (req, res) => {
       res.status(400).json({ success: false, message: err.message });
    }
 };
+// @desc    Delete product review
+// @route   DELETE /api/products/:id/reviews/:reviewId
+// @access  Private/Admin
+exports.deleteProductReview = async (req, res) => {
+   try {
+      const product = await Product.findById(req.params.id);
+
+      if (!product) {
+         return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+
+      // Check if review exists
+      const reviewIndex = product.reviews.findIndex(
+         r => r._id.toString() === req.params.reviewId
+      );
+
+      if (reviewIndex === -1) {
+         return res.status(404).json({ success: false, message: 'Review not found' });
+      }
+
+      // Remove review
+      product.reviews.splice(reviewIndex, 1);
+
+      // Recalculate Average Rating
+      product.numReviews = product.reviews.length;
+      if (product.numReviews > 0) {
+         product.rating =
+            product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+            product.reviews.length;
+      } else {
+         product.rating = 0;
+      }
+
+      await product.save();
+
+      res.status(200).json({ success: true, message: 'Review deleted', data: product.reviews });
+   } catch (err) {
+      res.status(400).json({ success: false, message: err.message });
+   }
+};
