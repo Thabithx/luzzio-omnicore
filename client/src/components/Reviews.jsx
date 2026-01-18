@@ -246,7 +246,11 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
                            <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest leading-none">Verified</span>
                         </div>
                      )}
-                     <span className="text-[9px] text-gray-400 font-medium tracking-tight ml-auto">
+                  </div>
+
+                  {/* Date Line */}
+                  <div className="mt-[-2px] mb-1">
+                     <span className="text-[10px] text-black/40 font-medium tracking-tight">
                         {new Date(review.createdAt).toLocaleDateString()}
                      </span>
                   </div>

@@ -8,7 +8,7 @@ const {
    createProductReview,
    deleteProductReview
 } = require('../controllers/productController');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect, admin, optionalProtect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ router.route('/:id')
    .delete(protect, admin, deleteProduct);
 
 router.route('/:id/reviews')
-   .post(createProductReview);
+   .post(optionalProtect, createProductReview);
 
 router.route('/:id/reviews/:reviewId')
    .delete(protect, admin, deleteProductReview);
