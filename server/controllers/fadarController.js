@@ -56,8 +56,14 @@ exports.createFadarParcel = async (req, res) => {
       const numericOrderId = parseInt(hexId, 16).toString();
       form.append('order_id', numericOrderId);
 
-      form.append('parcel_weight', parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1'); // Default to 1kg if not provided or invalid
-      form.append('parcel_description', `Order #${order._id.toString().slice(-6).toUpperCase()}`);
+      const weightVal = parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1';
+      form.append('parcel_weight', weightVal);
+
+      // New format: weight, product name, quantity
+      const productSummary = order.orderItems.map(item => `${item.name} (${item.qty})`).join(', ');
+      const parcelDescription = `${weightVal}KG, ${productSummary}`;
+
+      form.append('parcel_description', parcelDescription.substring(0, 100)); // Safety truncate for API limits
       form.append('recipient_name', `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim());
 
       // Sending Phone Number AS IS (expecting 10 digits with leading 0, e.g., 077...)
@@ -82,7 +88,8 @@ exports.createFadarParcel = async (req, res) => {
       const debugParamsObj = {
          order_id: numericOrderId,
          recipient_city: order.shippingAddress.city || '',
-         parcel_weight: parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1',
+         parcel_weight: weightVal,
+         parcel_description: parcelDescription,
          amount: codAmount,
          recipient_name: `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim(),
          recipient_contact_1: rawPhone,
