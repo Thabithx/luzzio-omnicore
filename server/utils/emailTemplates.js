@@ -206,7 +206,7 @@ exports.trackingUpdateTemplate = (order, trackingNumber, user) => {
       </div>
 
       <div class="text-center">
-         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/profile" class="btn">Track Shipment</a>
+         <a href="https://www.fdedomestic.com/track.php?track_number=${trackingNumber}" class="btn">Track Shipment</a>
       </div>
    `;
 
