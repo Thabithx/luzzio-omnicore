@@ -109,24 +109,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
                   </div>
                )}
 
-               {/* ADMIN UTILS: Connection Test */}
-               <div className="flex justify-end">
-                  <button
-                     onClick={async () => {
-                        try {
-                           const res = await api.post('/fadar/test-connection');
-                           const debugInfo = JSON.stringify(res.data.data, null, 2);
-                           const authInfo = JSON.stringify(res.data.auth_check, null, 2);
-                           alert(`CONNECTION RESULT:\n\nAPI RESPONSE: ${debugInfo}\n\nAUTH CHECK:\n${authInfo}\n\n(If Status is 212, check if Client ID matches strict Fadar requirements)`);
-                        } catch (err) {
-                           alert(`CONNECTION FAILED:\n${err.response?.data?.message || err.message}`);
-                        }
-                     }}
-                     className="text-[9px] font-black uppercase tracking-widest text-black/40 hover:text-black hover:underline transition-colors"
-                  >
-                     [Run Fadar Connection Diagnostic]
-                  </button>
-               </div>
+
 
                {/* Client Registry Info (EDITABLE) */}
                <div className="p-8 bg-brand-grey border border-black relative">

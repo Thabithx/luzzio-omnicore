@@ -13,6 +13,7 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
    const [isWritingReview, setIsWritingReview] = useState(false);
    const [sortBy, setSortBy] = useState('newest'); // newest, highest, lowest
    const [isDeleting, setIsDeleting] = useState(null);
+   const [expandedImage, setExpandedImage] = useState(null);
 
    const sortedReviews = useMemo(() => {
       const items = [...reviews];
@@ -245,33 +246,37 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
                   {/* Rating Stars */}
                   <div className="flex gap-0.5">
                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={10} className={i < review.rating ? "fill-black text-black" : "text-gray-200"} strokeWidth={0} />
+                        <Star key={i} size={16} className={i < review.rating ? "fill-black text-black" : "text-gray-200"} strokeWidth={0} />
                      ))}
                   </div>
 
                   {/* User Info Line */}
                   <div className="flex items-center gap-2">
-                     <span className="text-[11px] md:text-[12px] font-bold text-black tracking-tight">{review.name || "Anonymous"}</span>
+                     <span className="text-[14px] md:text-[16px] font-bold text-black tracking-tight">{review.name || "Anonymous"}</span>
                      {review.isVerified && (
-                        <div className="flex items-center gap-0.5 bg-black text-white px-1 py-[1px] rounded-[1px]">
-                           <Check size={8} strokeWidth={4} />
-                           <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest leading-none">Verified</span>
+                        <div className="flex items-center gap-0.5 bg-black text-white px-1.5 py-[2px] rounded-[1px]">
+                           <Check size={10} strokeWidth={4} />
+                           <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest leading-none">Verified</span>
                         </div>
                      )}
                   </div>
 
                   {/* Comment */}
-                  <div className="text-black/80 font-normal leading-relaxed text-[11px] md:text-[12px]">
+                  <div className="text-black/80 font-normal leading-relaxed text-[13px] md:text-[14px]">
                      <p>{review.comment}</p>
                   </div>
 
                   {/* Date & Review Images Footer */}
                   <div className="flex flex-col gap-3">
                      {review.images?.length > 0 && (
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-3">
                            {review.images.map((img, idx) => (
-                              <div key={idx} className="w-16 h-16 border border-gray-100 bg-gray-50 flex-shrink-0">
-                                 <img src={img} alt="" className="w-full h-full object-cover hover:opacity-80 transition-opacity cursor-zoom-in" />
+                              <div
+                                 key={idx}
+                                 onClick={() => setExpandedImage(img)}
+                                 className="w-24 h-24 md:w-32 md:h-32 border border-gray-100 bg-gray-50 flex-shrink-0 cursor-zoom-in group/img overflow-hidden"
+                              >
+                                 <img src={img} alt="" className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500" />
                               </div>
                            ))}
                         </div>
@@ -292,6 +297,28 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
                </div>
             )}
          </div>
+
+         {/* IMAGE LIGHTBOX */}
+         {expandedImage && (
+            <div
+               className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 md:p-10 animate-in fade-in duration-300"
+               onClick={() => setExpandedImage(null)}
+            >
+               <button
+                  className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
+                  onClick={() => setExpandedImage(null)}
+               >
+                  <X size={32} strokeWidth={1.5} />
+               </button>
+               <div className="relative max-w-5xl max-h-full" onClick={e => e.stopPropagation()}>
+                  <img
+                     src={expandedImage}
+                     alt="Review detail"
+                     className="w-full h-auto max-h-[85vh] object-contain shadow-2xl animate-in zoom-in-95 duration-300"
+                  />
+               </div>
+            </div>
+         )}
       </div>
    );
 }
