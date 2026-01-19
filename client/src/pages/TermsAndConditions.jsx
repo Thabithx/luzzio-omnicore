@@ -149,7 +149,7 @@ export function TermsAndConditions() {
                   <h2 className="text-[14px] font-black uppercase tracking-widest mb-4">Contact Information</h2>
                   <p>
                      For questions about these Terms and Conditions, please contact us at:<br />
-                     Email: archive@luzzio.com<br />
+                     Email: contact@luzzio.com<br />
                      Phone: +44 20 33 18 60 32
                   </p>
                </section>

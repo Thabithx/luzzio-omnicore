@@ -664,7 +664,7 @@ const AdminProducts = () => {
    };
 
    const handleDelete = async (id) => {
-      if (window.confirm('Confirm permanent removal from archive?')) {
+      if (window.confirm('Confirm permanent deletion?')) {
          try {
             await api.delete(`/products/${id}`);
             fetchData();

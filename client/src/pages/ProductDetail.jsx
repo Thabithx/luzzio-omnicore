@@ -147,7 +147,7 @@ export function ProductDetail() {
    }, [loading, product, id]);
 
    if (loading) return <div className="min-h-screen flex items-center justify-center text-small-brand animate-pulse">Retrieving Product Details...</div>;
-   if (!product) return <div className="min-h-screen flex items-center justify-center text-small-brand">Product not found in archive.</div>;
+   if (!product) return <div className="min-h-screen flex items-center justify-center text-small-brand">Product not found.</div>;
 
    const productImages = product.images?.length > 0 ? product.images : [
       "https://placehold.co/1200x1600/F6F6F6/000000?text=LUZZIO+STORY+1",
@@ -158,7 +158,7 @@ export function ProductDetail() {
       <div className="min-h-screen bg-white">
          <Meta
             title={`${product.name} | Luzzio`}
-            description={product.description || `Buy ${product.name} at Luzzio. Luxury fashion archive.`}
+            description={product.description || `Buy ${product.name} at Luzzio. Luxury fashion collection.`}
          />
 
          <div className="flex flex-col lg:flex-row">

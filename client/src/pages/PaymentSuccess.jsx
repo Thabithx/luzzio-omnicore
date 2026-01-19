@@ -51,7 +51,7 @@ export function PaymentSuccess() {
             </div>
 
             <p className="text-sm font-medium leading-relaxed uppercase tracking-widest text-gray-600">
-               Your selection has been successfully recorded in the digital archive. A confirmation protocol has been dispatched to your registered email.
+               Your selection has been successfully recorded. A confirmation email has been dispatched to your registered email.
             </p>
 
             <div className="pt-10 border-t border-black space-y-4">

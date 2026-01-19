@@ -138,8 +138,8 @@ export function Contact() {
                   <div className="mt-12 space-y-6 text-[11px] font-medium leading-relaxed tracking-wide">
                      <div>
                         <p className="font-black uppercase tracking-widest mb-2">Email</p>
-                        <a href="mailto:archive@luzzio.com" className="underline underline-offset-4">
-                           archive@luzzio.com
+                        <a href="mailto:contact@luzzio.com" className="underline underline-offset-4">
+                           contact@luzzio.com
                         </a>
                      </div>
                      <div>

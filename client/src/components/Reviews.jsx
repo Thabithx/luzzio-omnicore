@@ -93,7 +93,7 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
    };
 
    const handleDeleteReview = async (reviewId) => {
-      if (!window.confirm('Are you sure you want to delete this archive record?')) return;
+      if (!window.confirm('Are you sure you want to delete this review?')) return;
 
       try {
          setIsDeleting(reviewId);
@@ -282,7 +282,7 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
 
             {reviews.length === 0 && !isWritingReview && (
                <div className="text-center py-10 space-y-3">
-                  <p className="text-[10px] uppercase tracking-widest text-gray-400">No archival records yet</p>
+                  <p className="text-[10px] uppercase tracking-widest text-gray-400">No reviews yet</p>
                   <button
                      onClick={() => setIsWritingReview(true)}
                      className="text-[10px] font-black uppercase tracking-[0.2em] border-b border-black pb-0.5 hover:opacity-50"

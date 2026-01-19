@@ -256,5 +256,6 @@ exports.paymentSuccessTemplate = (order, is_admin = false) => {
    if (!is_admin) {
       return exports.orderConfirmationTemplate(order, { name: order.shippingAddress.firstName });
    }
-   return exports.adminOrderNotificationTemplate(order);
+   // For admins, we use the same detailed format
+   return exports.orderConfirmationTemplate(order, { name: 'Admin' });
 };

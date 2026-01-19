@@ -55,7 +55,7 @@ export function Register() {
                <div className="space-y-4">
                   <p className="text-small-brand text-gray-400">Client Onboarding</p>
                   <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">Registration</h1>
-                  <p className="text-[11px] text-gray-500 tracking-widest font-medium">Create a digital profile for exclusive archive access.</p>
+                  <p className="text-[11px] text-gray-500 tracking-widest font-medium">Create a profile for exclusive access.</p>
                </div>
 
                {error && (

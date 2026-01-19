@@ -22,7 +22,7 @@ export function ShippingPolicy() {
                      <div className="space-y-2">
                         <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Shipping Origin</h2>
                         <p className="text-[12px] font-black uppercase">Anuradhapura, Sri Lanka</p>
-                        <p className="text-gray-500 italic">All orders are dispatched directly from our central archive.</p>
+                        <p className="text-gray-500 italic">All orders are dispatched directly from our center.</p>
                      </div>
 
                      <div className="space-y-2 pt-4 border-t border-black/10">
@@ -51,7 +51,7 @@ export function ShippingPolicy() {
                   <div className="flex-1 space-y-6">
                      <h2 className="text-[14px] font-black uppercase tracking-widest">Digital Tracking Sequence</h2>
                      <p className="text-gray-500 leading-loose">
-                        Once your order has been dispatched from our archive, you will receive a confirmation message
+                        Once your order has been dispatched, you will receive a confirmation message
                         containing your unique tracking details. This allows for real-time monitoring of your acquisition.
                      </p>
                   </div>

@@ -28,7 +28,7 @@ export function ReturnPolicy() {
                      </div>
                      <div className="flex gap-4">
                         <span className="font-black text-[14px]">/</span>
-                        <p>You must provide <span className="font-black">PHOTOGRAPHIC EVIDENCE</span> of the defect for our archive audit and verification.</p>
+                        <p>You must provide <span className="font-black">PHOTOGRAPHIC EVIDENCE</span> of the defect for our verification.</p>
                      </div>
                   </div>
                </section>

@@ -44,7 +44,7 @@ export default function ForgotPassword() {
                   Credential Recovery
                </h1>
                <p className="text-small-brand text-gray-400">
-                  Initiate the security protocol to regain access to your archive.
+                  Initiate the security protocol to regain account access.
                </p>
             </div>
 

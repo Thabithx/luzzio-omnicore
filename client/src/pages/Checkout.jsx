@@ -400,7 +400,7 @@ export function Checkout() {
                {/* RIGHT: ORDER REVIEW */}
                <div className="lg:w-[450px]">
                   <div className="bg-brand-grey p-10 space-y-10 lg:sticky lg:top-24">
-                     <p className="text-small-brand font-black">Archive Review</p>
+                     <p className="text-small-brand font-black">Order Summary</p>
 
                      <div className="space-y-8 max-h-[50vh] overflow-y-auto pr-4">
                         {cart.map((item, index) => (

@@ -280,7 +280,7 @@ export function Profile() {
                                  type="email"
                                  value={manualEmail}
                                  onChange={(e) => setManualEmail(e.target.value)}
-                                 placeholder="Email archive..."
+                                 placeholder="Email..."
                                  className="w-full bg-white border border-black p-4 text-[11px] font-bold uppercase tracking-widest outline-none focus:ring-1 focus:ring-black"
                                  required
                               />
@@ -295,7 +295,7 @@ export function Profile() {
                            <div className="space-y-4">
                               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black">Protocol Sync Available</p>
                               <p className="text-[9px] text-gray-500 leading-relaxed tracking-widest uppercase">
-                                 Synchronize this anonymous order archive with your permanent registry to prevent data loss.
+                                 Synchronize this anonymous order history with your permanent registry to prevent data loss.
                               </p>
                            </div>
                            <Link to="/login" className="btn-brand w-full block text-center">Sign In & Sync</Link>
@@ -413,7 +413,7 @@ export function Profile() {
                                     value={editData.email}
                                     readOnly
                                     className="w-full bg-transparent border-b border-black py-4 text-small-brand font-black focus:outline-none opacity-50 cursor-not-allowed"
-                                    placeholder="Email archive (immutable)"
+                                    placeholder="Email address (immutable)"
                                  />
                               </div>
 
@@ -427,7 +427,7 @@ export function Profile() {
                                           value={editData.shippingAddress.address}
                                           onChange={(e) => setEditData({ ...editData, shippingAddress: { ...editData.shippingAddress, address: e.target.value } })}
                                           className="w-full bg-transparent border-b border-black py-4 text-[13px] tracking-wider font-black focus:outline-none"
-                                          placeholder="Street archive..."
+                                          placeholder="Street address..."
                                        />
                                     </div>
                                     <div className="grid grid-cols-2 gap-6">
@@ -448,7 +448,7 @@ export function Profile() {
                                              value={editData.shippingAddress.postalCode}
                                              onChange={(e) => setEditData({ ...editData, shippingAddress: { ...editData.shippingAddress, postalCode: e.target.value } })}
                                              className="w-full bg-transparent border-b border-black py-4 text-[13px] tracking-wider font-black focus:outline-none"
-                                             placeholder="Zip archive..."
+                                             placeholder="Zip code..."
                                           />
                                        </div>
                                     </div>
@@ -469,7 +469,7 @@ export function Profile() {
                            <div className="p-6 bg-brand-grey border border-black space-y-4">
                               <p className="text-[10px] font-black uppercase tracking-widest">Protocol Warning</p>
                               <p className="text-[10px] text-gray-500 leading-relaxed tracking-widest uppercase">
-                                 Updating these credentials will synchronize across all Luzzio archive access points immediately.
+                                 Updating these credentials will synchronize across all Luzzio access points immediately.
                               </p>
                            </div>
 

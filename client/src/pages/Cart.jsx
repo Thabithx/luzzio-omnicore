@@ -23,7 +23,7 @@ export function Cart() {
             <Meta title="Shopping Bag | Luzzio" />
             <h1 className="text-[8vw] font-black uppercase tracking-tighter leading-none mb-10">Your Bag is Empty</h1>
             <p className="text-small-brand text-gray-400 max-w-sm mb-12">
-               The digital archive contains no items. Explore the collection to begin your selection.
+               Your bag contains no items. Explore the collection to begin your selection.
             </p>
             <Link to="/products" className="btn-brand">
                Explore Collection
