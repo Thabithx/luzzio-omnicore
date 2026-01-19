@@ -7,6 +7,11 @@ const cache = {
    ttl: 5 * 60 * 1000 // 5 minutes
 };
 
+const clearCache = () => {
+   cache.products = null;
+   cache.lastFetch = 0;
+};
+
 // @desc    Get all products
 // @route   GET /api/products
 // @access  Public
@@ -111,6 +116,7 @@ exports.getProduct = async (req, res) => {
 exports.createProduct = async (req, res) => {
    try {
       const product = await Product.create(req.body);
+      clearCache();
 
       res.status(201).json({
          success: true,
@@ -137,6 +143,8 @@ exports.updateProduct = async (req, res) => {
          runValidators: true
       });
 
+      clearCache();
+
       res.status(200).json({
          success: true,
          data: product
@@ -158,6 +166,7 @@ exports.deleteProduct = async (req, res) => {
       }
 
       await product.deleteOne();
+      clearCache();
 
       res.status(200).json({
          success: true,
@@ -201,6 +210,7 @@ exports.createProductReview = async (req, res) => {
          product.reviews.length;
 
       await product.save();
+      clearCache();
 
       res.status(201).json({ success: true, message: 'Review added', data: review });
    } catch (err) {
@@ -241,6 +251,7 @@ exports.deleteProductReview = async (req, res) => {
       }
 
       await product.save();
+      clearCache();
 
       res.status(200).json({ success: true, message: 'Review deleted', data: product.reviews });
    } catch (err) {
