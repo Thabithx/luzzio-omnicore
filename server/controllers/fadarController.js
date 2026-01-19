@@ -104,9 +104,11 @@ exports.createFadarParcel = async (req, res) => {
 
       if (response.data) {
          // The Fadar API response structure can vary; we check for known ID fields
-         const fadarId = response.data.fadar_order_id || response.data.order_id || response.data.id;
+         // Update: Include waybill_no as per successful response logs
+         const fadarId = response.data.waybill_no || response.data.fadar_order_id || response.data.order_id || response.data.id;
+         const isStatusOk = response.data.status === '200' || response.data.status === 200;
 
-         if (!fadarId) {
+         if (!fadarId && !isStatusOk) {
             console.error(`[FADAR FAILURE] No Order ID in response for Order ${order._id}:`, response.data);
 
             if (response.data.status === '212' || response.data.status === 212) {
@@ -138,6 +140,8 @@ exports.createFadarParcel = async (req, res) => {
          }
 
          order.fadar_order_id = fadarId;
+         order.fadar_tracking_number = fadarId;
+         order.trackingNumber = fadarId;
          order.status = 'processing';
          const updatedOrder = await order.save();
 
