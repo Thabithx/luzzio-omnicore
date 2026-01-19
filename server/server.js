@@ -7,10 +7,12 @@ const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const path = require('path');
+const compression = require('compression');
 
 dotenv.config();
 
 const app = express();
+app.use(compression()); // Register early for global activation
 app.set('trust proxy', true); // Trust all proxies in the chain for Railway/Cloud environments
 const PORT = process.env.PORT || 5001;
 

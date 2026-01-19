@@ -1,10 +1,29 @@
 const Product = require('../models/Product');
 
+// Performance: In-memory cache for high-traffic read operations
+const cache = {
+   products: null,
+   lastFetch: 0,
+   ttl: 5 * 60 * 1000 // 5 minutes
+};
+
 // @desc    Get all products
 // @route   GET /api/products
 // @access  Public
 exports.getProducts = async (req, res) => {
    try {
+      // 1. Optimized Fast-Path for global fetching (Home/ProductList defaults)
+      const isSimpleFetch = Object.keys(req.query).length === 0 || (req.query.limit === '1000' && Object.keys(req.query).length === 1);
+
+      if (isSimpleFetch && cache.products && (Date.now() - cache.lastFetch < cache.ttl)) {
+         return res.status(200).json({
+            success: true,
+            count: cache.products.length,
+            data: cache.products,
+            source: 'cache'
+         });
+      }
+
       let query;
 
       // Copy req.query
@@ -43,18 +62,23 @@ exports.getProducts = async (req, res) => {
       const page = parseInt(req.query.page, 10) || 1;
       const limit = parseInt(req.query.limit, 10) || 100;
       const startIndex = (page - 1) * limit;
-      const endIndex = page * limit;
-      const total = await Product.countDocuments();
 
       query = query.skip(startIndex).limit(limit);
 
       // Executing query
       const products = await query;
 
+      // Update cache if it was a simple fetch
+      if (isSimpleFetch) {
+         cache.products = products;
+         cache.lastFetch = Date.now();
+      }
+
       res.status(200).json({
          success: true,
          count: products.length,
-         data: products
+         data: products,
+         source: 'database'
       });
    } catch (err) {
       res.status(500).json({ success: false, message: err.message });

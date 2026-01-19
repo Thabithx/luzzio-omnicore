@@ -92,6 +92,12 @@ const productSchema = new mongoose.Schema({
    }
 });
 
+// Optimization: Indexing for blazingly fast lookups
+productSchema.index({ slug: 1 });
+productSchema.index({ categories: 1 });
+productSchema.index({ price: 1 });
+productSchema.index({ createdAt: -1 });
+
 // Create product slug from the name
 productSchema.pre('save', function (next) {
    this.slug = slugify(this.name, { lower: true });

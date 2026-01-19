@@ -101,6 +101,11 @@ const orderSchema = new mongoose.Schema({
    timestamps: true
 });
 
+// Optimization: Indexing for common searches & filtered views
+orderSchema.index({ user: 1 });
+orderSchema.index({ status: 1 });
+orderSchema.index({ email: 1 });
+
 // Auto-delete orders after 60 days (60 * 60 * 24 * 60 seconds)
 orderSchema.index({ createdAt: 1 }, { expireAfterSeconds: 5184000 });
 
