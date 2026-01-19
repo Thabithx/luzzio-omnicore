@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Eye, Search, X, Package, MapPin, CreditCard, Clock, Printer, CheckSquare, Square } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { Input } from '../../components/ui/Input';
@@ -264,6 +265,7 @@ const AdminOrders = () => {
    const [selectedIds, setSelectedIds] = useState([]);
    const [parcelWeights, setParcelWeights] = useState({});
    const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
+   const [searchParams] = useSearchParams();
    const { token } = useAuth();
 
    const fetchOrders = async (page = 1) => {
@@ -286,6 +288,18 @@ const AdminOrders = () => {
    useEffect(() => {
       if (token) fetchOrders();
    }, [token]);
+
+   // Deep Linking: Auto-open specific order modal if passed via URL
+   useEffect(() => {
+      const orderId = searchParams.get('order');
+      if (orderId && orders.length > 0) {
+         const order = orders.find(o => o._id === orderId);
+         if (order) {
+            setSelectedOrder(order);
+            setIsModalOpen(true);
+         }
+      }
+   }, [searchParams, orders]);
 
    const handleTrackingUpdate = async (orderId, trackingNumber) => {
       try {

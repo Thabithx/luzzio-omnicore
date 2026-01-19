@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import { Package, MapPin, User as UserIcon, Clock, ChevronRight, LogOut } from 'lucide-react';
 import Meta from '../components/ui/Meta';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
 
 const OrderDetailsModal = ({ isOpen, onClose, order, user }) => {
    if (!isOpen || !order) return null;
@@ -135,6 +135,7 @@ export function Profile() {
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [activeTab, setActiveTab] = useState('orders');
+   const [searchParams] = useSearchParams();
    const { user, token, guestEmail, setGuestProfile, logout, updateUser, clearGuestProfile } = useAuth();
 
    // Profile Edit States
@@ -192,6 +193,18 @@ export function Profile() {
    useEffect(() => {
       fetchOrders();
    }, [token, guestEmail]);
+
+   // Deep Linking: Auto-open specific order if passed via URL
+   useEffect(() => {
+      const orderId = searchParams.get('order');
+      if (orderId && orders.length > 0) {
+         const order = orders.find(o => o._id === orderId);
+         if (order) {
+            setSelectedOrder(order);
+            setIsModalOpen(true);
+         }
+      }
+   }, [searchParams, orders]);
 
    const handleManualIdentity = (e) => {
       e.preventDefault();

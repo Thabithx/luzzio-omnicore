@@ -163,7 +163,7 @@ exports.orderConfirmationTemplate = (order, user, isAdmin = false) => {
       </div>
 
       <div class="text-center">
-         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/${isAdmin ? 'admin/orders' : 'profile'}" class="btn">
+         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/${isAdmin ? 'admin/orders' : 'profile'}?order=${order._id}" class="btn">
             ${isAdmin ? 'Manage Order' : 'View Order'}
          </a>
       </div>
