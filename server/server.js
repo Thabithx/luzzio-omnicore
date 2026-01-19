@@ -11,7 +11,7 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
-app.set('trust proxy', '1'); // Protocol: Explicit string for cloud proxy chains
+app.set('trust proxy', true); // Trust all proxies in the chain for Railway/Cloud environments
 const PORT = process.env.PORT || 5001;
 
 // CORS Configuration (Must be before all other middleware/routes)
@@ -72,10 +72,14 @@ app.use(hpp());
 // Rate Limiting
 const limiter = rateLimit({
    windowMs: 10 * 60 * 1000, // 10 minutes
-   max: 500, // Limit each IP to 500 requests per window
+   max: 1000, // High ceiling to prevent SPA burst issues during testing
    message: 'Too many requests from this IP, please try again after 10 minutes',
    standardHeaders: true,
    legacyHeaders: false,
+   keyGenerator: (req) => {
+      // Prioritize X-Forwarded-For provided by Railway/Load Balancer
+      return req.headers['x-forwarded-for']?.split(',')[0] || req.ip || req.connection.remoteAddress;
+   },
 });
 app.use('/api', limiter);
 
