@@ -562,8 +562,32 @@ async function triggerFadarInternal(order, weight) {
       console.log(`[FADAR BATCH] API RESPONSE:`, response.data);
 
       if (response.data) {
-         const fadarId = response.data.fadar_order_id || response.data.order_id || response.data.id;
+         const fadarId = response.data.waybill_no || response.data.fadar_order_id || response.data.order_id || response.data.id;
          if (fadarId) {
+            // Dispatch Logistics Email Protocol (Background)
+            setImmediate(async () => {
+               try {
+                  const User = require('../models/User');
+                  const sendEmail = require('../utils/sendEmail');
+                  const { trackingUpdateTemplate } = require('../utils/emailTemplates');
+
+                  const user = order.user ? await User.findById(order.user) : null;
+                  const recipientEmail = order.email || (user ? user.email : null);
+                  const recipientName = user ? user.name : `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim();
+
+                  if (recipientEmail) {
+                     console.log(`[FADAR BATCH EMAIL] Dispatching tracking update to: ${recipientEmail}`);
+                     await sendEmail({
+                        email: recipientEmail,
+                        subject: `LUZZIO LOGISTICS: SHIPMENT DISPATCHED #${order._id.toString().slice(-6).toUpperCase()}`,
+                        html: trackingUpdateTemplate(order, fadarId, { name: recipientName || 'Valued Client' })
+                     });
+                  }
+               } catch (emailErr) {
+                  console.error('[FADAR BATCH EMAIL FAILURE] Logistics Email Protocol Deferred:', emailErr.message);
+               }
+            });
+
             return { success: true, fadar_order_id: fadarId };
          }
          return {

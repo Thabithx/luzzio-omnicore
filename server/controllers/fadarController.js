@@ -1,5 +1,8 @@
 const axios = require('axios');
 const Order = require('../models/Order');
+const User = require('../models/User');
+const sendEmail = require('../utils/sendEmail');
+const { trackingUpdateTemplate } = require('../utils/emailTemplates');
 
 // @desc    Create a new parcel booking with Fadar
 // @route   POST /api/fadar/create-parcel
@@ -153,6 +156,26 @@ exports.createFadarParcel = async (req, res) => {
          const updatedOrder = await order.save();
 
          console.log(`[FADAR SUCCESS] Order ${order._id} synchronized with Fadar ID: ${order.fadar_order_id}`);
+
+         // Dispatch Logistics Email Protocol (Background)
+         setImmediate(async () => {
+            try {
+               const user = order.user ? await User.findById(order.user) : null;
+               const recipientEmail = order.email || (user ? user.email : null);
+               const recipientName = user ? user.name : `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim();
+
+               if (recipientEmail) {
+                  console.log(`[FADAR EMAIL] Dispatching tracking update to: ${recipientEmail}`);
+                  await sendEmail({
+                     email: recipientEmail,
+                     subject: `LUZZIO LOGISTICS: SHIPMENT DISPATCHED #${order._id.toString().slice(-6).toUpperCase()}`,
+                     html: trackingUpdateTemplate(order, fadarId, { name: recipientName || 'Valued Client' })
+                  });
+               }
+            } catch (emailErr) {
+               console.error('[FADAR EMAIL FAILURE] Logistics Email Protocol Deferred:', emailErr.message);
+            }
+         });
 
          return res.status(200).json({
             success: true,
