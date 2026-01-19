@@ -101,14 +101,17 @@ const renderItems = (items) => items.map(item => `
    </tr>
 `).join('');
 
-exports.orderConfirmationTemplate = (order, user) => {
+exports.orderConfirmationTemplate = (order, user, isAdmin = false) => {
    const orderIdShort = order._id.toString().slice(-6).toUpperCase();
    const dateStr = new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+   const customerName = `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`;
 
    const content = `
       <div class="mb-30 text-center">
-         <h2 style="font-size: 20px; margin-bottom: 10px;">Order Confirmed</h2>
-         <p style="color: #666666;">Thank you for your purchase, ${user.name}.</p>
+         <h2 style="font-size: 20px; margin-bottom: 10px;">${isAdmin ? 'New Order Received' : 'Order Confirmed'}</h2>
+         <p style="color: #666666;">
+            ${isAdmin ? `A new order has been placed by ${customerName}.` : `Thank you for your purchase, ${user.name || order.shippingAddress.firstName}.`}
+         </p>
          <div class="text-small" style="margin-top: 5px;">Order #${orderIdShort} • ${dateStr}</div>
       </div>
 
@@ -160,11 +163,16 @@ exports.orderConfirmationTemplate = (order, user) => {
       </div>
 
       <div class="text-center">
-         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/profile" class="btn">View Order</a>
+         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/${isAdmin ? 'admin/orders' : 'profile'}" class="btn">
+            ${isAdmin ? 'Manage Order' : 'View Order'}
+         </a>
       </div>
    `;
 
-   return baseTemplate(content, `Order Confirmed #${orderIdShort}`, `Your order #${orderIdShort} has been received.`);
+   const subject = isAdmin ? `New Order Received #${orderIdShort}` : `Order Confirmed #${orderIdShort}`;
+   const preheader = isAdmin ? `New order received from ${customerName}.` : `Your order #${orderIdShort} has been received.`;
+
+   return baseTemplate(content, subject, preheader);
 };
 
 exports.trackingUpdateTemplate = (order, trackingNumber, user) => {
@@ -206,56 +214,12 @@ exports.trackingUpdateTemplate = (order, trackingNumber, user) => {
 };
 
 exports.adminOrderNotificationTemplate = (order) => {
-   const orderIdShort = order._id.toString().slice(-6).toUpperCase();
-
-   const content = `
-      <div class="mb-30">
-         <div style="background-color: #000000; color: #FFFFFF; padding: 10px 15px; display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-            New Order Received
-         </div>
-      </div>
-
-      <div class="mb-30">
-         <table role="presentation">
-            <tr>
-               <td style="padding-bottom: 10px; font-size: 14px; color: #666;">Order ID</td>
-               <td class="text-right" style="font-size: 14px; font-weight: 700;">#${orderIdShort}</td>
-            </tr>
-            <tr>
-               <td style="padding-bottom: 10px; font-size: 14px; color: #666;">Customer</td>
-               <td class="text-right" style="font-size: 14px; font-weight: 700;">${order.shippingAddress.firstName} ${order.shippingAddress.lastName}</td>
-            </tr>
-            <tr>
-               <td style="padding-bottom: 10px; font-size: 14px; color: #666;">Total Value</td>
-               <td class="text-right" style="font-size: 14px; font-weight: 700;">Rs ${order.totalPrice.toLocaleString()}</td>
-            </tr>
-         </table>
-      </div>
-
-      <div class="mb-30">
-         <div class="text-small" style="margin-bottom: 15px; border-bottom: 1px solid #E5E5E5; padding-bottom: 10px;">Items to Pack</div>
-         <table role="presentation">
-             ${order.orderItems.map(item => `
-               <tr>
-                  <td style="padding: 5px 0; font-size: 13px;">${item.name} (${item.size})</td>
-                  <td class="text-right" style="padding: 5px 0; font-size: 13px; font-weight: 700;">x${item.qty}</td>
-               </tr>
-             `).join('')}
-         </table>
-      </div>
-
-      <div class="text-center">
-         <a href="${process.env.CLIENT_URL || 'https://luzziopremium.com'}/admin/orders" class="btn">Manage Order</a>
-      </div>
-   `;
-
-   return baseTemplate(content, `New Order #${orderIdShort}`, `New order received from ${order.shippingAddress.firstName}.`);
+   return exports.orderConfirmationTemplate(order, { name: 'Admin' }, true);
 };
 
 exports.paymentSuccessTemplate = (order, is_admin = false) => {
    if (!is_admin) {
       return exports.orderConfirmationTemplate(order, { name: order.shippingAddress.firstName });
    }
-   // For admins, we use the same detailed format
-   return exports.orderConfirmationTemplate(order, { name: 'Admin' });
+   return exports.adminOrderNotificationTemplate(order);
 };
