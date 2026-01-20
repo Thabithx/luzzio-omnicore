@@ -150,7 +150,7 @@ export function Footer() {
                   <div className="space-y-6 text-[10px] font-bold uppercase tracking-widest">
                      <div className="space-y-1">
                         <p className="text-black/50">Call us</p>
-                        <a href="tel:+442033186032" className="underline underline-offset-4 decoration-1 hover:opacity-50 transition-opacity">+44 20 33 18 60 32</a>
+                        <a href="tel:0781423168" className="underline underline-offset-4 decoration-1 hover:opacity-50 transition-opacity">078 142 3168</a>
                      </div>
                      <div className="space-y-1">
                         <p className="text-black/50">Support</p>

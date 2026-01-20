@@ -144,8 +144,8 @@ export function Contact() {
                      </div>
                      <div>
                         <p className="font-black uppercase tracking-widest mb-2">Phone</p>
-                        <a href="tel:+442033186032" className="underline underline-offset-4">
-                           +44 20 33 18 60 32
+                        <a href="tel:0781423168" className="underline underline-offset-4">
+                           078 142 3168
                         </a>
                      </div>
                      <div>

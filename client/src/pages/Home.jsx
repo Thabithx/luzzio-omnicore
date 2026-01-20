@@ -40,9 +40,13 @@ export function Home() {
             // Helper to check if product matches "New" category
             const isNew = (p) => {
                // Check new categories array
-               if (p.categories?.some(cat => cat.name?.toLowerCase() === 'new')) return true;
+               if (p.categories?.some(cat =>
+                  cat.name?.toLowerCase() === 'new' ||
+                  cat.name?.toLowerCase() === 'new arrivals'
+               )) return true;
                // Check legacy category field
-               if (p.category?.name?.toLowerCase() === 'new') return true;
+               if (p.category?.name?.toLowerCase() === 'new' ||
+                  p.category?.name?.toLowerCase() === 'new arrivals') return true;
                return false;
             };
 
@@ -181,71 +185,6 @@ export function Home() {
             </div>
          </section>
 
-         {/* BEST SELLERS SLIDER */}
-         <section className="bg-brand-grey border-b border-black">
-            <div className="flex flex-col items-start text-left px-4 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
-               <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Best Sellers</h2>
-               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Most Exquisite Pieces</p>
-            </div>
-
-            {/* Horizontal Scrolling Product Slider */}
-            <div
-               ref={bestSellersRef}
-               onScroll={() => handleScroll(bestSellersRef, setBestSellersProgress)}
-               className="overflow-x-auto ios-slider-scrollbar"
-            >
-               <div className="flex">
-                  {loading ? (
-                     Array(4).fill(0).map((_, i) => (
-                        <div key={i} className="min-w-[50%] md:min-w-[25%] aspect-[3/4] bg-brand-grey animate-pulse border-r border-b border-black" />
-                     ))
-                  ) : bestSellers.length > 0 ? (
-                     bestSellers.map((product) => (
-                        <div key={product._id} className="min-w-[50%] md:min-w-[25%] border-r border-b border-black md:last:border-r-0">
-                           <ProductCard product={product} />
-                        </div>
-                     ))
-                  ) : (
-                     <div className="w-full py-20 text-center">
-                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400">
-                           No Best Sellers Available
-                        </p>
-                     </div>
-                  )}
-               </div>
-            </div>
-
-            <div className="slider-progress-container border-b border-black">
-               <div
-                  className="slider-progress-bar"
-                  style={{
-                     width: `25%`,
-                     transform: `translateX(${bestSellersProgress * 3}%)`
-                  }}
-               />
-            </div>
-
-            <div className="py-10 flex justify-center bg-brand-grey">
-               <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
-                  Explore Collection
-               </Link>
-            </div>
-         </section>
-         {/* BRAND INTERSTITIAL - MOVED AFTER BEST SELLERS */}
-         <section className="h-[60vh] md:h-[70vh] flex items-center justify-center bg-brand-grey relative overflow-hidden border-b border-black">
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-               <h2 className="text-[25vw] md:text-[20vw] font-black uppercase tracking-[-0.05em] text-black/[0.03] leading-none px-10">LUZZIO</h2>
-            </div>
-            <div className="relative text-center space-y-8 md:space-y-12 max-w-2xl px-6 md:px-10">
-               <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-[0.9] md:leading-tight">
-                  Uncompromising <br className="md:hidden" /> Designs.
-               </h3>
-               <Link to="/products" className="inline-block text-[10px] font-black uppercase tracking-[0.3em] border-b border-black pb-2 hover:opacity-50">
-                  Discover Now
-               </Link>
-            </div>
-         </section>
-
          {/* CATEGORY DROPDOWNS - ACCORDION STYLE */}
          <section className="bg-brand-grey-dark border-t border-black">
             {categories.map((category, index) => {
@@ -323,6 +262,57 @@ export function Home() {
                   </p>
                </div>
             )}
+         </section>
+
+         {/* BEST SELLERS SLIDER */}
+         <section className="bg-brand-grey border-b border-black">
+            <div className="flex flex-col items-start text-left px-4 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
+               <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Best Sellers</h2>
+               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Most Exquisite Pieces</p>
+            </div>
+
+            {/* Horizontal Scrolling Product Slider */}
+            <div
+               ref={bestSellersRef}
+               onScroll={() => handleScroll(bestSellersRef, setBestSellersProgress)}
+               className="overflow-x-auto ios-slider-scrollbar"
+            >
+               <div className="flex">
+                  {loading ? (
+                     Array(4).fill(0).map((_, i) => (
+                        <div key={i} className="min-w-[50%] md:min-w-[25%] aspect-[3/4] bg-brand-grey animate-pulse border-r border-b border-black" />
+                     ))
+                  ) : bestSellers.length > 0 ? (
+                     bestSellers.map((product) => (
+                        <div key={product._id} className="min-w-[50%] md:min-w-[25%] border-r border-b border-black md:last:border-r-0">
+                           <ProductCard product={product} />
+                        </div>
+                     ))
+                  ) : (
+                     <div className="w-full py-20 text-center">
+                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400">
+                           No Best Sellers Available
+                        </p>
+                     </div>
+                  )}
+               </div>
+            </div>
+
+            <div className="slider-progress-container border-b border-black">
+               <div
+                  className="slider-progress-bar"
+                  style={{
+                     width: `25%`,
+                     transform: `translateX(${bestSellersProgress * 3}%)`
+                  }}
+               />
+            </div>
+
+            <div className="py-10 flex justify-center bg-brand-grey">
+               <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
+                  Explore Collection
+               </Link>
+            </div>
          </section>
 
          {/* SALE SLIDER */}

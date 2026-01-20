@@ -39,7 +39,7 @@ const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
                <div className="space-y-1">
                   <p className="text-[9px] text-white/40 font-black uppercase tracking-[0.2em]">Archive Classification</p>
                   <h2 className="text-xl font-black uppercase tracking-tight text-white">
-                     {category ? 'Modify Classification' : 'Initialize Classification'}
+                     {category ? 'Modify Scope' : 'Initialize Classification'}
                   </h2>
                </div>
                <button onClick={onClose} className="p-2 text-white/50 hover:text-white transition-colors">
@@ -54,8 +54,17 @@ const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
                      value={formData.name}
                      onChange={e => setFormData({ ...formData, name: e.target.value })}
                      required
-                     className="rounded-none border-black focus:border-black text-small-brand"
+                     disabled={!!category}
+                     className={cn(
+                        "rounded-none border-black focus:border-black text-small-brand",
+                        category && "bg-gray-100 cursor-not-allowed opacity-70"
+                     )}
                   />
+                  {category && (
+                     <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                        Classification labels are system-locked. Modify tactical description only.
+                     </p>
+                  )}
                </div>
                <div className="space-y-2">
                   <label className="text-small-brand text-gray-400">Tactical Description</label>

@@ -116,7 +116,7 @@ export function PrivacyPolicy() {
                   <p>
                      If you have questions about this Privacy Policy, please contact us at:<br />
                      Email: contact@luzzio.com<br />
-                     Phone: +44 20 33 18 60 32
+                     Phone: 078 142 3168
                   </p>
                </section>
             </div>
