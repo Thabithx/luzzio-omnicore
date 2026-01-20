@@ -20,19 +20,19 @@ export function KokoWidget({ price, className }) {
             <img
                src="https://paykoko.com/img/logo1.7ff549c0.png"
                alt="Koko"
-               className="h-[18px] w-auto relative top-[1px]"
+               className="h-[18px] w-auto relative top-[-1px]"
             />
          </a>
          <a
             href="https://paykoko.com/customer-education"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center hover:opacity-70 transition-opacity"
+            className="inline-flex items-center hover:opacity-70 transition-opacity ml-[-2px]"
          >
             <img
                src="https://koko-merchant.oss-ap-southeast-1.aliyuncs.com/bnpl-site-cms-dev/koko-images/info.png"
                alt="Info"
-               className="h-[10px] w-auto mb-[2px]"
+               className="h-[12px] w-auto opacity-40 brightness-0"
             />
          </a>
       </div>

@@ -176,8 +176,13 @@ export function ProductDetail() {
                   {productImages.map((img, index) => (
                      <div
                         key={index}
-                        className="min-w-full lg:min-w-0 w-full snap-center border-b border-black last:border-b-0 flex-shrink-0"
+                        className="min-w-full lg:min-w-0 w-full snap-center border-b border-black last:border-b-0 flex-shrink-0 relative"
                      >
+                        {index === 0 && product.salePrice > 0 && (
+                           <div className="absolute top-0 right-0 z-10 bg-black text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest">
+                              Sale
+                           </div>
+                        )}
                         <img
                            src={img}
                            alt={`${product.name} view ${index + 1}`}
@@ -185,6 +190,7 @@ export function ProductDetail() {
                         />
                      </div>
                   ))}
+
 
                </div>
 
@@ -308,9 +314,9 @@ export function ProductDetail() {
                               <span className="text-[10px] uppercase font-black tracking-[0.15em] text-black">Quantity</span>
                               <div className="flex items-center border border-black h-12">
                                  <button
-                                    type="button"
+                                    disabled={!selectedSize || (product.variants?.find(v => v.size === selectedSize)?.stock <= 0)}
                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    className="w-12 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors touch-manipulation"
+                                    className="w-12 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
                                  >
                                     <Minus size={12} />
                                  </button>
@@ -318,17 +324,18 @@ export function ProductDetail() {
                                     {quantity}
                                  </div>
                                  <button
-                                    type="button"
+                                    disabled={!selectedSize || (product.variants?.find(v => v.size === selectedSize)?.stock <= quantity)}
                                     onClick={() => {
                                        const variant = product.variants?.find(v => v.size === selectedSize);
                                        const maxStock = variant ? variant.stock : 1;
                                        setQuantity(Math.min(maxStock, quantity + 1));
                                     }}
-                                    className="w-12 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors touch-manipulation"
+                                    className="w-12 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
                                  >
                                     <Plus size={12} />
                                  </button>
                               </div>
+
                            </div>
                         </div>
                      )}
@@ -338,29 +345,30 @@ export function ProductDetail() {
                   <div className="space-y-4 pt-2">
                      <div className="grid grid-cols-2 gap-4">
                         <button
-                           disabled={!selectedSize || (product.colors?.length > 0 && !selectedColor) || adding}
+                           disabled={!selectedSize || (product.colors?.length > 0 && !selectedColor) || adding || (product.variants?.find(v => v.size === selectedSize)?.stock <= 0)}
                            onClick={handleAddToCart}
                            className={cn(
                               "w-full py-6 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
-                              (selectedSize && (product.colors?.length > 0 ? selectedColor : true))
+                              (selectedSize && (product.colors?.length > 0 ? selectedColor : true) && (product.variants?.find(v => v.size === selectedSize)?.stock > 0))
                                  ? "bg-white text-black hover:bg-black hover:text-white border border-black"
                                  : "bg-gray-50 text-stone-300 cursor-not-allowed border border-gray-100"
                            )}
                         >
-                           {adding ? "..." : added ? "ADDED" : "Add to Bag"}
+                           {adding ? "..." : (product.variants?.find(v => v.size === selectedSize)?.stock <= 0) ? "OUT OF STOCK" : added ? "ADDED" : "Add to Bag"}
                         </button>
                         <button
-                           disabled={!selectedSize || (product.colors?.length > 0 && !selectedColor) || adding}
+                           disabled={!selectedSize || (product.colors?.length > 0 && !selectedColor) || adding || (product.variants?.find(v => v.size === selectedSize)?.stock <= 0)}
                            onClick={handleBuyNow}
                            className={cn(
                               "w-full py-6 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
-                              (selectedSize && (product.colors?.length > 0 ? selectedColor : true))
+                              (selectedSize && (product.colors?.length > 0 ? selectedColor : true) && (product.variants?.find(v => v.size === selectedSize)?.stock > 0))
                                  ? "bg-black text-white hover:bg-stone-900 border border-black shadow-xl"
                                  : "bg-gray-50 text-stone-300 cursor-not-allowed border border-gray-100"
                            )}
                         >
                            Buy It Now
                         </button>
+
                      </div>
                   </div>
 
