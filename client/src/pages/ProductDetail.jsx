@@ -380,16 +380,17 @@ export function ProductDetail() {
                            <Plus size={12} className="group-open:hidden text-black/40" />
                            <Minus size={12} className="hidden group-open:block text-black/40" />
                         </summary>
-                        <div className="mt-4 text-[10px] leading-[2] font-medium text-black/60 uppercase tracking-[0.15em] space-y-6 max-w-sm">
+                        <div className="mt-4 text-[10px] leading-[1.8] font-medium text-black/60 uppercase tracking-[0.12em] space-y-6">
                            {product.sizeChart && (
                               <div className="mb-6 border border-black p-2">
                                  <img src={product.sizeChart} alt="Size Guide" className="w-full h-auto" />
                               </div>
                            )}
-                           <p className="normal-case font-normal text-xs text-black/80 italic px-2 border-l-2 border-black/5">
+                           <div className="normal-case font-normal text-xs text-black/80 whitespace-pre-wrap leading-relaxed">
                               {product.description}
-                           </p>
+                           </div>
                            <ul className="space-y-4 pl-1">
+
                               {product.material && <li className="flex items-start gap-3"><span className="text-black/20">•</span> <span>{product.material}</span></li>}
                            </ul>
                         </div>
