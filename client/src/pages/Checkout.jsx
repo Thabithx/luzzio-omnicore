@@ -8,8 +8,10 @@ import { useCart } from '../context/CartContext';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Meta from '../components/ui/Meta';
-import { ChevronLeft, Lock, ArrowRight } from 'lucide-react';
+import { Lock, ArrowRight } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { KokoWidget } from '../components/ui/KokoWidget';
+
 
 export function Checkout() {
    const { cart, clearCart } = useCart();
@@ -445,7 +447,9 @@ export function Checkout() {
                            <span className="text-small-brand font-black">Total Due</span>
                            <span className="text-2xl font-black tracking-tighter">LKR {totalPrice.toLocaleString()}.00</span>
                         </div>
+                        <KokoWidget price={totalPrice} className="pt-4 justify-end" />
                      </div>
+
                   </div>
                </div>
 

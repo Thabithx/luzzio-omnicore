@@ -10,6 +10,8 @@ import { useCart } from '../context/CartContext';
 import { cn } from '../utils/cn';
 import { Reviews } from '../components/Reviews';
 import * as metaPixel from '../utils/metaPixel';
+import { KokoWidget } from '../components/ui/KokoWidget';
+
 
 export function ProductDetail() {
    const { id } = useParams();
@@ -216,7 +218,12 @@ export function ProductDetail() {
                         ) : (
                            <p className="text-lg font-bold text-black tracking-tighter">LKR {product.price.toLocaleString()}.00</p>
                         )}
+                        <KokoWidget
+                           price={product.salePrice > 0 ? product.salePrice : product.price}
+                           className="mt-2"
+                        />
                      </div>
+
                   </div>
 
                   {/* COLOR SELECTION */}
@@ -301,8 +308,9 @@ export function ProductDetail() {
                               <span className="text-[10px] uppercase font-black tracking-[0.15em] text-black">Quantity</span>
                               <div className="flex items-center border border-black h-12">
                                  <button
+                                    type="button"
                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    className="w-12 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors"
+                                    className="w-12 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors touch-manipulation"
                                  >
                                     <Minus size={12} />
                                  </button>
@@ -310,12 +318,13 @@ export function ProductDetail() {
                                     {quantity}
                                  </div>
                                  <button
+                                    type="button"
                                     onClick={() => {
                                        const variant = product.variants?.find(v => v.size === selectedSize);
                                        const maxStock = variant ? variant.stock : 1;
                                        setQuantity(Math.min(maxStock, quantity + 1));
                                     }}
-                                    className="w-12 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors"
+                                    className="w-12 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors touch-manipulation"
                                  >
                                     <Plus size={12} />
                                  </button>
@@ -374,25 +383,12 @@ export function ProductDetail() {
                            </p>
                            <ul className="space-y-4 pl-1">
                               {product.material && <li className="flex items-start gap-3"><span className="text-black/20">•</span> <span>{product.material}</span></li>}
-                              <li className="flex items-start gap-3"><span className="text-black/20">•</span> <span>Oversized silhouette</span></li>
-                              <li className="flex items-start gap-3"><span className="text-black/20">•</span> <span>Organic heavy fleece carbon-neutral</span></li>
-                              <li className="flex items-start gap-3"><span className="text-black/20">•</span> <span>Made in Italy</span></li>
                            </ul>
                         </div>
                      </details>
 
 
 
-                     <details className="group border-t border-b border-black py-6">
-                        <summary className="flex justify-between items-center list-none cursor-pointer">
-                           <span className="text-[10px] uppercase font-black tracking-[0.2em] text-black">Sustainability</span>
-                           <Plus size={12} className="group-open:hidden text-black/40" />
-                           <Minus size={12} className="hidden group-open:block text-black/40" />
-                        </summary>
-                        <div className="mt-10 text-[10px] leading-[2] font-medium text-black/60 uppercase tracking-[0.15em]">
-                           <p>Luzzio is committed to the sustainable management of its operations. 100% of our packaging is recyclable.</p>
-                        </div>
-                     </details>
                   </div>
                </div>
             </div>
