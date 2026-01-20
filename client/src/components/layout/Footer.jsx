@@ -117,7 +117,7 @@ export function Footer() {
                >
                   <form onSubmit={handleNewsletterSubmit} className="space-y-4">
                      <p className="text-[10px] font-bold uppercase tracking-widest text-black/40">
-                        Join the Luzzio Archive
+                        Join Luzzio
                      </p>
                      <div className="relative">
                         <input

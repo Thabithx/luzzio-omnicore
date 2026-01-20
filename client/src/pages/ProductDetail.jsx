@@ -456,7 +456,7 @@ export function ProductDetail() {
                <section className="bg-brand-grey border-t border-black">
                   <div className="flex flex-col items-center py-16 border-b border-black">
                      <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Recommended for You</h2>
-                     <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-4 italic">You Might Also Archive</p>
+                     <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-4 italic">You Might Also Like</p>
                   </div>
 
                   <div
