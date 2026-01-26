@@ -120,6 +120,15 @@ exports.createOrder = async (req, res) => {
             const mId = process.env.KOKO_MERCHANT_ID;
             const apiKey = process.env.KOKO_API_KEY;
             const privateKey = process.env.KOKO_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+            console.log('[KOKO DEBUG] mId:', mId ? 'exists' : 'MISSING');
+            console.log('[KOKO DEBUG] apiKey:', apiKey ? 'exists' : 'MISSING');
+            console.log('[KOKO DEBUG] privateKey:', privateKey ? 'exists' : 'MISSING');
+
+            if (!mId || !apiKey || !privateKey) {
+               throw new Error('Koko Credentials Missing');
+            }
+
             const amount = createdOrder.totalPrice.toFixed(2);
             const currency = 'LKR';
             const pluginName = 'customapi';
@@ -139,6 +148,8 @@ exports.createOrder = async (req, res) => {
                returnUrl + cancelUrl + orderId + reference +
                firstName + lastName + email + productName +
                apiKey + responseUrl;
+
+            console.log('[KOKO DEBUG] dataString:', dataString);
 
             const sign = crypto.createSign('SHA256');
             sign.update(dataString);
@@ -165,8 +176,9 @@ exports.createOrder = async (req, res) => {
                signature: signature,
                kokoUrl: process.env.KOKO_MODE === 'qa' ? 'https://qaapi.paykoko.com/api/merchants/orderCreate' : 'https://prodapi.paykoko.com/api/merchants/orderCreate'
             };
+            console.log('[KOKO DEBUG] Generated kokoParams successfully');
          } catch (kokoErr) {
-            console.error('[KOKO PARAM GEN FAILURE]', kokoErr);
+            console.error('[KOKO PARAM GEN FAILURE]', kokoErr.message);
          }
       }
 
