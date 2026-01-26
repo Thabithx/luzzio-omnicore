@@ -129,9 +129,12 @@ exports.createOrder = async (req, res) => {
             const currency = 'LKR';
             const pluginName = 'customapi';
             const pluginVersion = '1.0.1';
-            const returnUrl = `${process.env.CLIENT_URL}/payment-success?orderId=${createdOrder._id}&method=koko`;
-            const cancelUrl = `${process.env.CLIENT_URL}/cart`;
-            const responseUrl = `${process.env.SERVER_URL || 'https://luzzio-production.up.railway.app'}/api/payments/koko/notify`;
+            const clientUrl = (process.env.CLIENT_URL || 'https://luzziopremium.com').replace(/\/$/, '');
+            const serverUrl = (process.env.SERVER_URL || 'https://luzzio-production.up.railway.app').replace(/\/$/, '');
+
+            const returnUrl = `${clientUrl}/payment-success?orderId=${createdOrder._id}&method=koko`;
+            const cancelUrl = `${clientUrl}/cart`;
+            const responseUrl = `${serverUrl}/api/payments/koko/notify`;
             const orderId = createdOrder._id.toString();
             const reference = `REF-${orderId.slice(-6).toUpperCase()}`;
             const firstName = shippingAddress.firstName || '';
