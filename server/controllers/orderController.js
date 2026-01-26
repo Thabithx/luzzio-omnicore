@@ -80,8 +80,10 @@ exports.createOrder = async (req, res) => {
          }
       });
 
-      // 4. Prepare PayHere parameters if needed (Calculated locally, near-instant)
+      // 4. Prepare PayHere or Koko parameters if needed (Calculated locally, near-instant)
       let payhereParams = null;
+      let kokoParams = null;
+
       if (paymentMethod === 'PayHere') {
          const merchantId = (process.env.PAYHERE_MERCHANT_ID || '').trim();
          const merchantSecret = (process.env.PAYHERE_SECRET || '').trim();
@@ -113,13 +115,67 @@ exports.createOrder = async (req, res) => {
             city: shippingAddress.city,
             country: 'Sri Lanka',
          };
+      } else if (paymentMethod === 'Koko') {
+         try {
+            const mId = process.env.KOKO_MERCHANT_ID;
+            const apiKey = process.env.KOKO_API_KEY;
+            const privateKey = process.env.KOKO_PRIVATE_KEY?.replace(/\\n/g, '\n');
+            const amount = createdOrder.totalPrice.toFixed(2);
+            const currency = 'LKR';
+            const pluginName = 'customapi';
+            const pluginVersion = '1.0.1';
+            const returnUrl = `${process.env.CLIENT_URL}/payment-success?orderId=${createdOrder._id}&method=koko`;
+            const cancelUrl = `${process.env.CLIENT_URL}/cart`;
+            const responseUrl = `${process.env.SERVER_URL || 'https://luzzio-production.up.railway.app'}/api/payments/koko/notify`;
+            const orderId = createdOrder._id.toString();
+            const reference = `REF-${orderId.slice(-6).toUpperCase()}`;
+            const firstName = shippingAddress.firstName || '';
+            const lastName = shippingAddress.lastName || '';
+            const email = createdOrder.email || '';
+            const productName = createdOrder.orderItems.map(item => item.name).join(', ').substring(0, 100);
+
+            // dataString order is critical!
+            const dataString = mId + amount + currency + pluginName + pluginVersion +
+               returnUrl + cancelUrl + orderId + reference +
+               firstName + lastName + email + productName +
+               apiKey + responseUrl;
+
+            const sign = crypto.createSign('SHA256');
+            sign.update(dataString);
+            const signature = sign.sign(privateKey, 'base64');
+
+            kokoParams = {
+               _mId: mId,
+               api_key: apiKey,
+               _returnUrl: returnUrl,
+               _cancelUrl: cancelUrl,
+               _responseUrl: responseUrl,
+               _amount: amount,
+               _currency: currency,
+               _reference: reference,
+               _orderId: orderId,
+               _pluginName: pluginName,
+               _pluginVersion: pluginVersion,
+               _description: productName,
+               _firstName: firstName,
+               _lastName: lastName,
+               _email: email,
+               _mobileNo: shippingAddress.phone || '0770000000',
+               dataString: dataString,
+               signature: signature,
+               kokoUrl: process.env.KOKO_MODE === 'qa' ? 'https://qaapi.paykoko.com/api/merchants/orderCreate' : 'https://prodapi.paykoko.com/api/merchants/orderCreate'
+            };
+         } catch (kokoErr) {
+            console.error('[KOKO PARAM GEN FAILURE]', kokoErr);
+         }
       }
 
       // 4. IMMEDIATE RESPONSE DISPATCH (Background everything else)
       res.status(201).json({
          success: true,
          data: createdOrder,
-         payhereParams
+         payhereParams,
+         kokoParams
       });
 
       console.log(`[ORDER PROTOCOL DISPATCHED] Time to respond: ${Date.now() - start}ms`);

@@ -161,11 +161,36 @@ export function Checkout() {
                }
             } else if (paymentMethod === 'Koko') {
                console.log(`[CHECKOUT] Koko Pay path selected for Order ${orderId}`);
-               // Koko Pay Integration (Immediate confirmation, pending settlement)
-               clearCart();
-               setLoading(false);
-               navigate(`/payment-success?orderId=${orderId}&method=koko`);
-            } else {
+               const kokoParams = res.data.kokoParams;
+
+               if (kokoParams) {
+                  // Create a temporary form to POST to Koko
+                  const form = document.createElement('form');
+                  form.method = 'POST';
+                  form.action = kokoParams.kokoUrl;
+
+                  // Add all parameters as hidden inputs
+                  Object.entries(kokoParams).forEach(([key, value]) => {
+                     if (key !== 'kokoUrl') {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = value;
+                        form.appendChild(input);
+                     }
+                  });
+
+                  document.body.appendChild(form);
+                  form.submit();
+               } else {
+                  console.error('[CHECKOUT] Koko params missing from response');
+                  // Fallback: immediate success (legacy behavior)
+                  clearCart();
+                  setLoading(false);
+                  navigate(`/payment-success?orderId=${orderId}&method=koko`);
+               }
+            }
+            else {
                // Fallback for Stripe or other methods
                clearCart();
                setLoading(false);

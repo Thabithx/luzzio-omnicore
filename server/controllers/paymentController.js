@@ -222,3 +222,96 @@ exports.payHereNotify = async (req, res) => {
       res.status(500).send('Internal Server Error');
    }
 };
+
+// @desc    Koko Pay Webhook Handler (Response URL)
+// @route   POST /api/payments/koko/notify
+// @access  Public (Signature Verified)
+exports.kokoNotify = async (req, res) => {
+   try {
+      console.log('Koko Notification Received:', req.body);
+
+      const {
+         orderId,
+         trnId,
+         status,
+         signature
+      } = req.body;
+
+      if (!orderId || !signature) {
+         console.warn('Koko Notification missing critical parameters');
+         return res.status(400).send('Missing parameters');
+      }
+
+      // dataString to verify is orderId + trnId + status
+      const dataString = orderId + trnId + status;
+      const publicKey = process.env.KOKO_PUBLIC_KEY?.replace(/\\n/g, '\n');
+
+      if (!publicKey) {
+         console.error('[KOKO NOTIFY] Public key missing from environment');
+         return res.status(500).send('Server configuration error');
+      }
+
+      // Verify RSA Signature
+      try {
+         const verifier = crypto.createVerify('SHA256');
+         verifier.update(dataString);
+         const isVerified = verifier.verify({
+            key: publicKey,
+            padding: crypto.constants.RSA_PKCS1_PADDING
+         }, signature, 'base64');
+
+         if (!isVerified) {
+            console.warn(`[KOKO NOTIFY] Signature Mismatch for Order: ${orderId}`);
+            return res.status(400).send('Invalid Signature');
+         }
+      } catch (verifyErr) {
+         console.error('[KOKO NOTIFY] RSA Verification Error:', verifyErr.message);
+         return res.status(400).send('Signature Verification Failed');
+      }
+
+      if (status === 'SUCCESS') {
+         const order = await Order.findById(orderId);
+         if (order && !order.isPaid) {
+            order.isPaid = true;
+            order.paidAt = Date.now();
+            order.status = 'paid';
+            order.paymentResult = {
+               id: trnId,
+               status: 'succeeded',
+               provider: 'Koko'
+            };
+            await order.save();
+            console.log(`Order ${orderId} verified and paid via Koko Protocol.`);
+
+            // Protocol: Strategic Settlement Notification
+            const adminEmail = process.env.ADMIN_EMAIL || 'luzzioclothing.com@gmail.com';
+
+            setImmediate(() => {
+               console.log(`[PAYMENT PROTOCOL] Dispatching Koko settlement notifications for Order: ${orderId}`);
+               // 1. Notify Client
+               sendEmail({
+                  email: order.email,
+                  subject: `Order Confirmation #${order._id.toString().slice(-6).toUpperCase()}`,
+                  html: paymentSuccessTemplate(order, false)
+               })
+                  .then(() => console.log(`[PAYMENT PROTOCOL] Koko client notification delivered: ${order.email}`))
+                  .catch(e => console.error('[PAYMENT PROTOCOL FAILURE] Koko Client Notify Deferred:', e.message));
+
+               // 2. Notify Admin
+               sendEmail({
+                  email: adminEmail,
+                  subject: `New Order Received (Paid via Koko) #${order._id.toString().slice(-6).toUpperCase()}`,
+                  html: paymentSuccessTemplate(order, true)
+               })
+                  .then(() => console.log(`[PAYMENT PROTOCOL] Koko admin notification delivered: ${adminEmail}`))
+                  .catch(e => console.error('[PAYMENT PROTOCOL FAILURE] Koko Admin Alert Deferred:', e.message));
+            });
+         }
+      }
+
+      res.status(200).send('OK');
+   } catch (err) {
+      console.error('Koko Notify Error:', err);
+      res.status(500).send('Internal Server Error');
+   }
+};
