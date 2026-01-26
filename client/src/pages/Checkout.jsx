@@ -8,7 +8,7 @@ import { useCart } from '../context/CartContext';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Meta from '../components/ui/Meta';
-import { Lock, ArrowRight } from 'lucide-react';
+import { Lock, ArrowRight, ChevronLeft } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { KokoWidget } from '../components/ui/KokoWidget';
 
