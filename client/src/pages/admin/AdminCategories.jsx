@@ -9,19 +9,22 @@ import { cn } from '../../utils/cn';
 const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
    const [formData, setFormData] = useState({
       name: '',
-      description: ''
+      description: '',
+      order: 0
    });
 
    useEffect(() => {
       if (category) {
          setFormData({
             name: category.name,
-            description: category.description || ''
+            description: category.description || '',
+            order: category.order || 0
          });
       } else {
          setFormData({
             name: '',
-            description: ''
+            description: '',
+            order: 0
          });
       }
    }, [category, isOpen]);
@@ -75,6 +78,20 @@ const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
                      onChange={e => setFormData({ ...formData, description: e.target.value })}
                      placeholder="Enter classification details..."
                   />
+               </div>
+
+               <div className="space-y-2">
+                  <label className="text-small-brand text-gray-400">Display Sequence (Order)</label>
+                  <Input
+                     type="number"
+                     value={formData.order}
+                     onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                     required
+                     className="rounded-none border-black focus:border-black text-[11px] font-bold"
+                  />
+                  <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                     Lower numbers appear first on the homepage.
+                  </p>
                </div>
 
                <div className="pt-8 border-t border-black flex justify-end gap-1">
@@ -179,6 +196,7 @@ const AdminCategories = () => {
             <table className="w-full text-left min-w-[800px]">
                <thead>
                   <tr className="bg-brand-grey border-b border-black">
+                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black w-24">Sequence</th>
                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Tag Label</th>
                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Technical Scope</th>
                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black text-right">Protocols</th>
@@ -187,6 +205,9 @@ const AdminCategories = () => {
                <tbody className="divide-y divide-black">
                   {filteredCategories.map((cat) => (
                      <tr key={cat._id} className="hover:bg-brand-grey transition-all group">
+                        <td className="px-8 py-8">
+                           <div className="text-[13px] font-black text-black">{cat.order || 0}</div>
+                        </td>
                         <td className="px-8 py-8">
                            <div className="text-[11px] font-black uppercase tracking-tight text-black">{cat.name}</div>
                            <div className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">CODE: {cat._id.toUpperCase()}</div>

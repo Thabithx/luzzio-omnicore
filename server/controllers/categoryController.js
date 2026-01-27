@@ -5,7 +5,7 @@ const Category = require('../models/Category');
 // @access  Public
 exports.getCategories = async (req, res) => {
    try {
-      const categories = await Category.find();
+      const categories = await Category.find().sort('order');
 
       res.status(200).json({
          success: true,
