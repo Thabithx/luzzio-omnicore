@@ -9,8 +9,8 @@ import api from '../services/api';
 import { cn } from '../utils/cn';
 
 // Import brand assets
-import heroVideo from '../assets/hero.mp4';
-import heroImg from '../assets/hero.jpg';
+import heroImg from '../assets/hero_new.jpg';
+import heroOld from '../assets/hero.jpg';
 import bootsImg from '../assets/boots.png';
 import hoodieCat from '../assets/hoodie.jpg';
 import bootCat from '../assets/boot.jpg';
@@ -62,15 +62,7 @@ export function Home() {
       fetchProducts();
    }, []);
 
-   const videoRef = React.useRef(null);
 
-   useEffect(() => {
-      if (videoRef.current) {
-         videoRef.current.play().catch(error => {
-            console.log("Autoplay blocked:", error);
-         });
-      }
-   }, []);
 
 
 
@@ -82,19 +74,11 @@ export function Home() {
 
          {/* SECTION 1: HERO - READY TO WEAR */}
          <section className="relative h-screen overflow-hidden group">
-            <video
-               ref={videoRef}
-               autoPlay
-               loop
-               muted
-               playsInline
-               poster={heroImg}
+            <img
+               src={heroImg}
+               alt="Hero"
                className="absolute inset-0 w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000"
-               key="hero-video"
-            >
-               <source src={heroVideo} type="video/mp4" />
-               Your browser does not support the video tag.
-            </video>
+            />
 
 
 
