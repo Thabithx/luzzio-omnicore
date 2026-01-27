@@ -73,11 +73,11 @@ export function Home() {
          <Meta title="Luxury Redefined" description="Explore the Luzzio collection. High-fashion minimalist luxury." />
 
          {/* SECTION 1: HERO - READY TO WEAR */}
-         <section className="relative h-screen overflow-hidden group">
+         <section className="relative h-[60vh] md:h-screen overflow-hidden group">
             <img
                src={heroImg}
                alt="Hero"
-               className="absolute inset-0 w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000"
+               className="absolute inset-0 w-full h-full object-cover object-center grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000"
             />
 
 
