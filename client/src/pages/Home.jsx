@@ -154,85 +154,7 @@ export function Home() {
             </section>
          )}
 
-         {/* PREMIUM POLOS SECTION */}
-         {(loading || premiumPolos.length > 0) && (
-            <section className="bg-brand-grey border-b border-black">
-               <div className="flex flex-col items-start text-left px-4 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
-                  <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Premium Polos</h2>
-                  <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Architectural Precision</p>
-               </div>
 
-               <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-black">
-                  {loading ? (
-                     Array(8).fill(0).map((_, i) => (
-                        <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
-                     ))
-                  ) : (
-                     premiumPolos.map((product, idx) => {
-                        const isLastRowMobile = idx >= (Math.ceil(premiumPolos.length / 2) - 1) * 2;
-                        const isLastRowDesktop = idx >= (Math.ceil(premiumPolos.length / 4) - 1) * 4;
-
-                        return (
-                           <div key={product._id} className={cn(
-                              "border-black",
-                              !isLastRowMobile ? "border-b" : "border-b-0",
-                              !isLastRowDesktop ? "md:border-b" : "md:border-b-0",
-                              idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
-                              idx % 4 === 3 ? "md:border-r-0" : ""
-                           )}>
-                              <ProductCard product={product} />
-                           </div>
-                        );
-                     })
-                  )}
-               </div>
-               <div className="py-10 flex justify-center bg-brand-grey">
-                  <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
-                     Shop Polos
-                  </Link>
-               </div>
-            </section>
-         )}
-
-         {/* PREMIUM CHINOS SECTION */}
-         {(loading || premiumChinos.length > 0) && (
-            <section className="bg-brand-grey border-b border-black">
-               <div className="flex flex-col items-start text-left px-4 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
-                  <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Premium Chinos</h2>
-                  <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Refined Silhouette</p>
-               </div>
-
-               <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-black">
-                  {loading ? (
-                     Array(8).fill(0).map((_, i) => (
-                        <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
-                     ))
-                  ) : (
-                     premiumChinos.map((product, idx) => {
-                        const isLastRowMobile = idx >= (Math.ceil(premiumChinos.length / 2) - 1) * 2;
-                        const isLastRowDesktop = idx >= (Math.ceil(premiumChinos.length / 4) - 1) * 4;
-
-                        return (
-                           <div key={product._id} className={cn(
-                              "border-black",
-                              !isLastRowMobile ? "border-b" : "border-b-0",
-                              !isLastRowDesktop ? "md:border-b" : "md:border-b-0",
-                              idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
-                              idx % 4 === 3 ? "md:border-r-0" : ""
-                           )}>
-                              <ProductCard product={product} />
-                           </div>
-                        );
-                     })
-                  )}
-               </div>
-               <div className="py-10 flex justify-center bg-brand-grey">
-                  <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
-                     Shop Chinos
-                  </Link>
-               </div>
-            </section>
-         )}
 
          {/* CATEGORY DROPDOWNS - ACCORDION STYLE */}
          <section className="bg-brand-grey-dark border-t border-black">
@@ -348,6 +270,86 @@ export function Home() {
                <div className="py-10 flex justify-center bg-brand-grey">
                   <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
                      Explore Collection
+                  </Link>
+               </div>
+            </section>
+         )}
+
+         {/* PREMIUM POLOS SECTION */}
+         {(loading || premiumPolos.length > 0) && (
+            <section className="bg-brand-grey border-b border-black">
+               <div className="flex flex-col items-start text-left px-4 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
+                  <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Premium Polos</h2>
+                  <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Architectural Precision</p>
+               </div>
+
+               <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-black">
+                  {loading ? (
+                     Array(8).fill(0).map((_, i) => (
+                        <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
+                     ))
+                  ) : (
+                     premiumPolos.map((product, idx) => {
+                        const isLastRowMobile = idx >= (Math.ceil(premiumPolos.length / 2) - 1) * 2;
+                        const isLastRowDesktop = idx >= (Math.ceil(premiumPolos.length / 4) - 1) * 4;
+
+                        return (
+                           <div key={product._id} className={cn(
+                              "border-black",
+                              !isLastRowMobile ? "border-b" : "border-b-0",
+                              !isLastRowDesktop ? "md:border-b" : "md:border-b-0",
+                              idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
+                              idx % 4 === 3 ? "md:border-r-0" : ""
+                           )}>
+                              <ProductCard product={product} />
+                           </div>
+                        );
+                     })
+                  )}
+               </div>
+               <div className="py-10 flex justify-center bg-brand-grey">
+                  <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
+                     Shop Polos
+                  </Link>
+               </div>
+            </section>
+         )}
+
+         {/* PREMIUM CHINOS SECTION */}
+         {(loading || premiumChinos.length > 0) && (
+            <section className="bg-brand-grey border-b border-black">
+               <div className="flex flex-col items-start text-left px-4 md:px-10 md:items-center md:text-center py-8 md:py-16 bg-brand-grey border-b border-black">
+                  <h2 className="text-lg md:text-3xl font-black uppercase tracking-[0.4em]">Premium Chinos</h2>
+                  <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Refined Silhouette</p>
+               </div>
+
+               <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-black">
+                  {loading ? (
+                     Array(8).fill(0).map((_, i) => (
+                        <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
+                     ))
+                  ) : (
+                     premiumChinos.map((product, idx) => {
+                        const isLastRowMobile = idx >= (Math.ceil(premiumChinos.length / 2) - 1) * 2;
+                        const isLastRowDesktop = idx >= (Math.ceil(premiumChinos.length / 4) - 1) * 4;
+
+                        return (
+                           <div key={product._id} className={cn(
+                              "border-black",
+                              !isLastRowMobile ? "border-b" : "border-b-0",
+                              !isLastRowDesktop ? "md:border-b" : "md:border-b-0",
+                              idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
+                              idx % 4 === 3 ? "md:border-r-0" : ""
+                           )}>
+                              <ProductCard product={product} />
+                           </div>
+                        );
+                     })
+                  )}
+               </div>
+               <div className="py-10 flex justify-center bg-brand-grey">
+                  <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
+                     Shop Chinos
                   </Link>
                </div>
             </section>
