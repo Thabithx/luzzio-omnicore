@@ -35,7 +35,8 @@ export const CartProvider = ({ children }) => {
             }
 
             const res = await api.get('/cart');
-            setCart(res.data.data.items);
+            const items = (res.data.data.items || []).filter(item => item.product !== null);
+            setCart(items);
          } catch (err) {
             console.error('Error fetching/merging cart:', err.response?.data?.message || err.message);
          } finally {
@@ -65,7 +66,8 @@ export const CartProvider = ({ children }) => {
                size,
                color
             });
-            setCart(res.data.data.items);
+            const items = (res.data.data.items || []).filter(item => item.product !== null);
+            setCart(items);
          } catch (err) {
             console.error('Error adding to cart:', err);
          }
@@ -73,8 +75,8 @@ export const CartProvider = ({ children }) => {
          // Track Meta Pixel Event
          metaPixel.addToCart(product, quantity, size, color);
 
-         const localCart = JSON.parse(localStorage.getItem('cart')) || [];
-         const index = localCart.findIndex(item => item.product._id === product._id && item.size === size && item.color === color);
+         const localCart = (JSON.parse(localStorage.getItem('cart')) || []).filter(item => item.product !== null);
+         const index = localCart.findIndex(item => item.product?._id === product._id && item.size === size && item.color === color);
          if (index > -1) {
             localCart[index].quantity += quantity;
          } else {
@@ -89,13 +91,14 @@ export const CartProvider = ({ children }) => {
       if (token) {
          try {
             const res = await api.delete(`/cart/${productId}/${size}/${color}`);
-            setCart(res.data.data.items);
+            const items = (res.data.data.items || []).filter(item => item.product !== null);
+            setCart(items);
          } catch (err) {
             console.error('Error removing from cart:', err);
          }
       } else {
-         const localCart = JSON.parse(localStorage.getItem('cart')) || [];
-         const updatedCart = localCart.filter(item => !(item.product._id === productId && item.size === size && item.color === color));
+         const localCart = (JSON.parse(localStorage.getItem('cart')) || []).filter(item => item.product !== null);
+         const updatedCart = localCart.filter(item => !(item.product?._id === productId && item.size === size && item.color === color));
          setCart(updatedCart);
          localStorage.setItem('cart', JSON.stringify(updatedCart));
       }
@@ -105,7 +108,7 @@ export const CartProvider = ({ children }) => {
       // 1. Instant Optimistic Update for UI Smoothness
       const previousCart = [...cart];
       const updatedCart = cart.map(item =>
-         (item.product._id === productId && item.size === size && item.color === color)
+         item.product && (item.product._id === productId && item.size === size && item.color === color)
             ? { ...item, quantity }
             : item
       );
@@ -129,10 +132,8 @@ export const CartProvider = ({ children }) => {
                color,
                quantity
             });
-            // ONLY update from server if the network response is the absolute latest
-            // However, to avoid "jumping", we trust our optimistic state for the count
-            // and only use the server response to ensure ID consistency/metadata.
-            setCart(res.data.data.items);
+            const items = (res.data.data.items || []).filter(item => item.product !== null);
+            setCart(items);
          } catch (err) {
             console.error('Error syncing cart quantity:', err);
             // Rollback to previous known good state on critical failure

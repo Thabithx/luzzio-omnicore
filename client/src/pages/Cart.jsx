@@ -9,7 +9,9 @@ import { KokoWidget } from '../components/ui/KokoWidget';
 export function Cart() {
    const { cart, removeFromCart, updateQuantity, loading } = useCart();
 
-   const subtotal = cart.reduce((acc, item) => {
+   const validItems = cart.filter(item => item && item.product);
+
+   const subtotal = validItems.reduce((acc, item) => {
       const price = (item.product?.salePrice > 0) ? item.product.salePrice : (item.product?.price || 0);
       return acc + (price * item.quantity);
    }, 0);
@@ -42,7 +44,7 @@ export function Cart() {
             <div className="flex flex-col items-center mb-24">
                <h1 className="text-[8vw] font-black uppercase tracking-tighter leading-none">Shopping Bag</h1>
                <div className="mt-4 flex items-center gap-4 text-small-brand">
-                  <span>{cart.length} Items</span>
+                  <span>{validItems.length} Items</span>
                   <span className="text-gray-300">/</span>
                   <span className="text-black font-black">Archive Selection</span>
                </div>
@@ -51,9 +53,9 @@ export function Cart() {
             <div className="flex flex-col lg:flex-row gap-20">
                {/* Cart Items */}
                <div className="flex-1 space-y-1">
-                  {cart.map((item, index) => (
-                     <div key={`${item.product._id}-${item.size}-${index}`} className="flex gap-4 md:gap-10 py-6 md:py-10 border-t border-black last:border-b">
-                        <Link to={`/products/${item.product._id}`} className="w-24 md:w-32 aspect-[3/4] bg-brand-grey shrink-0 overflow-hidden hover:opacity-80 transition-opacity">
+                  {validItems.map((item, index) => (
+                     <div key={`${item.product?._id || index}-${item.size}-${index}`} className="flex gap-4 md:gap-10 py-6 md:py-10 border-t border-black last:border-b">
+                        <Link to={`/products/${item.product?._id}`} className="w-24 md:w-32 aspect-[3/4] bg-brand-grey shrink-0 overflow-hidden hover:opacity-80 transition-opacity">
                            <img
                               src={item.product?.images?.[0] || 'https://placehold.co/300x400/F6F6F6/000000'}
                               alt={item.product?.name}
@@ -64,7 +66,7 @@ export function Cart() {
                         <div className="flex-1 flex flex-col justify-between py-2">
                            <div className="flex justify-between items-start">
                               <div className="space-y-2 md:space-y-4">
-                                 <Link to={`/products/${item.product._id}`}>
+                                 <Link to={`/products/${item.product?._id}`}>
                                     <h3 className="text-sm md:text-xl font-black uppercase tracking-tight leading-tight hover:underline">{item.product?.name}</h3>
                                  </Link>
                                  <div className="flex flex-col md:flex-row gap-2 md:gap-8 text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gray-400">
@@ -73,7 +75,7 @@ export function Cart() {
                                  </div>
                               </div>
                               <button
-                                 onClick={() => removeFromCart(item.product._id, item.size, item.color)}
+                                 onClick={() => removeFromCart(item.product?._id, item.size, item.color)}
                                  className="text-black hover:opacity-50 transition-opacity"
                               >
                                  <Trash2 size={18} strokeWidth={1.5} />
@@ -83,14 +85,14 @@ export function Cart() {
                            <div className="flex justify-between items-end">
                               <div className="flex items-center border border-black scale-90 md:scale-100 origin-left">
                                  <button
-                                    onClick={() => updateQuantity(item.product._id, item.size, item.color, Math.max(1, item.quantity - 1))}
+                                    onClick={() => updateQuantity(item.product?._id, item.size, item.color, Math.max(1, item.quantity - 1))}
                                     className="p-2 md:p-3 hover:bg-black hover:text-white transition-all border-r border-black"
                                  >
                                     <Minus size={10} />
                                  </button>
                                  <span className="px-4 md:px-6 text-[10px] md:text-[11px] font-black">{item.quantity}</span>
                                  <button
-                                    onClick={() => updateQuantity(item.product._id, item.size, item.color, item.quantity + 1)}
+                                    onClick={() => updateQuantity(item.product?._id, item.size, item.color, item.quantity + 1)}
                                     className="p-2 md:p-3 hover:bg-black hover:text-white transition-all border-l border-black"
                                  >
                                     <Plus size={10} />
