@@ -161,7 +161,7 @@ export function ProductList() {
                   onClick={() => setActiveCategory('all')}
                   className={`transition-colors hover:text-black ${activeCategory === 'all' ? 'text-black' : ''}`}
                >
-                  All Items
+                  ALL ITEMS
                </button>
                {categories.map(cat => (
                   <button
@@ -169,7 +169,7 @@ export function ProductList() {
                      onClick={() => setActiveCategory(cat.name.toLowerCase())}
                      className={`transition-colors hover:text-black ${activeCategory === cat.name.toLowerCase() ? 'text-black' : ''}`}
                   >
-                     {cat.name}
+                     {cat.name.toUpperCase()}
                   </button>
                ))}
             </div>
