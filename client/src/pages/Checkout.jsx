@@ -11,6 +11,7 @@ import Meta from '../components/ui/Meta';
 import { Lock, ArrowRight, ChevronLeft } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { KokoWidget } from '../components/ui/KokoWidget';
+import { SearchableSelect } from '../components/ui/SearchableSelect';
 
 
 export function Checkout() {
@@ -295,7 +296,7 @@ export function Checkout() {
                         <Input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleInputChange} required />
                         <Input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleInputChange} required />
                         <Input name="address" placeholder="Physical Address" className="col-span-2" value={formData.address} onChange={handleInputChange} required />
-                        <Select
+                        <SearchableSelect
                            name="city"
                            placeholder="Select City / Area"
                            options={SRI_LANKA_LOCATIONS}
