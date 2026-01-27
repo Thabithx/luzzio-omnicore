@@ -73,8 +73,8 @@ export function Home() {
             };
 
             setNewProducts(products.filter(isNew).slice(0, 8));
-            setBestSellers(products.filter(isBestSeller));
-            setSaleProducts(products.filter(isSale));
+            setBestSellers(products.filter(isBestSeller).slice(0, 8));
+            setSaleProducts(products.filter(isSale).slice(0, 8));
          } catch (err) {
             // Error feedback handled via UI/Meta
          } finally {
@@ -83,12 +83,6 @@ export function Home() {
       };
       fetchProducts();
    }, []);
-
-   const bestSellersRef = React.useRef(null);
-   const saleRef = React.useRef(null);
-   const [bestSellersProgress, setBestSellersProgress] = useState(0);
-   const [saleProgress, setSaleProgress] = useState(0);
-
 
    const videoRef = React.useRef(null);
 
@@ -102,12 +96,7 @@ export function Home() {
 
 
 
-   const handleScroll = (ref, setProgress) => {
-      if (!ref.current) return;
-      const { scrollLeft, scrollWidth, clientWidth } = ref.current;
-      const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
-      setProgress(progress);
-   };
+
 
    return (
       <div className="min-h-screen bg-white">
@@ -271,41 +260,36 @@ export function Home() {
                <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Most Exquisite Pieces</p>
             </div>
 
-            {/* Horizontal Scrolling Product Slider */}
-            <div
-               ref={bestSellersRef}
-               onScroll={() => handleScroll(bestSellersRef, setBestSellersProgress)}
-               className="overflow-x-auto ios-slider-scrollbar"
-            >
-               <div className="flex">
-                  {loading ? (
-                     Array(4).fill(0).map((_, i) => (
-                        <div key={i} className="min-w-[50%] md:min-w-[25%] aspect-[3/4] bg-brand-grey animate-pulse border-r border-b border-black" />
-                     ))
-                  ) : bestSellers.length > 0 ? (
-                     bestSellers.map((product) => (
-                        <div key={product._id} className="min-w-[50%] md:min-w-[25%] border-r border-b border-black md:last:border-r-0">
+            {/* Products Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-black">
+               {loading ? (
+                  Array(8).fill(0).map((_, i) => (
+                     <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
+                  ))
+               ) : bestSellers.length > 0 ? (
+                  bestSellers.map((product, idx) => {
+                     const isLastRowMobile = idx >= (Math.ceil(bestSellers.length / 2) - 1) * 2;
+                     const isLastRowDesktop = idx >= (Math.ceil(bestSellers.length / 4) - 1) * 4;
+
+                     return (
+                        <div key={product._id} className={cn(
+                           "border-black",
+                           !isLastRowMobile ? "border-b" : "border-b-0",
+                           !isLastRowDesktop ? "md:border-b" : "md:border-b-0",
+                           idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
+                           idx % 4 === 3 ? "md:border-r-0" : ""
+                        )}>
                            <ProductCard product={product} />
                         </div>
-                     ))
-                  ) : (
-                     <div className="w-full py-20 text-center">
-                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400">
-                           No Best Sellers Available
-                        </p>
-                     </div>
-                  )}
-               </div>
-            </div>
-
-            <div className="slider-progress-container border-b border-black">
-               <div
-                  className="slider-progress-bar"
-                  style={{
-                     width: `25%`,
-                     transform: `translateX(${bestSellersProgress * 3}%)`
-                  }}
-               />
+                     );
+                  })
+               ) : (
+                  <div className="col-span-full py-20 text-center">
+                     <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400">
+                        No Best Sellers Available
+                     </p>
+                  </div>
+               )}
             </div>
 
             <div className="py-10 flex justify-center bg-brand-grey">
@@ -322,41 +306,36 @@ export function Home() {
                <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.6em] text-black/30 mt-2 md:mt-4 italic">Limited Time Offers</p>
             </div>
 
-            {/* Horizontal Scrolling Product Slider */}
-            <div
-               ref={saleRef}
-               onScroll={() => handleScroll(saleRef, setSaleProgress)}
-               className="overflow-x-auto ios-slider-scrollbar"
-            >
-               <div className="flex">
-                  {loading ? (
-                     Array(4).fill(0).map((_, i) => (
-                        <div key={i} className="min-w-[50%] md:min-w-[25%] aspect-[3/4] bg-brand-grey animate-pulse border-r border-b border-black" />
-                     ))
-                  ) : saleProducts.length > 0 ? (
-                     saleProducts.map((product) => (
-                        <div key={product._id} className="min-w-[50%] md:min-w-[25%] border-r border-b border-black md:last:border-r-0">
+            {/* Products Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-black">
+               {loading ? (
+                  Array(8).fill(0).map((_, i) => (
+                     <div key={i} className="aspect-[3/4] bg-brand-grey animate-pulse border-r border-black last:border-r-0" />
+                  ))
+               ) : saleProducts.length > 0 ? (
+                  saleProducts.map((product, idx) => {
+                     const isLastRowMobile = idx >= (Math.ceil(saleProducts.length / 2) - 1) * 2;
+                     const isLastRowDesktop = idx >= (Math.ceil(saleProducts.length / 4) - 1) * 4;
+
+                     return (
+                        <div key={product._id} className={cn(
+                           "border-black",
+                           !isLastRowMobile ? "border-b" : "border-b-0",
+                           !isLastRowDesktop ? "md:border-b" : "md:border-b-0",
+                           idx % 2 === 0 ? "border-r" : "border-r-0 md:border-r",
+                           idx % 4 === 3 ? "md:border-r-0" : ""
+                        )}>
                            <ProductCard product={product} />
                         </div>
-                     ))
-                  ) : (
-                     <div className="w-full py-20 text-center">
-                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400">
-                           No Sale Products Available
-                        </p>
-                     </div>
-                  )}
-               </div>
-            </div>
-
-            <div className="slider-progress-container border-b border-black">
-               <div
-                  className="slider-progress-bar"
-                  style={{
-                     width: `25%`,
-                     transform: `translateX(${saleProgress * 3}%)`
-                  }}
-               />
+                     );
+                  })
+               ) : (
+                  <div className="col-span-full py-20 text-center">
+                     <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400">
+                        No Sale Products Available
+                     </p>
+                  </div>
+               )}
             </div>
 
             <div className="py-10 flex justify-center bg-brand-grey">
