@@ -4,11 +4,14 @@ const {
    getCategory,
    createCategory,
    updateCategory,
-   deleteCategory
+   deleteCategory,
+   reorderCategories
 } = require('../controllers/categoryController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 const router = express.Router();
+
+router.post('/reorder', protect, admin, reorderCategories);
 
 router.route('/')
    .get(getCategories)

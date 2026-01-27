@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, X, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Search, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
@@ -9,22 +9,19 @@ import { cn } from '../../utils/cn';
 const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
    const [formData, setFormData] = useState({
       name: '',
-      description: '',
-      order: 0
+      description: ''
    });
 
    useEffect(() => {
       if (category) {
          setFormData({
             name: category.name,
-            description: category.description || '',
-            order: category.order || 0
+            description: category.description || ''
          });
       } else {
          setFormData({
             name: '',
-            description: '',
-            order: 0
+            description: ''
          });
       }
    }, [category, isOpen]);
@@ -80,20 +77,6 @@ const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
                   />
                </div>
 
-               <div className="space-y-2">
-                  <label className="text-small-brand text-gray-400">Display Sequence (Order)</label>
-                  <Input
-                     type="number"
-                     value={formData.order}
-                     onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                     required
-                     className="rounded-none border-black focus:border-black text-[11px] font-bold"
-                  />
-                  <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">
-                     Lower numbers appear first on the homepage.
-                  </p>
-               </div>
-
                <div className="pt-8 border-t border-black flex justify-end gap-1">
                   <button type="button" onClick={onClose} className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] border border-black hover:bg-black hover:text-white transition-all">
                      Abandon
@@ -113,6 +96,7 @@ const AdminCategories = () => {
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [editingCategory, setEditingCategory] = useState(null);
    const [searchTerm, setSearchTerm] = useState('');
+   const [hasOrderChanges, setHasOrderChanges] = useState(false);
    const { token } = useAuth();
 
    const fetchCategories = async () => {
@@ -159,6 +143,33 @@ const AdminCategories = () => {
       cat._id.toLowerCase().includes(searchTerm.toLowerCase())
    );
 
+   const moveCategory = (index, direction) => {
+      const newCategories = [...categories];
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+      if (targetIndex < 0 || targetIndex >= newCategories.length) return;
+
+      [newCategories[index], newCategories[targetIndex]] = [newCategories[targetIndex], newCategories[index]];
+      setCategories(newCategories);
+      setHasOrderChanges(true);
+   };
+
+   const handleSaveOrder = async () => {
+      try {
+         const orders = categories.map((cat, index) => ({
+            id: cat._id,
+            sortOrder: index
+         }));
+
+         await api.post('/categories/reorder', { orders });
+         setHasOrderChanges(false);
+         alert('Display order synchronized successfully.');
+      } catch (err) {
+         console.error('Order synchronization failed:', err);
+         alert('Failed to synchronize display order.');
+      }
+   };
+
    return (
       <div className="space-y-12 pb-40">
          {/* HEADER SECTION */}
@@ -167,17 +178,27 @@ const AdminCategories = () => {
                <p className="text-small-brand text-gray-400">Inventory Logic</p>
                <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">Archive Classification</h1>
             </div>
-            <button
-               onClick={() => {
-                  setEditingCategory(null);
-                  setIsModalOpen(true);
-               }}
-               className="btn-brand px-10 py-5 font-black uppercase tracking-[0.2em]"
-            >
-               <div className="flex items-center gap-3">
-                  <Plus size={16} /> Add Classification
-               </div>
-            </button>
+            <div className="flex items-center gap-3">
+               {hasOrderChanges && (
+                  <button
+                     onClick={handleSaveOrder}
+                     className="px-10 py-5 bg-black text-white font-black uppercase tracking-[0.2em] border border-black hover:bg-white hover:text-black transition-all"
+                  >
+                     Save Order
+                  </button>
+               )}
+               <button
+                  onClick={() => {
+                     setEditingCategory(null);
+                     setIsModalOpen(true);
+                  }}
+                  className="btn-brand px-10 py-5 font-black uppercase tracking-[0.2em]"
+               >
+                  <div className="flex items-center gap-3">
+                     <Plus size={16} /> Add Classification
+                  </div>
+               </button>
+            </div>
          </div>
 
          {/* Search Bar */}
@@ -196,8 +217,8 @@ const AdminCategories = () => {
             <table className="w-full text-left min-w-[800px]">
                <thead>
                   <tr className="bg-brand-grey border-b border-black">
-                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black w-24">Sequence</th>
                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Tag Label</th>
+                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black text-center">Rank</th>
                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Technical Scope</th>
                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black text-right">Protocols</th>
                   </tr>
@@ -206,11 +227,26 @@ const AdminCategories = () => {
                   {filteredCategories.map((cat) => (
                      <tr key={cat._id} className="hover:bg-brand-grey transition-all group">
                         <td className="px-8 py-8">
-                           <div className="text-[13px] font-black text-black">{cat.order || 0}</div>
-                        </td>
-                        <td className="px-8 py-8">
                            <div className="text-[11px] font-black uppercase tracking-tight text-black">{cat.name}</div>
                            <div className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">CODE: {cat._id.toUpperCase()}</div>
+                        </td>
+                        <td className="px-8 py-8">
+                           <div className="flex justify-center items-center gap-1">
+                              <button
+                                 onClick={() => moveCategory(categories.indexOf(cat), 'up')}
+                                 disabled={categories.indexOf(cat) === 0}
+                                 className="p-2 text-black/30 hover:text-black disabled:opacity-0 transition-all"
+                              >
+                                 <ArrowUp size={14} />
+                              </button>
+                              <button
+                                 onClick={() => moveCategory(categories.indexOf(cat), 'down')}
+                                 disabled={categories.indexOf(cat) === categories.length - 1}
+                                 className="p-2 text-black/30 hover:text-black disabled:opacity-0 transition-all"
+                              >
+                                 <ArrowDown size={14} />
+                              </button>
+                           </div>
                         </td>
                         <td className="px-8 py-8">
                            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-widest max-w-lg leading-relaxed">{cat.description || 'NO SYSTEM DESCRIPTION RECORDED.'}</div>

@@ -5,7 +5,7 @@ const Category = require('../models/Category');
 // @access  Public
 exports.getCategories = async (req, res) => {
    try {
-      const categories = await Category.find().sort('order');
+      const categories = await Category.find().sort({ sortOrder: 1, createdAt: 1 });
 
       res.status(200).json({
          success: true,
@@ -94,6 +94,30 @@ exports.deleteCategory = async (req, res) => {
       res.status(200).json({
          success: true,
          data: {}
+      });
+   } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+   }
+};
+
+// @desc    Reorder categories
+// @route   POST /api/categories/reorder
+// @access  Private/Admin
+exports.reorderCategories = async (req, res) => {
+   try {
+      const { orders } = req.body; // Array of { id, sortOrder }
+
+      if (!orders || !Array.isArray(orders)) {
+         return res.status(400).json({ success: false, message: 'Please provide valid order data' });
+      }
+
+      await Promise.all(orders.map(item =>
+         Category.findByIdAndUpdate(item.id, { sortOrder: item.sortOrder })
+      ));
+
+      res.status(200).json({
+         success: true,
+         message: 'Categories reordered successfully'
       });
    } catch (err) {
       res.status(500).json({ success: false, message: err.message });

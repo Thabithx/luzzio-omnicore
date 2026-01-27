@@ -14,7 +14,7 @@ const categorySchema = new mongoose.Schema({
       type: String,
       maxlength: [500, 'Description can not be more than 500 characters']
    },
-   order: {
+   sortOrder: {
       type: Number,
       default: 0
    },
