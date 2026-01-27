@@ -10,6 +10,7 @@ import { cn } from '../utils/cn';
 
 // Import brand assets
 import heroImg from '../assets/hero_new.jpg';
+import heroMobile from '../assets/hero_mobile.png';
 import heroOld from '../assets/hero.jpg';
 import bootsImg from '../assets/boots.png';
 import hoodieCat from '../assets/hoodie.jpg';
@@ -73,12 +74,15 @@ export function Home() {
          <Meta title="Luxury Redefined" description="Explore the Luzzio collection. High-fashion minimalist luxury." />
 
          {/* SECTION 1: HERO - READY TO WEAR */}
-         <section className="relative h-[60vh] md:h-screen overflow-hidden group">
-            <img
-               src={heroImg}
-               alt="Hero"
-               className="absolute inset-0 w-full h-full object-cover object-center grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000"
-            />
+         <section className="relative h-screen overflow-hidden group">
+            <picture>
+               <source srcSet={heroMobile} media="(max-width: 768px)" />
+               <img
+                  src={heroImg}
+                  alt="Hero"
+                  className="absolute inset-0 w-full h-full object-cover object-center grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000"
+               />
+            </picture>
 
 
 
