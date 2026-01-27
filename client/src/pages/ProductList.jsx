@@ -152,17 +152,22 @@ export function ProductList() {
          <Meta title="Collection" description="Browse the Luzzio luxury collection." />
 
          {/* CATEGORY HEADER */}
-         <div className="px-10 mb-8 md:mb-12 flex flex-col items-center">
-            <h1 className="text-6xl md:text-[10vw] font-black uppercase tracking-tighter leading-none mb-4">
-               {activeCategory}
+         <div className="px-6 md:px-10 mb-12 md:mb-16 flex flex-col items-center">
+            <h1 className="text-4xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-none mb-8 text-center max-w-4xl">
+               {activeCategory === 'all' ? 'The Collection' : activeCategory.replace(/[+-]/g, ' ')}
             </h1>
-            <div className="flex items-center space-x-10 text-small-brand text-gray-400">
-               <button onClick={() => setActiveCategory('all')} className={activeCategory === 'all' ? 'text-black font-black' : ''}>All</button>
+            <div className="flex flex-wrap justify-center gap-x-6 md:gap-x-12 gap-y-4 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+               <button
+                  onClick={() => setActiveCategory('all')}
+                  className={`transition-colors hover:text-black ${activeCategory === 'all' ? 'text-black' : ''}`}
+               >
+                  All Items
+               </button>
                {categories.map(cat => (
                   <button
                      key={cat._id}
                      onClick={() => setActiveCategory(cat.name.toLowerCase())}
-                     className={activeCategory === cat.name.toLowerCase() ? 'text-black font-black' : ''}
+                     className={`transition-colors hover:text-black ${activeCategory === cat.name.toLowerCase() ? 'text-black' : ''}`}
                   >
                      {cat.name}
                   </button>
