@@ -13,7 +13,11 @@ const storage = new CloudinaryStorage({
    params: {
       folder: 'luzzio_products',
       allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
-      transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
+      transformation: [
+         { width: 2000, height: 2000, crop: 'limit' },
+         { quality: 'auto' },
+         { fetch_format: 'auto' }
+      ]
    }
 });
 
