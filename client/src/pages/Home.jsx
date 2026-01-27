@@ -74,7 +74,7 @@ export function Home() {
          <Meta title="Luxury Redefined" description="Explore the Luzzio collection. High-fashion minimalist luxury." />
 
          {/* SECTION 1: HERO - READY TO WEAR */}
-         <section className="relative h-screen overflow-hidden group">
+         <section className="relative h-[85vh] md:h-screen overflow-hidden group">
             <picture>
                <source srcSet={heroMobile} media="(max-width: 768px)" />
                <img
