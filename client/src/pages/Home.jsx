@@ -74,7 +74,7 @@ export function Home() {
          <Meta title="Luxury Redefined" description="Explore the Luzzio collection. High-fashion minimalist luxury." />
 
          {/* SECTION 1: HERO - READY TO WEAR */}
-         <section className="relative h-[85vh] md:h-screen overflow-hidden group">
+         <section className="relative h-[90vh] md:h-screen overflow-hidden group">
             <picture>
                <source srcSet={heroMobile} media="(max-width: 768px)" />
                <img
@@ -93,7 +93,7 @@ export function Home() {
                </div>
                <div className="flex gap-4">
                   <Link to="/products">
-                     <button className="px-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black hover:text-white border border-black transition-all duration-500 rounded-sm">
+                     <button className="px-8 py-3 bg-transparent text-white text-[9px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-black border border-white transition-all duration-500 rounded-sm">
                         Shop
                      </button>
                   </Link>
