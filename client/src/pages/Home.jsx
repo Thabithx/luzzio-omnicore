@@ -74,13 +74,13 @@ export function Home() {
          <Meta title="Luxury Redefined" description="Explore the Luzzio collection. High-fashion minimalist luxury." />
 
          {/* SECTION 1: HERO - READY TO WEAR */}
-         <section className="relative h-[90dvh] md:h-screen overflow-hidden group">
+         <section className="relative h-[90vh] md:h-screen overflow-hidden group">
             <picture>
                <source srcSet={heroMobile} media="(max-width: 768px)" />
                <img
                   src={heroImg}
                   alt="Hero"
-                  className="absolute inset-0 w-full h-full object-cover object-center grayscale-[30%] group-hover:grayscale-0 transition-[filter] duration-1000"
+                  className="absolute inset-0 w-full h-full object-cover object-center grayscale-[30%] group-hover:grayscale-0 transition duration-1000"
                />
             </picture>
 
