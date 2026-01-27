@@ -57,28 +57,7 @@ exports.createOrder = async (req, res) => {
       const [createdOrder] = await Promise.all(saveTasks);
       console.timeEnd('DB_OPERATIONS');
 
-      // 3. SECURE STOCK RESERVATION PROTOCOL (Internal)
-      // Deduct stock for each item's specific variant
-      setImmediate(async () => {
-         try {
-            for (const item of orderItems) {
-               const product = await Product.findById(item.product);
-               if (product && product.variants && product.variants.length > 0) {
-                  const variantIndex = product.variants.findIndex(v => v.size === item.size);
-                  if (variantIndex !== -1) {
-                     // Deduct from variant
-                     product.variants[variantIndex].stock = Math.max(0, product.variants[variantIndex].stock - (item.qty || 1));
 
-                     // total stock is auto-recalculated by the pre-save hook in Product.js
-                     await product.save();
-                     console.log(`[STOCK SYNC] Deducted ${item.qty || 1} units from ${product.name} (Size: ${item.size})`);
-                  }
-               }
-            }
-         } catch (stockErr) {
-            console.error('[STOCK SYNC FAILURE] Critical inventory mismatch:', stockErr.message);
-         }
-      });
 
       // 4. Prepare PayHere or Koko parameters if needed (Calculated locally, near-instant)
       let payhereParams = null;
@@ -187,36 +166,7 @@ exports.createOrder = async (req, res) => {
          kokoParams
       });
 
-      console.log(`[ORDER PROTOCOL DISPATCHED] Time to respond: ${Date.now() - start}ms`);
-
-      // 5. ASYNC BACKGROUND TASKS (Not blocking the user)
-      setImmediate(() => {
-         console.log(`[ORDER PROTOCOL] Background tasks initiated for Order: ${createdOrder._id}`);
-
-         if (orderEmail) {
-            console.log(`[ORDER PROTOCOL] Dispatching confirmation to client: ${orderEmail}`);
-            sendEmail({
-               email: orderEmail,
-               subject: `Order Confirmation #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
-               html: orderConfirmationTemplate(createdOrder, { name: recipientName || 'Valued Customer' })
-            })
-               .then(() => console.log(`[ORDER PROTOCOL] Client confirmation delivered: ${orderEmail}`))
-               .catch(emailErr => console.error('[ORDER PROTOCOL FAILURE] Client Email Deferred:', emailErr.message));
-         } else {
-            console.warn(`[ORDER PROTOCOL] No client email found for Order: ${createdOrder._id}`);
-         }
-
-         // Protocol: Admin Notification Dispatch
-         const adminEmail = process.env.ADMIN_EMAIL || 'luzzioclothing.com@gmail.com';
-         console.log(`[ORDER PROTOCOL] Dispatching notification to admin: ${adminEmail}`);
-         sendEmail({
-            email: adminEmail,
-            subject: `New Order Received #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
-            html: adminOrderNotificationTemplate(createdOrder)
-         })
-            .then(() => console.log(`[ORDER PROTOCOL] Admin notification delivered: ${adminEmail}`))
-            .catch(adminEmailErr => console.error('[ORDER PROTOCOL FAILURE] Admin Notification Deferred:', adminEmailErr.message));
-      });
+      console.log(`[ORDER PROTOCOL DISPATCHED] Order ${createdOrder._id} created with pending status. Awaiting payment.`);
 
    } catch (err) {
       console.error(`[ORDER PROTOCOL FAILURE] Time elapsed: ${Date.now() - start}ms - Error: ${err.message}`);

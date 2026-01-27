@@ -3,6 +3,7 @@ const User = require('../models/User');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 const { paymentSuccessTemplate } = require('../utils/emailTemplates');
+const { finalizeOrder } = require('../utils/orderFinalizer');
 
 // Initialize Stripe lazily to prevent server crashes if keys are missing
 const getStripe = () => null; // Stripe Logic Deprecated Step Id: 564
@@ -175,44 +176,7 @@ exports.payHereNotify = async (req, res) => {
 
       // Status Code 2 means success
       if (status_code == 2) {
-         const order = await Order.findById(order_id);
-         if (order && !order.isPaid) {
-            order.isPaid = true;
-            order.paidAt = Date.now();
-            order.status = 'paid';
-            order.paymentResult = {
-               id: payment_id,
-               status: 'succeeded',
-               email_address: 'payhere_customer', // PayHere doesn't send email in notify, optional
-               provider: 'PayHere'
-            };
-            await order.save();
-            console.log(`Order ${order_id} verified and paid via PayHere Protocol.`);
-
-            // Protocol: Strategic Settlement Notification
-            const adminEmail = process.env.ADMIN_EMAIL || 'luzzioclothing.com@gmail.com';
-
-            setImmediate(() => {
-               console.log(`[PAYMENT PROTOCOL] Dispatching PayHere settlement notifications for Order: ${order_id}`);
-               // 1. Notify Client
-               sendEmail({
-                  email: order.email,
-                  subject: `Order Confirmation #${order._id.toString().slice(-6).toUpperCase()}`,
-                  html: paymentSuccessTemplate(order, false)
-               })
-                  .then(() => console.log(`[PAYMENT PROTOCOL] PayHere client notification delivered: ${order.email}`))
-                  .catch(e => console.error('[PAYMENT PROTOCOL FAILURE] PayHere Client Notify Deferred:', e.message));
-
-               // 2. Notify Admin
-               sendEmail({
-                  email: adminEmail,
-                  subject: `New Order Received (Paid) #${order._id.toString().slice(-6).toUpperCase()}`,
-                  html: paymentSuccessTemplate(order, true)
-               })
-                  .then(() => console.log(`[PAYMENT PROTOCOL] PayHere admin notification delivered: ${adminEmail}`))
-                  .catch(e => console.error('[PAYMENT PROTOCOL FAILURE] PayHere Admin Alert Deferred:', e.message));
-            });
-         }
+         await finalizeOrder(order_id, payment_id, 'PayHere');
       }
 
       res.status(200).send('OK');
@@ -270,43 +234,7 @@ exports.kokoNotify = async (req, res) => {
       }
 
       if (status === 'SUCCESS') {
-         const order = await Order.findById(orderId);
-         if (order && !order.isPaid) {
-            order.isPaid = true;
-            order.paidAt = Date.now();
-            order.status = 'paid';
-            order.paymentResult = {
-               id: trnId,
-               status: 'succeeded',
-               provider: 'Koko'
-            };
-            await order.save();
-            console.log(`Order ${orderId} verified and paid via Koko Protocol.`);
-
-            // Protocol: Strategic Settlement Notification
-            const adminEmail = process.env.ADMIN_EMAIL || 'luzzioclothing.com@gmail.com';
-
-            setImmediate(() => {
-               console.log(`[PAYMENT PROTOCOL] Dispatching Koko settlement notifications for Order: ${orderId}`);
-               // 1. Notify Client
-               sendEmail({
-                  email: order.email,
-                  subject: `Order Confirmation #${order._id.toString().slice(-6).toUpperCase()}`,
-                  html: paymentSuccessTemplate(order, false)
-               })
-                  .then(() => console.log(`[PAYMENT PROTOCOL] Koko client notification delivered: ${order.email}`))
-                  .catch(e => console.error('[PAYMENT PROTOCOL FAILURE] Koko Client Notify Deferred:', e.message));
-
-               // 2. Notify Admin
-               sendEmail({
-                  email: adminEmail,
-                  subject: `New Order Received (Paid via Koko) #${order._id.toString().slice(-6).toUpperCase()}`,
-                  html: paymentSuccessTemplate(order, true)
-               })
-                  .then(() => console.log(`[PAYMENT PROTOCOL] Koko admin notification delivered: ${adminEmail}`))
-                  .catch(e => console.error('[PAYMENT PROTOCOL FAILURE] Koko Admin Alert Deferred:', e.message));
-            });
-         }
+         await finalizeOrder(orderId, trnId, 'Koko');
       }
 
       res.status(200).send('OK');
