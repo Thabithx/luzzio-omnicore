@@ -82,8 +82,8 @@ const orderSchema = new mongoose.Schema({
    },
    status: {
       type: String,
-      enum: ['pending', 'paid', 'processing', 'packaged', 'out for delivery', 'delivered', 'completed', 'cancelled', 'returned'],
-      default: 'pending'
+      enum: ['draft', 'pending', 'paid', 'processing', 'packaged', 'out for delivery', 'delivered', 'completed', 'cancelled', 'returned'],
+      default: 'draft'
    },
    fadar_order_id: {
       type: String,

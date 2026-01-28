@@ -449,7 +449,9 @@ const AdminOrders = () => {
                            className="bg-white text-black px-4 py-4 text-[10px] font-black uppercase tracking-widest border border-black focus:outline-none cursor-pointer appearance-none min-w-[180px]"
                         >
                            <option value="">BATCH ACTION</option>
+                           <option value="draft">DRAFT</option>
                            <option value="pending">PENDING</option>
+                           <option value="paid">PAID</option>
                            <option value="processing">PROCESSING</option>
                            <option value="packaged">PACKAGED</option>
                            <option value="out for delivery">OUT FOR DELIVERY</option>

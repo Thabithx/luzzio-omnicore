@@ -166,7 +166,7 @@ exports.createOrder = async (req, res) => {
          kokoParams
       });
 
-      console.log(`[ORDER PROTOCOL DISPATCHED] Order ${createdOrder._id} created with pending status. Awaiting payment.`);
+      console.log(`[ORDER PROTOCOL DISPATCHED] Order ${createdOrder._id} created with draft status. Awaiting payment.`);
 
    } catch (err) {
       console.error(`[ORDER PROTOCOL FAILURE] Time elapsed: ${Date.now() - start}ms - Error: ${err.message}`);
