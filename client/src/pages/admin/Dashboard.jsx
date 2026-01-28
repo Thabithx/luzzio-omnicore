@@ -128,9 +128,9 @@ const Dashboard = () => {
 
    const dashboardStats = [
       { label: "Gross Revenue", value: `LKR ${stats?.grossRevenue?.toLocaleString()}`, icon: DollarSign, trend: rangeLabels[range] },
+      { label: "Visitor Traffic", value: stats?.visitorCount?.toLocaleString(), icon: TrendingUp, trend: "TRAFFIC" },
       { label: "Inventory Outflow", value: stats?.inventoryOutflow?.toLocaleString(), icon: ShoppingBag, trend: "VOLUME" },
       { label: "Client Registry", value: stats?.clientRegistry?.toLocaleString(), icon: Users, trend: "RECORDS" },
-      { label: "Sales Momentum", value: stats?.archiveMomentum?.toLocaleString(), icon: TrendingUp, trend: "30D GAIN" },
    ];
 
    const ranges = [

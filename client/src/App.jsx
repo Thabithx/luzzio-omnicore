@@ -46,6 +46,8 @@ const Loading = () => (
   </div>
 );
 
+import api from './services/api';
+
 function PixelTracker() {
   const location = useLocation();
 
@@ -55,6 +57,16 @@ function PixelTracker() {
 
   React.useEffect(() => {
     metaPixel.pageview();
+
+    // Log visit to internal analytics
+    const logInternalVisit = async () => {
+      try {
+        await api.post('/analytics/log-visit', { path: location.pathname });
+      } catch (err) {
+        // Fail silently
+      }
+    };
+    logInternalVisit();
   }, [location]);
 
   return null;

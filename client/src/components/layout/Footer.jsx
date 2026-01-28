@@ -101,10 +101,9 @@ export function Footer() {
                   toggleSection={toggleSection}
                >
                   <ul className="space-y-3 text-[10px] font-bold uppercase tracking-widest">
-                     <li><a href="#" className="hover:opacity-50 transition-opacity">Facebook</a></li>
-                     <li><a href="#" className="hover:opacity-50 transition-opacity">Instagram</a></li>
+                     <li><a href="https://www.facebook.com/share/1CHDMDgT1Q/?mibextid=wwXIfr" className="hover:opacity-50 transition-opacity">Facebook</a></li>
+                     <li><a href="https://www.instagram.com/luzziopremium?igsh=cDV2OGoyZjM5aXZx" className="hover:opacity-50 transition-opacity">Instagram</a></li>
                      <li><a href="#" className="hover:opacity-50 transition-opacity">Tiktok</a></li>
-                     <li><a href="#" className="hover:opacity-50 transition-opacity">Pinterest</a></li>
                   </ul>
                </FooterSection>
 

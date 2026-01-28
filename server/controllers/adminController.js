@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
 const Product = require('../models/Product');
+const Visit = require('../models/Visit');
 
 // @desc    Get admin dashboard stats
 // @route   GET /api/admin/stats
@@ -44,6 +45,11 @@ exports.getDashboardStats = async (req, res) => {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const recentOrdersCount = await Order.countDocuments({ createdAt: { $gte: thirtyDaysAgo } });
 
+      // Visitor Traffic count for the range
+      const visitorCount = await Visit.countDocuments({
+         createdAt: { $gte: startDate }
+      });
+
       // Recent Orders for the table - Keep full recent history
       const recentOrders = await Order.find({})
          .populate('user', 'name email')
@@ -57,6 +63,7 @@ exports.getDashboardStats = async (req, res) => {
             inventoryOutflow,
             clientRegistry: userCount,
             archiveMomentum: recentOrdersCount,
+            visitorCount,
             recentOrders
          }
       });
