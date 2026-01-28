@@ -538,7 +538,9 @@ const AdminOrders = () => {
                                           onChange={(e) => handleStatusUpdate(order._id, e.target.value, order.status)}
                                           className="text-[9px] font-black uppercase tracking-widest bg-white border border-black px-3 py-1.5 focus:border-black focus:ring-0 appearance-none rounded-none w-full"
                                        >
+                                          <option value="draft">DRAFT</option>
                                           <option value="pending">PENDING</option>
+                                          <option value="paid">PAID</option>
                                           <option value="processing">PROCESSING</option>
                                           <option value="packaged">PACKAGED</option>
                                           <option value="out for delivery">OUT FOR DELIVERY</option>
