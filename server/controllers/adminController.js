@@ -26,7 +26,9 @@ exports.getDashboardStats = async (req, res) => {
 
       // Filter orders by date range
       const orders = await Order.find({
-         createdAt: { $gte: startDate }
+         createdAt: { $gte: startDate },
+         isPaid: true,
+         status: { $nin: ['cancelled', 'returned','draft','pending'] }
       });
 
       const userCount = await User.countDocuments({ role: 'user' });
