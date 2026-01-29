@@ -545,8 +545,10 @@ exports.batchUpdateOrderStatus = async (req, res) => {
 };
 
 // Helper to trigger Fadar without a req/res cycle
+// Helper to trigger Fadar without a req/res cycle
 async function triggerFadarInternal(order, weight) {
    const axios = require('axios');
+   const FormData = require('form-data');
    const apiKey = process.env.FADAR_API_KEY;
    const clientId = process.env.FADAR_CLIENT_ID;
 
@@ -554,24 +556,46 @@ async function triggerFadarInternal(order, weight) {
       return { success: false, message: 'Fadar API configuration missing' };
    }
 
-   const params = new URLSearchParams();
-   params.append('api_key', apiKey);
-   params.append('client_id', clientId);
-   params.append('order_id', order._id.toString());
-   params.append('parcel_weight', weight && weight > 0 ? weight.toString() : '1');
-   params.append('parcel_description', `Order #${order._id.toString().slice(-6).toUpperCase()}`);
-   params.append('recipient_name', `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim());
-   params.append('recipient_contact_1', order.shippingAddress.phone || '');
-   params.append('recipient_contact_2', order.shippingAddress.phone2 || '');
-   params.append('recipient_address', order.shippingAddress.address || '');
-   params.append('recipient_city', order.shippingAddress.city || '');
-   params.append('amount', order.totalPrice.toString());
-   params.append('exchange', 'no');
+   const form = new FormData();
+   form.append('api_key', apiKey);
+   form.append('client_id', clientId);
+
+   // Truncate Order ID logic (Match fadarController)
+   const hexId = order._id.toString().slice(-7);
+   const numericOrderId = parseInt(hexId, 16).toString();
+   form.append('order_id', numericOrderId);
+
+   const weightVal = weight && weight > 0 ? weight.toString() : '1';
+   form.append('parcel_weight', weightVal);
+
+   // Parcel Description (Match fadarController)
+   const itemDetails = (order.orderItems || []).map(item => `${item.name}(Qty: ${item.qty})`).join(', ');
+   form.append('parcel_description', itemDetails.substring(0, 100));
+
+   const recipientName = `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim();
+   form.append('recipient_name', recipientName);
+
+   // Phone Sanitization (Match fadarController)
+   let rawPhone = order.shippingAddress.phone || '';
+   rawPhone = rawPhone.replace(/\D/g, '');
+   if (rawPhone.length === 9) rawPhone = '0' + rawPhone;
+   form.append('recipient_contact_1', rawPhone);
+
+   form.append('recipient_contact_2', order.shippingAddress.phone2 || '');
+   form.append('recipient_address', order.shippingAddress.address || '');
+   form.append('recipient_city', order.shippingAddress.city || '');
+
+   // COD Amount (Match fadarController)
+   const isCod = order.paymentMethod === 'COD' || order.paymentMethod === 'Cash on Delivery';
+   const codAmount = isCod ? order.totalPrice.toString() : '0';
+   form.append('amount', codAmount);
+
+   form.append('exchange', '0');
 
    try {
-      console.log(`[FADAR BATCH] Initiating request for Order: ${order._id}`);
-      const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', params, {
-         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      console.log(`[FADAR BATCH] Initiating request for Order: ${numericOrderId} (Original: ${order._id})`);
+      const response = await axios.post('https://www.fdedomestic.com/api/parcel/new_api_v1.php', form, {
+         headers: { ...form.getHeaders() }
       });
 
       console.log(`[FADAR BATCH] API RESPONSE:`, response.data);
