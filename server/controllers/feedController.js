@@ -62,7 +62,7 @@ exports.getFacebookFeed = async (req, res) => {
          const price = `${product.price.toFixed(2)} LKR`;
 
          // Availability
-         const availability = product.stock > 0 ? 'in stock' : 'out of stock';
+         const availability = product.stock > 0 ? 'in_stock' : 'out_of_stock';
 
          // Optional: Brand (Static for now or from schema if exists)
          const brand = 'Luzzio';

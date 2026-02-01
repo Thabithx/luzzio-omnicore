@@ -1,6 +1,10 @@
 {
    "rewrites": [
       {
+         "source": "/facebook-product-feed",
+         "destination": "https://luzzio-production.up.railway.app/facebook-product-feed"
+      },
+      {
          "source": "/(.*)",
          "destination": "/index.html"
       }
