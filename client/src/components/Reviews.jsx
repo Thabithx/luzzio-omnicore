@@ -253,12 +253,10 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
                   {/* User Info Line */}
                   <div className="flex items-center gap-2">
                      <span className="text-[14px] md:text-[16px] font-bold text-black tracking-tight">{review.name || "Anonymous"}</span>
-                     {review.isVerified && (
-                        <div className="flex items-center gap-0.5 bg-black text-white px-1.5 py-[2px] rounded-[1px]">
-                           <Check size={10} strokeWidth={4} />
-                           <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest leading-none">Verified</span>
-                        </div>
-                     )}
+                     <div className="flex items-center gap-0.5 bg-black text-white px-1.5 py-[2px] rounded-[1px]">
+                        <Check size={10} strokeWidth={4} />
+                        <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest leading-none">Verified</span>
+                     </div>
                   </div>
 
                   {/* Comment */}
