@@ -39,6 +39,7 @@ const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminFAQ = lazy(() => import('./pages/admin/AdminFAQ'));
 const AdminContact = lazy(() => import('./pages/admin/AdminContact'));
+const AdminDraftOrders = lazy(() => import('./pages/admin/AdminDraftOrders'));
 
 const Loading = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
@@ -109,6 +110,7 @@ function App() {
           <Route path="/admin/products" element={<AdminLayout><AdminProducts /></AdminLayout>} />
           <Route path="/admin/categories" element={<AdminLayout><AdminCategories /></AdminLayout>} />
           <Route path="/admin/orders" element={<AdminLayout><AdminOrders /></AdminLayout>} />
+          <Route path="/admin/orders/drafts" element={<AdminLayout><AdminDraftOrders /></AdminLayout>} />
           <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/faq" element={<AdminLayout><AdminFAQ /></AdminLayout>} />
           <Route path="/admin/contact" element={<AdminLayout><AdminContact /></AdminLayout>} />

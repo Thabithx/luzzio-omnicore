@@ -78,7 +78,7 @@ const AdminLayout = ({ children }) => {
                      to={item.to}
                      icon={item.icon}
                      label={item.label}
-                     active={location.pathname === item.to}
+                     active={item.to === "/admin" ? location.pathname === "/admin" : location.pathname.startsWith(item.to)}
                   />
                ))}
             </nav>

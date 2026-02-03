@@ -1,0 +1,245 @@
+const Order = require('../models/Order');
+const User = require('../models/User');
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
+const { paymentSuccessTemplate } = require('../utils/emailTemplates');
+const { finalizeOrder } = require('../utils/orderFinalizer');
+
+// Initialize Stripe lazily to prevent server crashes if keys are missing
+const getStripe = () => null; // Stripe Logic Deprecated Step Id: 564
+
+/**
+ * Stripe Payment Protocol Controller
+ * Handles secure session creation and verified webhook signals.
+ */
+
+// @desc    Create Stripe Checkout Session
+// @route   POST /api/payments/create-checkout-session
+// @access  Private
+exports.createCheckoutSession = async (req, res) => {
+   try {
+      const stripe = getStripe();
+      if (!stripe) {
+         return res.status(500).json({
+            success: false,
+            message: 'Stripe Protocol not configured. Please add valid STRIPE_SECRET_KEY to .env'
+         });
+      }
+
+      const { orderId } = req.body;
+      const order = await Order.findById(orderId).populate('user', 'email name');
+
+      if (!order) {
+         return res.status(404).json({ success: false, message: 'Order protocol not found' });
+      }
+
+      const lineItems = order.orderItems.map((item) => ({
+         price_data: {
+            currency: 'usd',
+            product_data: {
+               name: item.name,
+               images: [item.image],
+               metadata: {
+                  size: item.size
+               }
+            },
+            unit_amount: Math.round(item.price * 100), // Stripe uses cents
+         },
+         quantity: item.qty,
+      }));
+
+      const session = await stripe.checkout.sessions.create({
+         payment_method_types: ['card'],
+         line_items: lineItems,
+         mode: 'payment',
+         success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+         cancel_url: `${process.env.CLIENT_URL}/cart`,
+         customer_email: order.email,
+         client_reference_id: orderId.toString(),
+         metadata: {
+            orderId: orderId.toString()
+         }
+      });
+
+      order.stripeSessionId = session.id;
+      await order.save();
+
+      res.status(200).json({
+         success: true,
+         url: session.url
+      });
+   } catch (err) {
+      console.error('Stripe Session Error:', err);
+      res.status(500).json({ success: false, message: err.message });
+   }
+};
+
+// @desc    Stripe Webhook Handler (Deprecated)
+exports.stripeWebhook = async (req, res) => res.json({ message: 'Deprecated' });
+
+/**
+ * PayHere Payment Protocol Controller
+ */
+
+// @desc    Initiate PayHere Payment
+// @route   POST /api/payments/payhere/initiate
+// @access  Private
+exports.initiatePayHerePayment = async (req, res) => {
+   try {
+      const { orderId } = req.body;
+      const order = await Order.findById(orderId).populate('user', 'email name');
+
+      if (!order) {
+         return res.status(404).json({ success: false, message: 'Order protocol not found' });
+      }
+
+      const merchantId = (process.env.PAYHERE_MERCHANT_ID || '').trim();
+      const merchantSecret = (process.env.PAYHERE_SECRET || '').trim();
+      const amount = order.totalPrice.toFixed(2); // Ensure 2 decimal places
+      const currency = 'LKR';
+
+      // Generate Hash
+      // Hash = md5(merchant_id + order_id + amount + currency + md5(merchant_secret).toUpperCase()).toUpperCase()
+      const hashedSecret = crypto.createHash('md5').update(merchantSecret).digest('hex').toUpperCase();
+      const amountFormatted = amount; // PayHere expects amount like "1000.00"
+      const hashSource = merchantId + orderId + amountFormatted + currency + hashedSecret;
+      const hash = crypto.createHash('md5').update(hashSource).digest('hex').toUpperCase();
+
+      const isSandbox = process.env.PAYHERE_MODE === 'sandbox' || (process.env.NODE_ENV !== 'production' && process.env.PAYHERE_MODE !== 'live');
+
+      const payHereParams = {
+         sandbox: isSandbox,
+         merchant_id: merchantId,
+         return_url: `${process.env.CLIENT_URL}/payment-success`,
+         cancel_url: `${process.env.CLIENT_URL}/cart`,
+         notify_url: `${process.env.SERVER_URL || 'https://luzzio-production.up.railway.app'}/api/payments/payhere/notify`,
+         order_id: orderId,
+         items: `Order ${orderId}`,
+         amount: amount,
+         currency: currency,
+         hash: hash,
+         first_name: order.shippingAddress.firstName,
+         last_name: order.shippingAddress.lastName,
+         email: order.email,
+         phone: '0771234567',
+         address: order.shippingAddress.address,
+         city: order.shippingAddress.city,
+         country: 'Sri Lanka',
+      };
+
+      console.log(`PayHere Initiation Protocol [${isSandbox ? 'SANDBOX' : 'LIVE'}]:`, {
+         orderId,
+         amount,
+         email: order.email
+      });
+
+      res.status(200).json({
+         success: true,
+         params: payHereParams
+      });
+
+   } catch (err) {
+      console.error('PayHere Initiation Error:', err);
+      res.status(500).json({ success: false, message: err.message });
+   }
+};
+
+// @desc    PayHere Webhook Handler (Notify URL)
+// @route   POST /api/payments/payhere/notify
+// @access  Public (Signature Verified)
+exports.payHereNotify = async (req, res) => {
+   try {
+      console.log('PayHere Notification Received:', req.body);
+
+      const {
+         merchant_id,
+         order_id,
+         payment_id,
+         payhere_amount,
+         payhere_currency,
+         status_code,
+         md5sig
+      } = req.body;
+
+      const merchantSecret = process.env.PAYHERE_SECRET;
+      const hashedSecret = crypto.createHash('md5').update(merchantSecret).digest('hex').toUpperCase();
+
+      // Verify Signature
+      // md5sig = md5(merchant_id + order_id + payhere_amount + payhere_currency + status_code + md5(merchant_secret).toUpperCase()).toUpperCase()
+      const signatureSource = merchant_id + order_id + payhere_amount + payhere_currency + status_code + hashedSecret;
+      const localMd5sig = crypto.createHash('md5').update(signatureSource).digest('hex').toUpperCase();
+
+      if (localMd5sig !== md5sig) {
+         console.warn('PayHere Signature Mismatch');
+         return res.status(400).send('Invalid Signature');
+      }
+
+      // Status Code 2 means success
+      if (status_code == 2) {
+         await finalizeOrder(order_id, payment_id, 'PayHere');
+      }
+
+      res.status(200).send('OK');
+
+   } catch (err) {
+      console.error('PayHere Notify Error:', err);
+      res.status(500).send('Internal Server Error');
+   }
+};
+
+// @desc    Koko Pay Webhook Handler (Response URL)
+// @route   POST /api/payments/koko/notify
+// @access  Public (Signature Verified)
+exports.kokoNotify = async (req, res) => {
+   try {
+      console.log('Koko Notification Received:', req.body);
+
+      const {
+         orderId,
+         trnId,
+         status,
+         signature
+      } = req.body;
+
+      if (!orderId || !signature) {
+         console.warn('Koko Notification missing critical parameters');
+         return res.status(400).send('Missing parameters');
+      }
+
+      // dataString to verify is orderId + trnId + status
+      const dataString = orderId + trnId + status;
+      const publicKey = process.env.KOKO_PUBLIC_KEY?.replace(/\\n/g, '\n');
+
+      if (!publicKey) {
+         console.error('[KOKO NOTIFY] Public key missing from environment');
+         return res.status(500).send('Server configuration error');
+      }
+
+      // Verify RSA Signature
+      try {
+         const verifier = crypto.createVerify('SHA256');
+         verifier.update(dataString);
+         const isVerified = verifier.verify({
+            key: publicKey,
+            padding: crypto.constants.RSA_PKCS1_PADDING
+         }, signature, 'base64');
+
+         if (!isVerified) {
+            console.warn(`[KOKO NOTIFY] Signature Mismatch for Order: ${orderId}`);
+            return res.status(400).send('Invalid Signature');
+         }
+      } catch (verifyErr) {
+         console.error('[KOKO NOTIFY] RSA Verification Error:', verifyErr.message);
+         return res.status(400).send('Signature Verification Failed');
+      }
+
+      if (status === 'SUCCESS') {
+         await finalizeOrder(orderId, trnId, 'Koko');
+      }
+
+      res.status(200).send('OK');
+   } catch (err) {
+      console.error('Koko Notify Error:', err);
+      res.status(500).send('Internal Server Error');
+   }
+};

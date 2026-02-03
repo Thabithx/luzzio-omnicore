@@ -368,17 +368,8 @@ exports.getOrders = async (req, res) => {
       const limit = parseInt(req.query.limit) || 20;
       const skip = (page - 1) * limit;
 
-      const { status, excludeStatus } = req.query;
-      const query = {};
-
-      if (status) {
-         query.status = status;
-      } else if (excludeStatus) {
-         query.status = { $ne: excludeStatus };
-      }
-
-      const count = await Order.countDocuments(query);
-      const orders = await Order.find(query)
+      const count = await Order.countDocuments({});
+      const orders = await Order.find({})
          .populate('user', 'id name')
          .sort('-createdAt')
          .skip(skip)
@@ -395,7 +386,6 @@ exports.getOrders = async (req, res) => {
       res.status(500).json({ success: false, message: err.message });
    }
 };
-
 
 // @desc    Update order status
 // @route   PUT /api/orders/:id/status
