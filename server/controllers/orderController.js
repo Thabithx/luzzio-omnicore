@@ -579,7 +579,7 @@ async function triggerFadarInternal(order, weight) {
    form.append('parcel_weight', weightVal);
 
    // Parcel Description (Match fadarController)
-   const itemDetails = (order.orderItems || []).map(item => `${item.name}(Qty: ${item.qty})`).join(', ');
+   const itemDetails = (order.orderItems || []).map(item => `${item.name} ${item.size ? '[' + item.size + '] ' : ''}(Qty: ${item.qty})`).join(', ');
    form.append('parcel_description', itemDetails.substring(0, 100));
 
    const recipientName = `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim();

@@ -62,7 +62,7 @@ exports.createFadarParcel = async (req, res) => {
       const weightVal = parcel_weight && parcel_weight > 0 ? parcel_weight.toString() : '1';
       form.append('parcel_weight', weightVal);
 
-      // Detailed format requested: Name: [product name]\n(Qty: [quantity])
+      // Detailed format requested: Name [Size] (Qty: [quantity])
       const itemDetails = order.orderItems.map(item => `${item.name} ${item.size ? '[' + item.size + '] ' : ''}(Qty: ${item.qty})`).join(', ');
       const parcelDescription = `${itemDetails}`;
 
