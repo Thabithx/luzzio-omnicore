@@ -7,6 +7,19 @@ import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { SRI_LANKA_LOCATIONS } from '../../constants/sl-locations';
 
+const STATUS_COLORS = {
+   'draft': 'bg-gray-100 text-gray-800 border-gray-200',
+   'pending': 'bg-amber-100 text-amber-800 border-amber-200',
+   'paid': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+   'processing': 'bg-blue-100 text-blue-800 border-blue-200',
+   'packaged': 'bg-purple-100 text-purple-800 border-purple-200',
+   'out for delivery': 'bg-cyan-100 text-cyan-800 border-cyan-200',
+   'delivered': 'bg-green-100 text-green-800 border-green-200',
+   'completed': 'bg-black text-white border-black',
+   'cancelled': 'bg-red-100 text-red-800 border-red-200',
+   'returned': 'bg-rose-100 text-rose-800 border-rose-200'
+};
+
 const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddressUpdate }) => {
    const [trackingNum, setTrackingNum] = useState('');
    const [editingAddress, setEditingAddress] = useState(false);
@@ -459,13 +472,18 @@ const AdminDraftOrders = () => {
                                  <div className="text-[9px] text-gray-400 uppercase tracking-widest mt-1 font-bold">{order.email || 'N/A'}</div>
                               </td>
                               <td className="px-8 py-8">
-                                 <div className="flex flex-col gap-2">
+                                 <div className="flex flex-col gap-3">
                                     <div className="flex items-center gap-2">
-                                       <span className="text-[9px] font-black text-gray-400">STATUS:</span>
+                                       <div className={cn(
+                                          "px-3 py-1 text-[9px] font-black uppercase tracking-widest border",
+                                          STATUS_COLORS[order.status] || 'bg-gray-100'
+                                       )}>
+                                          {order.status}
+                                       </div>
                                        <select
                                           value={order.status}
                                           onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
-                                          className="text-[9px] font-black uppercase tracking-widest bg-white border border-black px-3 py-1.5 focus:border-black focus:ring-0 appearance-none rounded-none w-full"
+                                          className="text-[9px] font-black uppercase tracking-widest bg-white border border-black px-3 py-1.5 focus:border-black focus:ring-0 appearance-none rounded-none w-24 h-[26px]"
                                        >
                                           <option value="draft">DRAFT</option>
                                           <option value="pending">PENDING</option>
