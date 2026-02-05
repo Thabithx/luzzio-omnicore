@@ -132,6 +132,11 @@ exports.createOrder = async (req, res) => {
             sign.update(dataString);
             const signature = sign.sign(privateKey, 'base64');
 
+            // Phone Sanitization: Ensure it starts with 0 and has 10 digits
+            let kokoPhone = (shippingAddress.phone || '').replace(/\D/g, '');
+            if (kokoPhone.length === 9) kokoPhone = '0' + kokoPhone;
+            if (!kokoPhone) kokoPhone = '0770000000';
+
             kokoParams = {
                _mId: mId,
                api_key: apiKey,
@@ -148,7 +153,7 @@ exports.createOrder = async (req, res) => {
                _firstName: firstName,
                _lastName: lastName,
                _email: email,
-               _mobileNo: shippingAddress.phone || '0770000000',
+               _mobileNumber: kokoPhone,
                dataString: dataString,
                signature: signature,
                kokoUrl: process.env.KOKO_MODE === 'qa' ? 'https://qaapi.paykoko.com/api/merchants/orderCreate' : 'https://prodapi.paykoko.com/api/merchants/orderCreate'
