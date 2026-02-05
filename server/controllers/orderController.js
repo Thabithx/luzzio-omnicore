@@ -135,7 +135,7 @@ exports.createOrder = async (req, res) => {
             // Phone Sanitization: Ensure it starts with 0 and has 10 digits
             let kokoPhone = (shippingAddress.phone || '').replace(/\D/g, '');
             if (kokoPhone.length === 9) kokoPhone = '0' + kokoPhone;
-            if (!kokoPhone) kokoPhone = '0770000000';
+            if (!kokoPhone) kokoPhone = shippingAddress.phone || '';
 
             kokoParams = {
                _mId: mId,
