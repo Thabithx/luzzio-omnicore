@@ -42,13 +42,12 @@ exports.getFacebookFeed = async (req, res) => {
          if (!product.images || product.images.length === 0) continue;
 
          // Required Fields
-         const id = product._id;
+         const id = product._id.toString();
          const title = escapeXml(product.name);
          const description = escapeXml(product.description || product.name);
 
-         // Generate Product URL
-         const slug = product.slug || product._id;
-         const link = `${cleanBaseUrl}/product/${slug}`;
+         // Generate Product URL - Match site structure: /products/:id
+         const link = `${cleanBaseUrl}/products/${id}`;
 
          // Image needs HTTPS
          let imageLink = product.images[0];

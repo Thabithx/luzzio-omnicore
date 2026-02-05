@@ -45,7 +45,7 @@ export const viewContent = (product) => {
    window.fbq('track', 'ViewContent', {
       content_name: product.name,
       content_category: Array.isArray(product.categories) ? product.categories[0]?.name : '',
-      content_ids: [product._id],
+      content_ids: [product._id.toString()],
       content_type: 'product',
       value: product.salePrice || product.price,
       currency: 'LKR',
@@ -57,12 +57,12 @@ export const addToCart = (product, quantity = 1, size = '', color = '') => {
    if (!isEnabled() || !product) return;
    window.fbq('track', 'AddToCart', {
       content_name: product.name,
-      content_ids: [product._id],
+      content_ids: [product._id.toString()],
       content_type: 'product',
       value: (product.salePrice || product.price) * quantity,
       currency: 'LKR',
       content_items: [{
-         id: product._id,
+         id: product._id.toString(),
          quantity: quantity,
          item_price: product.salePrice || product.price,
          size,
@@ -75,7 +75,7 @@ export const addToCart = (product, quantity = 1, size = '', color = '') => {
 export const purchase = (order) => {
    if (!isEnabled() || !order) return;
    window.fbq('track', 'Purchase', {
-      content_ids: order.orderItems.map(item => item.product),
+      content_ids: order.orderItems.map(item => (item.product?._id || item.product).toString()),
       content_type: 'product',
       value: order.totalPrice,
       currency: 'LKR',
