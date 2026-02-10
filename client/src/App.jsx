@@ -51,10 +51,11 @@ import api from './services/api';
 
 function PixelTracker() {
   const location = useLocation();
+  const { user } = useAuth();
 
   React.useEffect(() => {
-    metaPixel.init();
-  }, []);
+    metaPixel.init(user);
+  }, [user]);
 
   React.useEffect(() => {
     metaPixel.pageview();

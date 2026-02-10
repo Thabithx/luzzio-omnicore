@@ -7,8 +7,23 @@ export const PIXEL_ID = import.meta.env.VITE_PIXEL_ID;
 
 const isEnabled = () => typeof window !== 'undefined' && !!window.fbq && !!PIXEL_ID;
 
-export const init = () => {
+export const init = (user = null) => {
    if (typeof window === 'undefined' || !PIXEL_ID) return;
+
+   // Handle Advanced Matching if user data is provided
+   let advancedMatching = null;
+   if (user) {
+      advancedMatching = {
+         em: user.email?.toLowerCase().trim(),
+         fn: user.name?.split(' ')[0]?.toLowerCase().trim(),
+         ln: user.name?.split(' ').slice(1).join(' ')?.toLowerCase().trim(),
+         // Pixel will automatically hash these values
+      };
+      // Remove null/undefined values
+      Object.keys(advancedMatching).forEach(key =>
+         (advancedMatching[key] === null || advancedMatching[key] === undefined || advancedMatching[key] === '') && delete advancedMatching[key]
+      );
+   }
 
    // Standard Meta Pixel initialization script
    if (!window.fbq) {
@@ -29,8 +44,13 @@ export const init = () => {
          s.parentNode.insertBefore(t, s);
       })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
-      window.fbq('init', PIXEL_ID);
-      console.debug(`[Meta Pixel] Initialized with ID: ${PIXEL_ID}`);
+      if (advancedMatching && Object.keys(advancedMatching).length > 0) {
+         window.fbq('init', PIXEL_ID, advancedMatching);
+         console.debug(`[Meta Pixel] Initialized with Advanced Matching. ID: ${PIXEL_ID}`);
+      } else {
+         window.fbq('init', PIXEL_ID);
+         console.debug(`[Meta Pixel] Initialized. ID: ${PIXEL_ID}`);
+      }
    }
 };
 
