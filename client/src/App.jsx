@@ -4,6 +4,7 @@ import { Layout } from './components/layout/Layout';
 import ScrollToTop from './components/ScrollToTop';
 import * as metaPixel from './utils/metaPixel';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 
 // Lazy load pages
 const Home = lazy(() => import('./pages/Home').then(module => ({ default: module.Home })));
