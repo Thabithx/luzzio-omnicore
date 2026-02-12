@@ -41,6 +41,7 @@ const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminFAQ = lazy(() => import('./pages/admin/AdminFAQ'));
 const AdminContact = lazy(() => import('./pages/admin/AdminContact'));
 const AdminDraftOrders = lazy(() => import('./pages/admin/AdminDraftOrders'));
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
 
 const Loading = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
@@ -116,6 +117,7 @@ function App() {
           <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/faq" element={<AdminLayout><AdminFAQ /></AdminLayout>} />
           <Route path="/admin/contact" element={<AdminLayout><AdminContact /></AdminLayout>} />
+          <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
         </Routes>
       </Suspense>
     </Router>

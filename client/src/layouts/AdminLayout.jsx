@@ -58,6 +58,7 @@ const AdminLayout = ({ children }) => {
       { to: "/admin/users", icon: Users, label: "Client Registry" },
       { to: "/admin/faq", icon: HelpCircle, label: "FAQ Management" },
       { to: "/admin/contact", icon: MessageSquare, label: "Contact Messages" },
+      { to: "/admin/settings", icon: Settings, label: "Global Settings" },
    ];
 
    return (

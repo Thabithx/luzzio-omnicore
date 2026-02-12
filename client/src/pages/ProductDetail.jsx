@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import Meta from '../components/ui/Meta';
-import CountdownTimer from '../components/ui/CountdownTimer';
 import { ChevronDown, Plus, Minus, X, ArrowRight } from 'lucide-react';
 import { ProductCard } from '../components/ui/ProductCard';
 import { Link } from 'react-router-dom';
@@ -12,6 +11,7 @@ import { cn } from '../utils/cn';
 import { Reviews } from '../components/Reviews';
 import * as metaPixel from '../utils/metaPixel';
 import { KokoWidget } from '../components/ui/KokoWidget';
+import CountdownTimer from '../components/ui/CountdownTimer';
 
 
 export function ProductDetail() {
@@ -26,6 +26,7 @@ export function ProductDetail() {
    const [adding, setAdding] = useState(false);
    const [added, setAdded] = useState(false);
    const [showSizeGuide, setShowSizeGuide] = useState(false);
+   const [globalSettings, setGlobalSettings] = useState(null);
 
    const [activeImageIndex, setActiveImageIndex] = useState(0);
    const [scrollProgress, setScrollProgress] = useState(0);
@@ -121,6 +122,17 @@ export function ProductDetail() {
          }
       };
       fetchProduct();
+
+      const fetchSettings = async () => {
+         try {
+            const res = await api.get('/settings');
+            setGlobalSettings(res.data.data);
+         } catch (err) {
+            console.error('Error fetching global settings:', err);
+         }
+      };
+      fetchSettings();
+
       // Scroll to top on ID change
       window.scrollTo(0, 0);
    }, [id]);
@@ -371,15 +383,15 @@ export function ProductDetail() {
                         </button>
 
                      </div>
-                  </div>
 
-                  {/* TIMER */}
-                  {product.timerEnabled && (
-                     <CountdownTimer
-                        endTime={product.timerEndTime}
-                        message={product.timerMessage}
-                     />
-                  )}
+                     {/* GLOBAL TIMER */}
+                     {globalSettings?.timerEnabled && (
+                        <CountdownTimer
+                           endTime={globalSettings.timerEndTime}
+                           message={globalSettings.timerMessage}
+                        />
+                     )}
+                  </div>
 
                   {/* PRODUCT DETAILS ACCORDION */}
                   <div className="pt-8 space-y-0 text-left">

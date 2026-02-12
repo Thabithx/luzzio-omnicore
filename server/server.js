@@ -107,6 +107,7 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const fadarRoutes = require('./routes/fadarRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 const feedController = require('./controllers/feedController');
 
 app.get('/facebook-product-feed', feedController.getFacebookFeed);
@@ -126,6 +127,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/fadar', fadarRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Base route
 app.get('/', (req, res) => {

@@ -87,10 +87,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
       colors: [],
       material: '',
       salePrice: '',
-      sizeChart: '',
-      timerEnabled: false,
-      timerEndTime: '',
-      timerMessage: "Don't miss out on these great deals"
+      sizeChart: ''
    });
    const [uploading, setUploading] = useState(false);
    const { token } = useAuth();
@@ -128,9 +125,6 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
             material: product.material || '',
             salePrice: product.salePrice || '',
             sizeChart: product.sizeChart || '',
-            timerEnabled: product.timerEnabled || false,
-            timerEndTime: product.timerEndTime ? new Date(product.timerEndTime).toISOString().slice(0, 16) : '',
-            timerMessage: product.timerMessage || "Don't miss out on these great deals",
             variants: product.variants || (product.sizes || []).map(s => ({ size: s, stock: '' }))
          });
       } else {
@@ -150,10 +144,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
             colors: [],
             material: '',
             salePrice: '',
-            sizeChart: '',
-            timerEnabled: false,
-            timerEndTime: '',
-            timerMessage: "Don't miss out on these great deals"
+            sizeChart: ''
          });
       }
    }, [product, isOpen, categories]);
@@ -608,52 +599,6 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                   </div>
                </div>
 
-               {/* TIMER CONFIGURATION */}
-               <div className="space-y-6 pt-4 border-t border-black/10">
-                  <div className="space-y-4">
-                     <div className="flex items-center justify-between">
-                        <label className="text-small-brand text-gray-400">Countdown Timer Protocol</label>
-                        <button
-                           type="button"
-                           onClick={() => setFormData({ ...formData, timerEnabled: !formData.timerEnabled })}
-                           className={cn(
-                              "relative inline-flex h-6 w-11 items-center rounded-none transition-colors",
-                              formData.timerEnabled ? "bg-black" : "bg-gray-200"
-                           )}
-                        >
-                           <span
-                              className={cn(
-                                 "inline-block h-4 w-4 transform bg-white transition-transform",
-                                 formData.timerEnabled ? "translate-x-6" : "translate-x-1"
-                              )}
-                           />
-                        </button>
-                     </div>
-
-                     {formData.timerEnabled && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 bg-gray-50 border border-black/5 animate-in fade-in slide-in-from-top-4 duration-300">
-                           <div className="space-y-2">
-                              <label className="text-[9px] font-black uppercase tracking-widest text-black/40">Sequence End Time</label>
-                              <Input
-                                 type="datetime-local"
-                                 value={formData.timerEndTime}
-                                 onChange={e => setFormData({ ...formData, timerEndTime: e.target.value })}
-                                 className="rounded-none border-black focus:border-black text-[10px] font-bold"
-                              />
-                           </div>
-                           <div className="space-y-2">
-                              <label className="text-[9px] font-black uppercase tracking-widest text-black/40">Transmission Message</label>
-                              <Input
-                                 value={formData.timerMessage}
-                                 onChange={e => setFormData({ ...formData, timerMessage: e.target.value })}
-                                 placeholder="Don't miss out..."
-                                 className="rounded-none border-black focus:border-black text-[10px] font-bold"
-                              />
-                           </div>
-                        </div>
-                     )}
-                  </div>
-               </div>
                <div className="pt-8 border-t border-black flex justify-end gap-1">
                   <button type="button" onClick={onClose} className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] border border-black hover:bg-black hover:text-white transition-all">
                      Abandon
@@ -662,9 +607,9 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                      {product ? 'Authorize Update' : 'Initialize Entry'}
                   </button>
                </div>
-            </form >
-         </div >
-      </div >
+            </form>
+         </div>
+      </div>
    );
 };
 

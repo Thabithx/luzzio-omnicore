@@ -86,17 +86,6 @@ const productSchema = new mongoose.Schema({
       type: Number,
       default: 0
    },
-   timerEnabled: {
-      type: Boolean,
-      default: false
-   },
-   timerEndTime: {
-      type: Date
-   },
-   timerMessage: {
-      type: String,
-      default: "Don't miss out on these great deals"
-   },
    createdAt: {
       type: Date,
       default: Date.now
