@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import Meta from '../components/ui/Meta';
+import CountdownTimer from '../components/ui/CountdownTimer';
 import { ChevronDown, Plus, Minus, X, ArrowRight } from 'lucide-react';
 import { ProductCard } from '../components/ui/ProductCard';
 import { Link } from 'react-router-dom';
@@ -371,6 +372,14 @@ export function ProductDetail() {
 
                      </div>
                   </div>
+
+                  {/* TIMER */}
+                  {product.timerEnabled && (
+                     <CountdownTimer
+                        endTime={product.timerEndTime}
+                        message={product.timerMessage}
+                     />
+                  )}
 
                   {/* PRODUCT DETAILS ACCORDION */}
                   <div className="pt-8 space-y-0 text-left">
