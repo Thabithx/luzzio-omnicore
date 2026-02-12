@@ -64,7 +64,7 @@ const AdminLayout = ({ children }) => {
    return (
       <div className="flex min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white max-w-full overflow-x-hidden">
          {/* Sidebar */}
-         <aside className="fixed left-0 top-0 h-full w-72 bg-white border-r border-black z-50 print:hidden">
+         <aside className="fixed left-0 top-0 h-full w-72 bg-white border-r border-black z-50 print:hidden flex flex-col">
             <div className="p-10 border-b border-black">
                <Link to="/" className="block">
                   <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">Luzzio</h1>
@@ -72,7 +72,7 @@ const AdminLayout = ({ children }) => {
                </Link>
             </div>
 
-            <nav className="mt-8">
+            <nav className="flex-1 overflow-y-auto mt-4 py-4">
                {menuItems.map((item) => (
                   <SidebarItem
                      key={item.to}
@@ -84,7 +84,7 @@ const AdminLayout = ({ children }) => {
                ))}
             </nav>
 
-            <div className="absolute bottom-0 w-full p-8 border-t border-black">
+            <div className="p-8 border-t border-black bg-white">
                <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-4 px-4 py-4 text-gray-400 hover:text-red-600 transition-all group border-none bg-transparent"
