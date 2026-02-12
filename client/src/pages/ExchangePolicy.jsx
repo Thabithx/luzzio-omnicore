@@ -66,11 +66,7 @@ export function ExchangePolicy() {
                      </li>
                      <li className="flex items-center gap-3 font-black">
                         <span className="w-1 h-1 bg-black rotate-45"></span>
-                        First exchange is completely FREE.
-                     </li>
-                     <li className="flex items-center gap-3 text-gray-500">
-                        <span className="w-1 h-1 bg-black rotate-45"></span>
-                        For second exchanges of the same product, a delivery fee of Rs. 400 will be charged.
+                        Delivery fee of Rs. 400 will be charged
                      </li>
                   </ul>
                </section>
@@ -115,7 +111,7 @@ export function ExchangePolicy() {
                         <li>- If you do not want a replacement, you may request a full refund for the defective item.</li>
                      </ul>
                      <p className="font-black uppercase text-[9px] mt-6 bg-black text-white px-3 py-1 inline-block">
-                        Luzzio reserves the right to reject any return if the defect is deemed not genuine.
+                        Luzzio reserves the right to reject any return if the defect is deemed not genuine or if the item does not comply with the return criteria.
                      </p>
                   </div>
                </section>
