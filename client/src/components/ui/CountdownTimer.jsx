@@ -33,15 +33,15 @@ const CountdownTimer = ({ endTime, message }) => {
    }, [endTime]);
 
    return (
-      <div className="border border-black p-4 bg-brand-grey/30 mt-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
-         <div className="flex items-center gap-3 mb-3">
+      <div className="border border-black p-4 bg-brand-grey/30 mt-6 flex flex-col items-center animate-in fade-in slide-in-from-bottom-2 duration-700">
+         <div className="flex items-center justify-center gap-3 mb-3">
             <Timer size={14} className="text-black/40" />
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black">
                {message || "Limited Time Offer"}
             </p>
          </div>
 
-         <div className="flex gap-4">
+         <div className="flex justify-center gap-4">
             <TimeUnit value={timeLeft.days} label="Days" />
             <TimeUnit value={timeLeft.hours} label="Hours" />
             <TimeUnit value={timeLeft.minutes} label="Mins" />
