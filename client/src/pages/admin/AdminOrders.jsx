@@ -83,6 +83,14 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
                         {order.shippingAddress.city}
                      </p>
                   </div>
+                  <div className="space-y-3">
+                     <p className="text-small-brand text-gray-400 flex items-center gap-2">
+                        <Clock size={12} strokeWidth={2.5} /> Creation Timestamp
+                     </p>
+                     <p className="text-sm font-black uppercase tracking-widest text-brand-accent">
+                        {new Date(order.createdAt).toLocaleDateString('en-GB')} {new Date(order.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                     </p>
+                  </div>
                </div>
 
                {/* TRACKING MANAGEMENT (ORDER LEVEL) */}
@@ -526,6 +534,7 @@ const AdminOrders = () => {
                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Protocol Status</th>
                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Components</th>
                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Settlement</th>
+                           <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black">Sequence Time</th>
                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-black text-right">Audit</th>
                         </tr>
                      </thead>
@@ -599,6 +608,14 @@ const AdminOrders = () => {
                                  {order.orderItems?.length} Products
                               </td>
                               <td className="px-8 py-8 text-[11px] font-black text-black">LKR {order.totalPrice.toLocaleString()}.00</td>
+                              <td className="px-8 py-8">
+                                 <div className="text-[11px] font-black uppercase tracking-tight text-brand-accent">
+                                    {new Date(order.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                                 </div>
+                                 <div className="text-[9px] text-gray-400 uppercase tracking-widest mt-1 font-bold">
+                                    {new Date(order.createdAt).toLocaleDateString('en-GB')}
+                                 </div>
+                              </td>
                               <td className="px-8 py-8 text-right">
                                  <div className="flex justify-end gap-1">
                                     <button
