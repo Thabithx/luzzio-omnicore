@@ -12,19 +12,20 @@ const compression = require('compression');
 dotenv.config();
 
 const app = express();
-app.use(compression()); // Register early for global activation
 app.set('trust proxy', true); // Trust all proxies in the chain for Railway/Cloud environments
-const PORT = process.env.PORT || 5001;
 
 // CORS Configuration (Must be before all other middleware/routes)
 const allowedOrigins = [
-   process.env.CLIENT_URL,
    'https://luzziopremium.com',
    'https://www.luzziopremium.com',
    'https://luzzio.vercel.app',
    'http://localhost:5173',
    'http://localhost:5174'
-].filter(Boolean);
+];
+
+if (process.env.CLIENT_URL) {
+   allowedOrigins.push(process.env.CLIENT_URL);
+}
 
 const corsOptions = {
    origin: function (origin, callback) {
@@ -41,9 +42,14 @@ const corsOptions = {
       }
    },
    credentials: true,
+   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
    optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+
+app.use(compression()); // Register early for global activation
+const PORT = process.env.PORT || 5001;
 
 // Database Connection
 const connectDB = async () => {
