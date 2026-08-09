@@ -1,10 +1,21 @@
 const Category = require('../models/Category');
+const { isDevStore } = require('../config/database');
+const devStore = require('../devStore');
 
 // @desc    Get all categories
 // @route   GET /api/categories
 // @access  Public
 exports.getCategories = async (req, res) => {
    try {
+      if (isDevStore()) {
+         const data = devStore.getCategories();
+         return res.status(200).json({
+            success: true,
+            count: data.length,
+            data,
+         });
+      }
+
       const categories = await Category.find().sort({ sortOrder: 1, createdAt: 1 });
 
       res.status(200).json({

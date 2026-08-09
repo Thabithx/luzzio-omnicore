@@ -1,4 +1,6 @@
 const Product = require('../models/Product');
+const { isDevStore } = require('../config/database');
+const devStore = require('../devStore');
 
 // Performance: In-memory cache for high-traffic read operations
 const cache = {
@@ -17,6 +19,16 @@ const clearCache = () => {
 // @access  Public
 exports.getProducts = async (req, res) => {
    try {
+      if (isDevStore()) {
+         const data = devStore.getProducts(req.query);
+         return res.status(200).json({
+            success: true,
+            count: data.length,
+            data,
+            source: 'dev-store',
+         });
+      }
+
       // 1. Optimized Fast-Path for global fetching (Home/ProductList defaults)
       const isSimpleFetch = Object.keys(req.query).length === 0 || (req.query.limit === '1000' && Object.keys(req.query).length === 1);
 
@@ -95,6 +107,14 @@ exports.getProducts = async (req, res) => {
 // @access  Public
 exports.getProduct = async (req, res) => {
    try {
+      if (isDevStore()) {
+         const product = devStore.getProduct(req.params.id);
+         if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+         }
+         return res.status(200).json({ success: true, data: product });
+      }
+
       const product = await Product.findById(req.params.id).populate('categories').populate('category');
 
       if (!product) {
