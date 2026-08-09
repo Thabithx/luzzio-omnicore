@@ -12,7 +12,7 @@ const compression = require('compression');
 dotenv.config();
 
 const app = express();
-app.set('trust proxy', true); // Trust all proxies in the chain for Railway/Cloud environments
+app.set('trust proxy', 1); // Trust first proxy hop in cloud environments (Render, Railway, Heroku)
 
 // CORS Configuration (Must be before all other middleware/routes)
 const allowedOrigins = [
