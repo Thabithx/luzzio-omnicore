@@ -173,6 +173,46 @@ exports.createOrder = async (req, res) => {
 
       console.log(`[ORDER PROTOCOL DISPATCHED] Order ${createdOrder._id} created with draft status. Awaiting payment.`);
 
+      // 5. If COD, process stock deduction and notifications immediately
+      if (paymentMethod === 'COD' || paymentMethod === 'Cash on Delivery') {
+         try {
+            // Deduct stock
+            for (const item of createdOrder.orderItems) {
+               const product = await Product.findById(item.product);
+               if (product && product.variants && product.variants.length > 0) {
+                  const variantIndex = product.variants.findIndex(v => v.size === item.size);
+                  if (variantIndex !== -1) {
+                     product.variants[variantIndex].stock = Math.max(0, product.variants[variantIndex].stock - (item.qty || 1));
+                     await product.save();
+                  }
+               }
+            }
+            
+            createdOrder.status = 'pending';
+            await createdOrder.save();
+
+            const { paymentSuccessTemplate } = require('../utils/emailTemplates');
+            const adminEmail = process.env.ADMIN_EMAIL || 'luzzioclothing.com@gmail.com';
+
+            setImmediate(() => {
+               sendEmail({
+                  email: createdOrder.email,
+                  subject: `Order Confirmation #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
+                  html: paymentSuccessTemplate(createdOrder, false)
+               }).catch(e => console.error('[COD EMAIL FAILURE] Client Notify Deferred:', e.message));
+
+               sendEmail({
+                  email: adminEmail,
+                  subject: `New Order Received #${createdOrder._id.toString().slice(-6).toUpperCase()}`,
+                  html: paymentSuccessTemplate(createdOrder, true)
+               }).catch(e => console.error('[COD EMAIL FAILURE] Admin Alert Deferred:', e.message));
+            });
+            console.log(`[COD PROTOCOL] Order ${createdOrder._id} processed successfully as Cash on Delivery.`);
+         } catch (codErr) {
+            console.error(`[COD PROTOCOL FAILURE] Order ${createdOrder._id}:`, codErr.message);
+         }
+      }
+
    } catch (err) {
       console.error(`[ORDER PROTOCOL FAILURE] Time elapsed: ${Date.now() - start}ms - Error: ${err.message}`);
       res.status(400).json({ success: false, message: err.message });

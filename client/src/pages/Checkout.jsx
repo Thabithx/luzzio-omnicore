@@ -190,6 +190,11 @@ export function Checkout() {
                   setLoading(false);
                   navigate(`/payment-success?orderId=${orderId}&method=koko`);
                }
+            } else if (paymentMethod === 'COD') {
+               console.log(`[CHECKOUT] COD path selected for Order ${orderId}`);
+               clearCart();
+               setLoading(false);
+               navigate(`/payment-success?orderId=${orderId}`);
             }
             else {
                // Fallback for Stripe or other methods
@@ -412,6 +417,36 @@ export function Checkout() {
                                  </div>
                               </div>
                            </div>
+                        </div>
+
+                        {/* COD Option */}
+                        <div
+                           onClick={() => setPaymentMethod('COD')}
+                           className={cn(
+                              "border rounded-lg cursor-pointer transition-all duration-200",
+                              paymentMethod === 'COD' ? "border-blue-600 bg-white ring-1 ring-blue-600" : "border-gray-200 bg-white hover:border-gray-300"
+                           )}
+                        >
+                           <div className="p-4 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                 <div className={cn(
+                                    "w-4 h-4 rounded-full border flex items-center justify-center",
+                                    paymentMethod === 'COD' ? "border-blue-600" : "border-gray-300"
+                                 )}>
+                                    {paymentMethod === 'COD' && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                                 </div>
+                                 <span className="text-sm font-medium">Cash on Delivery (COD)</span>
+                              </div>
+                           </div>
+                           
+                           {/* Expanded Content for COD */}
+                           {paymentMethod === 'COD' && (
+                              <div className="bg-gray-50 p-8 border-t border-gray-100 flex flex-col items-center text-center space-y-4 rounded-b-lg overflow-hidden">
+                                 <p className="text-xs text-gray-600 max-w-xs leading-relaxed">
+                                    You will pay in cash when your order is delivered to your address.
+                                 </p>
+                              </div>
+                           )}
                         </div>
                      </div>
                   </section>
