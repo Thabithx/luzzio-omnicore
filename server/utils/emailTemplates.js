@@ -87,9 +87,6 @@ const baseTemplate = (content, title, preheader) => `
 
 const renderItems = (items) => items.map(item => `
    <tr class="item-row">
-      <td width="70" style="padding-right: 15px;">
-         <img src="${item.image}" width="60" style="border: 1px solid #E5E5E5; display: block;">
-      </td>
       <td>
          <div class="text-bold" style="font-size: 13px; margin-bottom: 4px;">${item.name}</div>
          <div class="text-small">Size: ${item.size}</div>

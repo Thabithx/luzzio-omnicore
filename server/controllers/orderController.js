@@ -2,7 +2,9 @@ const Order = require('../models/Order');
 const User = require('../models/User');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const RevenueTransaction = require('../models/RevenueTransaction');
 const { createNotification } = require('./notificationController');
+const { updateCentralInventory } = require('./inventoryController');
 const sendEmail = require('../utils/sendEmail');
 const { orderConfirmationTemplate, trackingUpdateTemplate, adminOrderNotificationTemplate } = require('../utils/emailTemplates');
 const crypto = require('crypto');
@@ -173,21 +175,31 @@ exports.createOrder = async (req, res) => {
 
       console.log(`[ORDER PROTOCOL DISPATCHED] Order ${createdOrder._id} created with draft status. Awaiting payment.`);
 
-      // 5. If COD, process stock deduction and notifications immediately
+      // 5. If COD, process centralized inventory deduction and revenue logging (THABITH SRIHARAN)
       if (paymentMethod === 'COD' || paymentMethod === 'Cash on Delivery') {
          try {
-            // Deduct stock
+            // Deduct stock via centralized inventory ledger (creates InventoryTransaction records)
             for (const item of createdOrder.orderItems) {
-               const product = await Product.findById(item.product);
-               if (product && product.variants && product.variants.length > 0) {
-                  const variantIndex = product.variants.findIndex(v => v.size === item.size);
-                  if (variantIndex !== -1) {
-                     product.variants[variantIndex].stock = Math.max(0, product.variants[variantIndex].stock - (item.qty || 1));
-                     await product.save();
-                  }
-               }
+               await updateCentralInventory({
+                  productId: item.product,
+                  variantSize: item.size,
+                  quantityChange: -(item.qty || 1),
+                  transactionType: 'ONLINE_SALE',
+                  source: 'ONLINE',
+                  referenceId: createdOrder._id,
+                  notes: `COD order ${createdOrder._id.toString().slice(-6).toUpperCase()}`
+               });
             }
-            
+
+            // Log revenue transaction
+            await RevenueTransaction.create({
+               order: createdOrder._id,
+               amount: createdOrder.totalPrice,
+               sourceChannel: 'ONLINE',
+               paymentMethod: 'COD',
+               note: `COD order #${createdOrder._id.toString().slice(-6).toUpperCase()}`
+            });
+
             createdOrder.status = 'pending';
             await createdOrder.save();
 
@@ -207,7 +219,7 @@ exports.createOrder = async (req, res) => {
                   html: paymentSuccessTemplate(createdOrder, true)
                }).catch(e => console.error('[COD EMAIL FAILURE] Admin Alert Deferred:', e.message));
             });
-            console.log(`[COD PROTOCOL] Order ${createdOrder._id} processed successfully as Cash on Delivery.`);
+            console.log(`[COD PROTOCOL] Order ${createdOrder._id} processed — inventory & revenue logged.`);
          } catch (codErr) {
             console.error(`[COD PROTOCOL FAILURE] Order ${createdOrder._id}:`, codErr.message);
          }
@@ -407,14 +419,21 @@ exports.syncMyOrders = async (req, res) => {
 // @desc    Get all orders
 // @route   GET /api/orders
 // @access  Private/Admin
+// THABITH SRIHARAN: Customer order management logic.
+// Handles creation, updates, cancellation and order status transitions.
+// Supports both ONLINE and POS order channels.
 exports.getOrders = async (req, res) => {
    try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 20;
       const skip = (page - 1) * limit;
 
-      const { status, excludeStatus } = req.query;
+      const { status, excludeStatus, channel } = req.query;
       const query = {};
+
+      if (channel) {
+         query.channel = channel;
+      }
 
       if (status) {
          query.status = status;
@@ -425,6 +444,7 @@ exports.getOrders = async (req, res) => {
       const count = await Order.countDocuments(query);
       const orders = await Order.find(query)
          .populate('user', 'id name')
+         .populate('createdBy', 'id name email')
          .sort('-createdAt')
          .skip(skip)
          .limit(limit);

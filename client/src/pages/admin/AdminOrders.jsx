@@ -277,10 +277,12 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
    );
 };
 
+// THABITH SRIHARAN: Customer order management - supports both ONLINE and POS channels.
 const AdminOrders = () => {
    const [orders, setOrders] = useState([]);
    const [loading, setLoading] = useState(true);
    const [searchTerm, setSearchTerm] = useState('');
+   const [channelFilter, setChannelFilter] = useState(''); // '' | 'ONLINE' | 'POS'
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [selectedIds, setSelectedIds] = useState([]);
@@ -292,7 +294,8 @@ const AdminOrders = () => {
    const fetchOrders = async (page = 1) => {
       try {
          setLoading(true);
-         const res = await api.get(`/orders?page=${page}&limit=20&excludeStatus=draft`);
+         const channelParam = channelFilter ? `&channel=${channelFilter}` : '';
+         const res = await api.get(`/orders?page=${page}&limit=20&excludeStatus=draft${channelParam}`);
          setOrders(res.data.data);
          setPagination({
             page: res.data.page,
@@ -308,7 +311,7 @@ const AdminOrders = () => {
 
    useEffect(() => {
       if (token) fetchOrders();
-   }, [token]);
+   }, [token, channelFilter]);
 
    // Deep Linking: Auto-open specific order modal if passed via URL
    useEffect(() => {
@@ -514,6 +517,24 @@ const AdminOrders = () => {
                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-black/20" size={18} />
             </div>
 
+            {/* Omnicommerce Channel Filter */}
+            <div className="flex items-center gap-2 mt-4">
+               <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 mr-2">Channel:</span>
+               {['', 'ONLINE', 'POS'].map((ch) => (
+                  <button
+                     key={ch}
+                     onClick={() => setChannelFilter(ch)}
+                     className={`px-4 py-2 text-[9px] font-black uppercase tracking-widest border transition-all ${
+                        channelFilter === ch
+                           ? 'bg-black text-white border-black'
+                           : 'bg-white text-black border-black hover:bg-brand-grey'
+                     }`}
+                  >
+                     {ch === '' ? 'All Orders' : ch}
+                  </button>
+               ))}
+            </div>
+
             {/* Table Section */}
             <div className="bg-white border border-black">
                <div className="overflow-x-auto w-full max-w-full">
@@ -551,7 +572,16 @@ const AdminOrders = () => {
                                  </button>
                               </td>
                               <td className="px-8 py-8">
-                                 <div className="text-[11px] font-black uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors">LU-{order._id.slice(-8).toUpperCase()}</div>
+                                 <div className="text-[11px] font-black uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors">
+                                    {order.orderNumber || `LU-${order._id.slice(-8).toUpperCase()}`}
+                                 </div>
+                                 <span className={`inline-block mt-1 px-2 py-0.5 text-[8px] font-black uppercase border ${
+                                    order.channel === 'POS'
+                                       ? 'bg-black text-white border-black'
+                                       : 'bg-brand-grey text-black border-gray-400'
+                                 }`}>
+                                    {order.channel || 'ONLINE'}
+                                 </span>
                               </td>
                               <td className="px-8 py-8">
                                  <div className="text-[11px] font-black uppercase tracking-tight">{order.shippingAddress?.firstName && order.shippingAddress?.lastName ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 'GUEST CLIENT'}</div>

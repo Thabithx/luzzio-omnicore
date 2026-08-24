@@ -77,12 +77,35 @@ const orderSchema = new mongoose.Schema({
       required: true,
       default: false
    },
+   // THABITH SRIHARAN: Omnicommerce channel and order tracking
+   channel: {
+      type: String,
+      enum: ['ONLINE', 'POS'],
+      default: 'ONLINE'
+   },
+   createdBy: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User'
+   },
+   orderNumber: {
+      type: String,
+      unique: true,
+      sparse: true
+   },
+   discount: {
+      type: Number,
+      default: 0.0
+   },
+   tax: {
+      type: Number,
+      default: 0.0
+   },
    deliveredAt: {
       type: Date
    },
    status: {
       type: String,
-      enum: ['draft', 'pending', 'paid', 'processing', 'packaged', 'out for delivery', 'delivered', 'completed', 'cancelled', 'returned'],
+      enum: ['draft', 'pending', 'paid', 'confirmed', 'processing', 'packaged', 'out for delivery', 'delivered', 'completed', 'cancelled', 'returned'],
       default: 'draft'
    },
    fadar_order_id: {

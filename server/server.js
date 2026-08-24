@@ -9,7 +9,7 @@ const hpp = require('hpp');
 const path = require('path');
 const compression = require('compression');
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 app.set('trust proxy', 1); // Trust first proxy hop in cloud environments (Render, Railway, Heroku)
@@ -96,6 +96,13 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const fadarRoutes = require('./routes/fadarRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+const posRoutes = require('./routes/posRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
+const supplierRoutes = require('./routes/supplierRoutes');
+const purchaseOrderRoutes = require('./routes/purchaseOrderRoutes');
+const returnRoutes = require('./routes/returnRoutes');
+const financeRoutes = require('./routes/financeRoutes');
+const staffRoutes = require('./routes/staffRoutes');
 const feedController = require('./controllers/feedController');
 
 app.get('/facebook-product-feed', feedController.getFacebookFeed);
@@ -116,6 +123,15 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/fadar', fadarRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/settings', settingsRoutes);
+
+// Omnicommerce Management API Endpoints
+app.use('/api/pos', posRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/suppliers', supplierRoutes);
+app.use('/api/purchase-orders', purchaseOrderRoutes);
+app.use('/api/returns', returnRoutes);
+app.use('/api/finance', financeRoutes);
+app.use('/api/staff', staffRoutes);
 
 // Base route
 app.get('/', (req, res) => {

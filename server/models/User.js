@@ -23,8 +23,35 @@ const userSchema = new mongoose.Schema({
    },
    role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin', 'sales', 'warehouse', 'customer'],
       default: 'user'
+   },
+   // BIHANDU / MAHATHIR: Staff Profile & RBAC extensions
+   employeeId: {
+      type: String,
+      unique: true,
+      sparse: true
+   },
+   phone: {
+      type: String,
+      default: ''
+   },
+   address: {
+      type: String,
+      default: ''
+   },
+   status: {
+      type: String,
+      enum: ['active', 'inactive'],
+      default: 'active'
+   },
+   joinedDate: {
+      type: Date,
+      default: Date.now
+   },
+   profileImage: {
+      type: String,
+      default: ''
    },
    createdAt: {
       type: Date,

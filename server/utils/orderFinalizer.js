@@ -1,5 +1,7 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const RevenueTransaction = require('../models/RevenueTransaction');
+const { updateCentralInventory } = require('../controllers/inventoryController');
 const sendEmail = require('./sendEmail');
 const { paymentSuccessTemplate } = require('./emailTemplates');
 
@@ -31,17 +33,36 @@ exports.finalizeOrder = async (orderId, paymentId, provider) => {
          provider: provider
       };
 
-      // 2. SECURE STOCK DEDUCTION
+      // 2. CENTRALIZED STOCK DEDUCTION (DULARA / THABITH SRIHARAN)
       for (const item of order.orderItems) {
-         const product = await Product.findById(item.product);
-         if (product && product.variants && product.variants.length > 0) {
-            const variantIndex = product.variants.findIndex(v => v.size === item.size);
-            if (variantIndex !== -1) {
-               product.variants[variantIndex].stock = Math.max(0, product.variants[variantIndex].stock - (item.qty || 1));
-               await product.save();
-               console.log(`[STOCK SYNC] Deducted ${item.qty || 1} units from ${product.name} (Size: ${item.size})`);
-            }
+         try {
+            await updateCentralInventory({
+               productId: item.product,
+               variantSize: item.size,
+               quantityChange: -(item.qty || 1),
+               transactionType: 'ONLINE_SALE',
+               source: 'ONLINE',
+               referenceId: order._id,
+               notes: `Paid online order ${order._id.toString().slice(-6).toUpperCase()} via ${provider}`
+            });
+            console.log(`[STOCK SYNC] Central stock deducted for ${item.name} (${item.size})`);
+         } catch (stockErr) {
+            console.error(`[STOCK SYNC FAILURE] Failed to deduct stock for ${item.name}: ${stockErr.message}`);
          }
+      }
+
+      // 3. LOG REVENUE TRANSACTION (ADHAN)
+      try {
+         await RevenueTransaction.create({
+            order: order._id,
+            amount: order.totalPrice,
+            sourceChannel: 'ONLINE',
+            paymentMethod: provider,
+            note: `Online order paid via ${provider} (Payment ID: ${paymentId})`
+         });
+         console.log(`[FINALIZE REVENUE] Revenue transaction created for Order ${order._id}`);
+      } catch (revErr) {
+         console.error(`[FINALIZE REVENUE FAILURE] Failed to log revenue: ${revErr.message}`);
       }
 
       await order.save();

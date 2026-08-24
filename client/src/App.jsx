@@ -43,6 +43,15 @@ const AdminContact = lazy(() => import('./pages/admin/AdminContact'));
 const AdminDraftOrders = lazy(() => import('./pages/admin/AdminDraftOrders'));
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
 
+// Omnicommerce Management Pages
+const AdminPOS = lazy(() => import('./pages/admin/AdminPOS'));
+const AdminInventory = lazy(() => import('./pages/admin/AdminInventory'));
+const AdminSuppliers = lazy(() => import('./pages/admin/AdminSuppliers'));
+const AdminPurchaseOrders = lazy(() => import('./pages/admin/AdminPurchaseOrders'));
+const AdminReturns = lazy(() => import('./pages/admin/AdminReturns'));
+const AdminFinance = lazy(() => import('./pages/admin/AdminFinance'));
+const AdminStaff = lazy(() => import('./pages/admin/AdminStaff'));
+
 const Loading = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
     <div className="text-[10px] font-bold uppercase tracking-[0.5em] animate-pulse">Luzzio</div>
@@ -118,6 +127,15 @@ function App() {
           <Route path="/admin/faq" element={<AdminLayout><AdminFAQ /></AdminLayout>} />
           <Route path="/admin/contact" element={<AdminLayout><AdminContact /></AdminLayout>} />
           <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
+
+          {/* Omnicommerce Management Routes */}
+          <Route path="/admin/pos" element={<AdminLayout><AdminPOS /></AdminLayout>} />
+          <Route path="/admin/inventory" element={<AdminLayout><AdminInventory /></AdminLayout>} />
+          <Route path="/admin/suppliers" element={<AdminLayout><AdminSuppliers /></AdminLayout>} />
+          <Route path="/admin/purchase-orders" element={<AdminLayout><AdminPurchaseOrders /></AdminLayout>} />
+          <Route path="/admin/returns" element={<AdminLayout><AdminReturns /></AdminLayout>} />
+          <Route path="/admin/finance" element={<AdminLayout><AdminFinance /></AdminLayout>} />
+          <Route path="/admin/staff" element={<AdminLayout><AdminStaff /></AdminLayout>} />
         </Routes>
       </Suspense>
     </Router>

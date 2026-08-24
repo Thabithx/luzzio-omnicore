@@ -9,7 +9,14 @@ import {
    MessageSquare,
    HelpCircle,
    Settings,
-   LogOut
+   LogOut,
+   Monitor,
+   Boxes,
+   RotateCcw,
+   Truck,
+   FileText,
+   TrendingUp,
+   UserCheck
 } from 'lucide-react';
 import { cn } from '../utils/cn';
 
@@ -17,13 +24,13 @@ const SidebarItem = ({ to, icon: Icon, label, active }) => (
    <Link
       to={to}
       className={cn(
-         "flex items-center gap-4 px-8 py-5 transition-all duration-300 relative group",
+         "flex items-center gap-4 px-8 py-4 transition-all duration-300 relative group",
          active
             ? "bg-black text-white"
             : "text-gray-400 hover:text-black hover:bg-brand-grey"
       )}
    >
-      <Icon size={18} strokeWidth={active ? 2.5 : 2} />
+      <Icon size={16} strokeWidth={active ? 2.5 : 2} />
       <span className="text-[10px] font-black uppercase tracking-[0.2em]">{label}</span>
       {active && (
          <div className="absolute right-0 top-0 bottom-0 w-1 bg-white" />
@@ -40,7 +47,7 @@ const AdminLayout = ({ children }) => {
    const navigate = useNavigate();
 
    React.useEffect(() => {
-      if (!authLoading && (!user || user.role !== 'admin')) {
+      if (!authLoading && (!user || !['admin', 'sales', 'warehouse'].includes(user.role))) {
          navigate('/login');
       }
    }, [user, authLoading, navigate]);
@@ -52,9 +59,16 @@ const AdminLayout = ({ children }) => {
 
    const menuItems = [
       { to: "/admin", icon: LayoutDashboard, label: "Command Center" },
-      { to: "/admin/products", icon: Package, label: "Inventory Registry" },
-      { to: "/admin/categories", icon: Layers, label: "Classification logic" },
-      { to: "/admin/orders", icon: ShoppingBag, label: "Fulfillment sequences" },
+      { to: "/admin/pos", icon: Monitor, label: "POS Terminal" },
+      { to: "/admin/inventory", icon: Boxes, label: "Central Inventory" },
+      { to: "/admin/orders", icon: ShoppingBag, label: "Fulfillment & Sales" },
+      { to: "/admin/returns", icon: RotateCcw, label: "Returns & Exchanges" },
+      { to: "/admin/suppliers", icon: Truck, label: "Suppliers & Vendors" },
+      { to: "/admin/purchase-orders", icon: FileText, label: "Purchase Orders" },
+      { to: "/admin/finance", icon: TrendingUp, label: "Financial Engine" },
+      { to: "/admin/staff", icon: UserCheck, label: "Staff & Shifts" },
+      { to: "/admin/products", icon: Package, label: "Product Registry" },
+      { to: "/admin/categories", icon: Layers, label: "Classification Logic" },
       { to: "/admin/users", icon: Users, label: "Client Registry" },
       { to: "/admin/faq", icon: HelpCircle, label: "FAQ Management" },
       { to: "/admin/contact", icon: MessageSquare, label: "Contact Messages" },
