@@ -19,6 +19,7 @@ const allowedOrigins = [
    'https://luzziopremium.com',
    'https://www.luzziopremium.com',
    'https://luzzio.vercel.app',
+   'https://luzzio-omnicore.vercel.app',
    'http://localhost:5173',
    'http://localhost:5174',
    'http://localhost:5177'
