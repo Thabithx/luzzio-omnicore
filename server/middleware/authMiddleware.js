@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { isDevStore } = require('../config/database');
 
 const protect = async (req, res, next) => {
    let token;
@@ -15,8 +16,18 @@ const protect = async (req, res, next) => {
          // Verify token
          const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-         // Get user from the token
-         req.user = await User.findById(decoded.id).select('-password');
+         // Get user from the token (mock user bypass for local dev fallback)
+         if (isDevStore() && decoded.id === '600000000000000000000001') {
+            req.user = {
+               _id: '600000000000000000000001',
+               id: '600000000000000000000001',
+               name: 'Dev Admin',
+               email: 'admin@luzzio.com',
+               role: 'admin'
+            };
+         } else {
+            req.user = await User.findById(decoded.id).select('-password');
+         }
 
          if (!req.user) {
             throw new Error('User not found');
@@ -85,7 +96,17 @@ const optionalProtect = async (req, res, next) => {
       try {
          token = req.headers.authorization.split(' ')[1];
          const decoded = jwt.verify(token, process.env.JWT_SECRET);
-         req.user = await User.findById(decoded.id).select('-password');
+         if (isDevStore() && decoded.id === '600000000000000000000001') {
+            req.user = {
+               _id: '600000000000000000000001',
+               id: '600000000000000000000001',
+               name: 'Dev Admin',
+               email: 'admin@luzzio.com',
+               role: 'admin'
+            };
+         } else {
+            req.user = await User.findById(decoded.id).select('-password');
+         }
       } catch (error) {
          console.error('Optional auth error:', error);
       }

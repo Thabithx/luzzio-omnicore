@@ -2,6 +2,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { linkGuestOrders } = require('./orderController');
+const { isDevStore } = require('../config/database');
 
 // Generate JWT
 const generateToken = (id) => {
@@ -69,6 +70,21 @@ exports.login = async (req, res) => {
    try {
       const { email, password, guestEmail } = req.body;
       const normalizedEmail = (email || '').trim().toLowerCase();
+
+      // Local Dev Catalog Fallback Login Bypass (THABITH SRIHARAN)
+      if (isDevStore()) {
+         if (normalizedEmail === 'admin@luzzio.com' && password === 'password123') {
+            console.log('[DEV LOGIN] Bypassing MongoDB authentication via mock admin user credentials.');
+            return res.json({
+               success: true,
+               _id: '600000000000000000000001',
+               name: 'Dev Admin',
+               email: 'admin@luzzio.com',
+               role: 'admin',
+               token: generateToken('600000000000000000000001')
+            });
+         }
+      }
 
       // Check for user email (Case-insensitive & Escaped)
       const user = await User.findOne({ email: { $regex: new RegExp(`^${escapeRegex(normalizedEmail)}$`, 'i') } }).select('+password');
