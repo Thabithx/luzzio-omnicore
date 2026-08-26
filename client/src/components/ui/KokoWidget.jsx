@@ -1,7 +1,7 @@
 import React from 'react';
 
 export function KokoWidget({ price, className }) {
-   if (!price || price <= 0) return null;
+   return null;
 
    const installment = (price / 3).toFixed(2);
    const formattedInstallment = Number(installment).toLocaleString();

@@ -60,7 +60,7 @@ export function Checkout() {
       setFormData({ ...formData, [e.target.name]: e.target.value });
    };
 
-   const [paymentMethod, setPaymentMethod] = useState('PayHere');
+   const [paymentMethod, setPaymentMethod] = useState('COD');
    const [showMobileSummary, setShowMobileSummary] = useState(false);
 
    const handleSubmit = async (e) => {
@@ -322,104 +322,7 @@ export function Checkout() {
                      </div>
 
                      <div className="flex flex-col gap-4">
-                        {/* PayHere Option */}
-                        <div
-                           onClick={() => setPaymentMethod('PayHere')}
-                           className={cn(
-                              "border rounded-lg cursor-pointer transition-all duration-200",
-                              paymentMethod === 'PayHere' ? "border-blue-600 bg-white ring-1 ring-blue-600" : "border-gray-200 bg-white hover:border-gray-300"
-                           )}
-                        >
-                           <div className="p-4 flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                 <div className={cn(
-                                    "w-4 h-4 rounded-full border flex items-center justify-center",
-                                    paymentMethod === 'PayHere' ? "border-blue-600" : "border-gray-300"
-                                 )}>
-                                    {paymentMethod === 'PayHere' && <div className="w-2 h-2 rounded-full bg-blue-600" />}
-                                 </div>
-                                 <span className="text-sm font-medium">Bank Card / Bank Account - PayHere</span>
-                              </div>
-                              <div className="flex gap-1.5 items-center">
-                                 {/* Visa Card */}
-                                 <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-100 rounded flex items-center justify-center px-1">
-                                    <img src="/icons/visa.svg" alt="Visa" className="h-[0.55rem] w-auto opacity-70" />
-                                 </div>
-                                 {/* Mastercard Card */}
-                                 <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-100 rounded flex items-center justify-center px-1">
-                                    <img src="/icons/mastercard.svg" alt="Mastercard" className="h-[0.8rem] w-auto opacity-70" />
-                                 </div>
-                                 {/* Amex Card */}
-                                 <div className="h-6 w-8 bg-white border border-gray-100 rounded flex items-center justify-center overflow-hidden">
-                                    <img src="/icons/amex.svg" alt="American Express" className="h-full w-full object-cover opacity-80" />
-                                 </div>
-
-                                 {/* +2 Tooltip Badge */}
-                                 <div className="relative group/tooltip">
-                                    <div className="h-6 w-auto min-w-[1.5rem] px-1 bg-white border border-gray-100 rounded flex items-center justify-center cursor-help">
-                                       <span className="text-[8px] font-black text-gray-300 whitespace-nowrap">+2</span>
-                                    </div>
-                                    <div className="absolute bottom-full right-0 mb-2 hidden group-hover/tooltip:flex items-center gap-1.5 p-1.5 bg-black rounded shadow-lg z-[100] w-max">
-                                       <div className="absolute bottom-[-4px] right-3 w-2 h-2 bg-black rotate-45"></div>
-                                       {/* Discover */}
-                                       <div className="h-6 w-auto bg-white rounded flex items-center justify-center px-1.5">
-                                          <img src="/icons/discover.svg" alt="Discover" className="h-[0.35rem] w-auto" />
-                                       </div>
-                                       {/* Diners Club */}
-                                       <div className="h-6 w-auto bg-white rounded flex items-center justify-center px-1.5">
-                                          <img src="/icons/diners.svg" alt="Diners Club" className="h-[0.35rem] w-auto" />
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-
-                           {/* Expanded Content for PayHere */}
-                           {paymentMethod === 'PayHere' && (
-                              <div className="bg-gray-50 p-8 border-t border-gray-100 flex flex-col items-center text-center space-y-4 rounded-b-lg overflow-hidden">
-                                 <div className="relative w-16 h-12 border-2 border-gray-400 rounded bg-white flex items-center justify-center mb-2">
-                                    <div className="w-full h-2 bg-gray-100 absolute top-0 border-b border-gray-200" />
-                                    <ArrowRight className="text-gray-400 ml-6" size={20} />
-                                 </div>
-                                 <p className="text-xs text-gray-600 max-w-xs leading-relaxed">
-                                    After clicking "Pay now", you will be redirected to Bank Card / Bank Account - PayHere to complete your purchase securely.
-                                 </p>
-                              </div>
-                           )}
-                        </div>
-
-                        {/* Koko Option */}
-                        <div
-                           onClick={() => setPaymentMethod('Koko')}
-                           className={cn(
-                              "border rounded-lg cursor-pointer transition-all duration-200",
-                              paymentMethod === 'Koko' ? "border-blue-600 bg-white ring-1 ring-blue-600" : "border-gray-200 bg-white hover:border-gray-300"
-                           )}
-                        >
-                           <div className="p-4 flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                 <div className={cn(
-                                    "w-4 h-4 rounded-full border flex items-center justify-center",
-                                    paymentMethod === 'Koko' ? "border-blue-600" : "border-gray-300"
-                                 )}>
-                                    {paymentMethod === 'Koko' && <div className="w-2 h-2 rounded-full bg-blue-600" />}
-                                 </div>
-                                 <span className="text-sm font-medium">Koko: Buy Now Pay Later</span>
-                              </div>
-                              <div className="flex gap-1.5 items-center">
-                                 {/* Visa Card */}
-                                 <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-100 rounded flex items-center justify-center px-1">
-                                    <img src="/icons/visa.svg" alt="Visa" className="h-[0.55rem] w-auto opacity-70" />
-                                 </div>
-                                 {/* Mastercard Card */}
-                                 <div className="h-6 w-auto min-w-[2.25rem] bg-white border border-gray-100 rounded flex items-center justify-center px-1">
-                                    <img src="/icons/mastercard.svg" alt="Mastercard" className="h-[0.8rem] w-auto opacity-70" />
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-
-                        {/* COD Option */}
+                        {/* COD Option (Only available gateway) */}
                         <div
                            onClick={() => setPaymentMethod('COD')}
                            className={cn(
