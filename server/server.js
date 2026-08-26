@@ -57,7 +57,7 @@ app.use(cors(corsOptions));
 app.use(compression()); // Register early for global activation
 const PORT = process.env.PORT || 5001;
 
-const { connectDB } = require('./config/database');
+const { connectDB, isDevStore } = require('./config/database');
 
 // Security Middleware
 app.use(helmet());
@@ -79,6 +79,24 @@ app.use('/api', limiter);
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10kb' })); // Body limit
 app.use(express.urlencoded({ extended: true })); // Parse application/x-www-form-urlencoded for PayHere
+
+// DB-guard: routes that require MongoDB return a clean 503 when DB is offline
+// instead of hanging and crashing with a Mongoose buffering timeout
+const DB_REQUIRED_PATHS = [
+   '/api/cart', '/api/orders', '/api/users', '/api/admin',
+   '/api/upload', '/api/newsletter', '/api/notifications', '/api/payments',
+   '/api/pos', '/api/inventory', '/api/suppliers', '/api/purchase-orders',
+   '/api/returns', '/api/finance', '/api/staff', '/api/fadar',
+];
+app.use((req, res, next) => {
+   if (isDevStore() && DB_REQUIRED_PATHS.some(p => req.path.startsWith(p))) {
+      return res.status(503).json({
+         success: false,
+         message: 'Database unavailable. Check MONGO_URI in Render environment variables.',
+      });
+   }
+   next();
+});
 
 // Routes
 const authRoutes = require('./routes/authRoutes');

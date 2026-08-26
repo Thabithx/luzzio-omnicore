@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+// Disable buffering so DB operations fail immediately (not after 10s timeout)
+// when Mongoose is not connected. This gives instant clear errors.
+mongoose.set('bufferCommands', false);
+
 let devMode = false;
 
 async function connectDB() {
@@ -7,14 +11,19 @@ async function connectDB() {
 
    if (!mongoUri) {
       devMode = true;
-      console.warn('MONGO_URI missing — using local dev catalog');
+      console.warn('⚠️  MONGO_URI is not set in environment variables — running in dev/offline mode');
       return;
    }
 
    try {
-      console.log('Attempting to connect to MongoDB...');
-      await mongoose.connect(mongoUri);
-      console.log('Connected to MongoDB');
+      // Log a redacted version of the URI so we can confirm it's being read
+      const redacted = mongoUri.replace(/:([^@]+)@/, ':***@');
+      console.log(`Connecting to MongoDB: ${redacted}`);
+      await mongoose.connect(mongoUri, {
+         serverSelectionTimeoutMS: 10000,
+         connectTimeoutMS: 10000,
+      });
+      console.log('✅  Connected to MongoDB successfully');
 
       // Auto-seed default admin user if not exists (THABITH SRIHARAN)
       const User = require('../models/User');
