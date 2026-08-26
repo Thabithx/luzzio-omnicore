@@ -173,10 +173,10 @@ const Dashboard = () => {
             <div>
                <p className='text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 mb-4'>All-Time — Omnicommerce Financial Engine</p>
                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1'>
-                  <StatCard label='Online Revenue' value={'LKR ' + omniStats.onlineRevenue.toLocaleString()} icon={TrendingUp} trend='E-Commerce' />
-                  <StatCard label='POS Revenue' value={'LKR ' + omniStats.posRevenue.toLocaleString()} icon={Monitor} trend='In-Store' />
-                  <StatCard label='Total Expenses' value={'LKR ' + omniStats.totalExpenses.toLocaleString()} icon={TrendingDown} trend='Operating' />
-                  <StatCard accent label='Net Revenue' value={'LKR ' + omniStats.netProfit.toLocaleString()} icon={DollarSign} trend='Est. Profit' />
+                  <StatCard label='Online Revenue' value={'LKR ' + (omniStats.onlineRevenue ?? 0).toLocaleString()} icon={TrendingUp} trend='E-Commerce' />
+                  <StatCard label='POS Revenue' value={'LKR ' + (omniStats.posRevenue ?? 0).toLocaleString()} icon={Monitor} trend='In-Store' />
+                  <StatCard label='Total Expenses' value={'LKR ' + (omniStats.totalExpenses ?? 0).toLocaleString()} icon={TrendingDown} trend='Operating' />
+                  <StatCard accent label='Net Revenue' value={'LKR ' + (omniStats.netProfit ?? 0).toLocaleString()} icon={DollarSign} trend='Est. Profit' />
                </div>
             </div>
          )}
