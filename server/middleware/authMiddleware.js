@@ -16,21 +16,37 @@ const protect = async (req, res, next) => {
          // Verify token
          const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-         // Get user from the token (mock user bypass for local dev fallback)
-         if (isDevStore() && decoded.id === '600000000000000000000001') {
-            req.user = {
-               _id: '600000000000000000000001',
-               id: '600000000000000000000001',
-               name: 'Dev Admin',
-               email: 'admin@luzzio.com',
-               role: 'admin'
-            };
+         // Dev-mode mock admin bypass — works whether DB is online or offline.
+         // This ID is issued by the dev/offline auth bypass in authController.
+         if (decoded.id === '600000000000000000000001') {
+            if (isDevStore()) {
+               // DB offline — use full mock user
+               req.user = {
+                  _id: '600000000000000000000001',
+                  id: '600000000000000000000001',
+                  name: 'Dev Admin',
+                  email: 'admin@luzzio.com',
+                  role: 'admin'
+               };
+            } else {
+               // DB is online now — this is a stale dev token. Force re-login.
+               return res.status(401).json({
+                  success: false,
+                  code: 'SESSION_EXPIRED',
+                  message: 'Your session was issued in offline mode. Please log in again.',
+               });
+            }
          } else {
             req.user = await User.findById(decoded.id).select('-password');
          }
 
          if (!req.user) {
-            throw new Error('User not found');
+            // User was deleted or ID is invalid — clear the session
+            return res.status(401).json({
+               success: false,
+               code: 'SESSION_EXPIRED',
+               message: 'Account not found. Please log in again.',
+            });
          }
 
          next();
@@ -96,14 +112,17 @@ const optionalProtect = async (req, res, next) => {
       try {
          token = req.headers.authorization.split(' ')[1];
          const decoded = jwt.verify(token, process.env.JWT_SECRET);
-         if (isDevStore() && decoded.id === '600000000000000000000001') {
-            req.user = {
-               _id: '600000000000000000000001',
-               id: '600000000000000000000001',
-               name: 'Dev Admin',
-               email: 'admin@luzzio.com',
-               role: 'admin'
-            };
+         if (decoded.id === '600000000000000000000001') {
+            if (isDevStore()) {
+               req.user = {
+                  _id: '600000000000000000000001',
+                  id: '600000000000000000000001',
+                  name: 'Dev Admin',
+                  email: 'admin@luzzio.com',
+                  role: 'admin'
+               };
+            }
+            // If DB is online and token is from dev mode, leave req.user undefined (skip silently)
          } else {
             req.user = await User.findById(decoded.id).select('-password');
          }
