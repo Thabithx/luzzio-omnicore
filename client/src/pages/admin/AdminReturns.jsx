@@ -24,9 +24,78 @@ export default function AdminReturns() {
    });
    const [submitting, setSubmitting] = useState(false);
 
+   // Create Return Modal State
+   const [showCreateModal, setShowCreateModal] = useState(false);
+   const [ordersList, setOrdersList] = useState([]);
+   const [createForm, setCreateForm] = useState({
+      originalOrderId: '',
+      requestType: 'RETURN',
+      notes: '',
+      productId: '',
+      size: '',
+      quantity: 1,
+      reason: 'Defective / Damaged',
+      condition: 'RESELLABLE'
+   });
+   const [creatingReturn, setCreatingReturn] = useState(false);
+
    useEffect(() => {
       fetchReturns();
    }, [statusFilter]);
+
+   const fetchOrdersForSelect = async () => {
+      try {
+         const res = await api.get('/orders?limit=50&excludeStatus=draft');
+         setOrdersList(res.data.data || []);
+      } catch (err) {
+         console.error('Fetch orders for return select error:', err);
+      }
+   };
+
+   const openCreateModal = () => {
+      fetchOrdersForSelect();
+      setShowCreateModal(true);
+   };
+
+   const handleCreateReturnSubmit = async (e) => {
+      e.preventDefault();
+      if (!createForm.originalOrderId || !createForm.productId) {
+         alert('Please select an order and a product item');
+         return;
+      }
+
+      setCreatingReturn(true);
+      try {
+         await api.post('/returns', {
+            originalOrderId: createForm.originalOrderId,
+            requestType: createForm.requestType,
+            notes: createForm.notes,
+            items: [{
+               productId: createForm.productId,
+               size: createForm.size,
+               quantity: Number(createForm.quantity) || 1,
+               reason: createForm.reason,
+               condition: createForm.condition
+            }]
+         });
+         setShowCreateModal(false);
+         setCreateForm({
+            originalOrderId: '',
+            requestType: 'RETURN',
+            notes: '',
+            productId: '',
+            size: '',
+            quantity: 1,
+            reason: 'Defective / Damaged',
+            condition: 'RESELLABLE'
+         });
+         fetchReturns();
+      } catch (err) {
+         alert(err.response?.data?.message || 'Failed to create return request');
+      } finally {
+         setCreatingReturn(false);
+      }
+   };
 
    const fetchReturns = async () => {
       setLoading(true);
@@ -94,6 +163,9 @@ export default function AdminReturns() {
                   <option value="EXCHANGED">EXCHANGED</option>
                   <option value="REJECTED">REJECTED</option>
                </select>
+               <Button onClick={openCreateModal} className="bg-white text-black font-black uppercase text-xs px-4 py-2 border border-white hover:bg-gray-200">
+                  + Log Return Request
+               </Button>
                <Button onClick={fetchReturns} className="bg-brand-grey border border-white text-black">
                   <RefreshCw size={16} />
                </Button>
@@ -257,6 +329,93 @@ export default function AdminReturns() {
                            {submitting ? 'Updating...' : 'Confirm Status Update'}
                         </Button>
                         <Button type="button" onClick={() => setShowModal(false)} className="bg-brand-grey border border-black text-black text-xs font-black uppercase px-6">
+                           Cancel
+                        </Button>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         )}
+         {/* Create Return / Exchange Modal */}
+         {showCreateModal && (
+            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6">
+                  <div className="border-b border-black pb-4">
+                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Reverse Logistics</span>
+                     <h3 className="text-base font-black uppercase tracking-tight mt-1">Log New Return / Exchange Request</h3>
+                  </div>
+
+                  <form onSubmit={handleCreateReturnSubmit} className="space-y-4">
+                     <div>
+                        <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">Select Customer Order</label>
+                        <select
+                           value={createForm.originalOrderId}
+                           onChange={(e) => {
+                              const orderId = e.target.value;
+                              const selectedOrd = ordersList.find(o => o._id === orderId);
+                              const firstItem = selectedOrd?.orderItems?.[0];
+                              setCreateForm({
+                                 ...createForm,
+                                 originalOrderId: orderId,
+                                 productId: firstItem?.product?._id || firstItem?.product || '',
+                                 size: firstItem?.size || ''
+                              });
+                           }}
+                           required
+                           className="w-full p-2.5 border border-black font-mono text-xs bg-white"
+                        >
+                           <option value="">-- Choose Order --</option>
+                           {ordersList.map(ord => (
+                              <option key={ord._id} value={ord._id}>
+                                 Order #{ord.orderNumber || ord._id.slice(-6).toUpperCase()} — {ord.email} (LKR {ord.totalPrice})
+                              </option>
+                           ))}
+                        </select>
+                     </div>
+
+                     <div className="grid grid-cols-2 gap-4">
+                        <div>
+                           <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">Request Type</label>
+                           <select
+                              value={createForm.requestType}
+                              onChange={(e) => setCreateForm({ ...createForm, requestType: e.target.value })}
+                              className="w-full p-2.5 border border-black text-xs font-mono bg-white"
+                           >
+                              <option value="RETURN">RETURN (Refund)</option>
+                              <option value="EXCHANGE">EXCHANGE (Swap Item)</option>
+                           </select>
+                        </div>
+                        <div>
+                           <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">Reason</label>
+                           <select
+                              value={createForm.reason}
+                              onChange={(e) => setCreateForm({ ...createForm, reason: e.target.value })}
+                              className="w-full p-2.5 border border-black text-xs font-mono bg-white"
+                           >
+                              <option value="Defective / Damaged">Defective / Damaged</option>
+                              <option value="Wrong Size Fitted">Wrong Size Fitted</option>
+                              <option value="Changed Mind">Changed Mind</option>
+                              <option value="Incorrect Item Shipped">Incorrect Item Shipped</option>
+                           </select>
+                        </div>
+                     </div>
+
+                     <div>
+                        <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">Customer Notes / Internal Reason</label>
+                        <textarea
+                           rows="2"
+                           value={createForm.notes}
+                           onChange={(e) => setCreateForm({ ...createForm, notes: e.target.value })}
+                           placeholder="Enter return details or customer complaint..."
+                           className="w-full p-2.5 border border-black text-xs font-sans"
+                        />
+                     </div>
+
+                     <div className="flex gap-4 pt-4 border-t border-black">
+                        <Button type="submit" disabled={creatingReturn} className="flex-1 bg-black text-white text-xs font-black uppercase py-3">
+                           {creatingReturn ? 'Submitting...' : 'Log Return Request'}
+                        </Button>
+                        <Button type="button" onClick={() => setShowCreateModal(false)} className="bg-brand-grey border border-black text-black text-xs font-black uppercase px-6">
                            Cancel
                         </Button>
                      </div>
