@@ -41,6 +41,7 @@ const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminFAQ = lazy(() => import('./pages/admin/AdminFAQ'));
 const AdminContact = lazy(() => import('./pages/admin/AdminContact'));
 const AdminDraftOrders = lazy(() => import('./pages/admin/AdminDraftOrders'));
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
 const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
 
 // Omnicommerce Management Pages
