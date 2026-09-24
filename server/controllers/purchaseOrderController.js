@@ -189,12 +189,50 @@ exports.updatePOStatus = async (req, res) => {
          return res.status(404).json({ success: false, message: 'Purchase Order not found' });
       }
 
+      const previousStatus = po.status;
       po.status = status;
+
+      // Automatically link PO status change to central stock intake when marked RECEIVED
+      if (status === 'RECEIVED' && previousStatus !== 'RECEIVED') {
+         po.receivedDate = Date.now();
+         for (const item of po.items) {
+            const qtyNeeded = item.quantity - (item.receivedQuantity || 0);
+            if (qtyNeeded > 0) {
+               item.receivedQuantity = item.quantity;
+               await updateCentralInventory({
+                  productId: item.product,
+                  variantSize: item.size,
+                  quantityChange: qtyNeeded,
+                  transactionType: 'PURCHASE_ORDER_RECEIVED',
+                  source: 'WAREHOUSE',
+                  referenceId: po._id.toString(),
+                  userId: req.user ? req.user._id : null,
+                  notes: `PO Received Intake #${po.poNumber}`
+               });
+            }
+         }
+
+         // Log supplier procurement expense
+         try {
+            await Expense.create({
+               category: 'Supplier Payments',
+               description: `Procurement Payment for PO #${po.poNumber}`,
+               amount: po.totalCost,
+               supplier: po.supplier,
+               reference: po.poNumber,
+               status: 'PAID',
+               createdBy: req.user ? req.user._id : null
+            });
+         } catch (expErr) {
+            console.error('Expense log failed for PO:', expErr.message);
+         }
+      }
+
       await po.save();
 
       res.status(200).json({
          success: true,
-         message: 'PO status updated',
+         message: `PO #${po.poNumber} status updated to ${status}${status === 'RECEIVED' ? ' & stock intake completed' : ''}`,
          data: po
       });
    } catch (error) {

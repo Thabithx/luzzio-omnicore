@@ -9,10 +9,12 @@ import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 
 export default function AdminFinance() {
-   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'revenue' | 'expenses'
+   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'revenue' | 'expenses' | 'reconciliation' | 'apar'
    const [overview, setOverview] = useState(null);
    const [revenues, setRevenues] = useState([]);
    const [expenses, setExpenses] = useState([]);
+   const [reconciliations, setReconciliations] = useState([]);
+   const [aparData, setAparData] = useState(null);
    const [loading, setLoading] = useState(false);
 
    // Expense Modal State
@@ -43,6 +45,12 @@ export default function AdminFinance() {
          } else if (activeTab === 'expenses') {
             const res = await api.get('/finance/expenses');
             setExpenses(res.data.data || []);
+         } else if (activeTab === 'reconciliation') {
+            const res = await api.get('/finance/reconciliation');
+            setReconciliations(res.data.data || []);
+         } else if (activeTab === 'apar') {
+            const res = await api.get('/finance/ap-ar');
+            setAparData(res.data.data || null);
          }
       } catch (err) {
          console.error('Fetch finance data error:', err);
@@ -94,9 +102,9 @@ export default function AdminFinance() {
          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-black text-white p-8">
             <div>
                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400">Financial Management Engine</span>
-               <h1 className="text-2xl font-black uppercase tracking-tight mt-1">Revenue & Expense Ledgers</h1>
+               <h1 className="text-2xl font-black uppercase tracking-tight mt-1">Revenue, Gateway & AP/AR Ledgers</h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
                <Button
                   onClick={() => setActiveTab('overview')}
                   className={`text-xs font-black uppercase tracking-wider px-4 py-2.5 ${activeTab === 'overview' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'}`}
@@ -115,6 +123,18 @@ export default function AdminFinance() {
                >
                   Expenses
                </Button>
+               <Button
+                  onClick={() => setActiveTab('reconciliation')}
+                  className={`text-xs font-black uppercase tracking-wider px-4 py-2.5 ${activeTab === 'reconciliation' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'}`}
+               >
+                  Reconciliation
+               </Button>
+               <Button
+                  onClick={() => setActiveTab('apar')}
+                  className={`text-xs font-black uppercase tracking-wider px-4 py-2.5 ${activeTab === 'apar' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'}`}
+               >
+                  AP / AR
+               </Button>
             </div>
          </div>
 
@@ -127,7 +147,7 @@ export default function AdminFinance() {
                   </div>
                ) : overview ? (
                   <>
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="bg-white border-2 border-black p-6">
                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total Gross Revenue</span>
                            <p className="text-2xl font-black mt-2 font-mono">Rs. {overview.totalRevenue.toLocaleString()}</p>
@@ -143,16 +163,24 @@ export default function AdminFinance() {
                            <p className="text-[10px] text-gray-400 mt-4">Supplier, Rent, Salaries, Utilities</p>
                         </div>
 
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total Refunds Issued</span>
-                           <p className="text-2xl font-black text-amber-600 mt-2 font-mono">Rs. {overview.totalRefunds.toLocaleString()}</p>
-                           <p className="text-[10px] text-gray-400 mt-4">Approved Customer Returns</p>
-                        </div>
-
                         <div className="bg-black text-white border-2 border-black p-6">
                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Estimated Net Revenue</span>
                            <p className="text-2xl font-black text-green-400 mt-2 font-mono">Rs. {overview.netProfit.toLocaleString()}</p>
                            <p className="text-[10px] text-gray-400 mt-4">(Gross - Expenses - Refunds)</p>
+                        </div>
+                     </div>
+
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 pt-4">
+                        <div className="bg-amber-50 border-2 border-amber-600 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-800">Accounts Payable (AP)</span>
+                           <p className="text-2xl font-black text-amber-900 mt-2 font-mono">Rs. {(overview.accountsPayable || 0).toLocaleString()}</p>
+                           <p className="text-[10px] text-amber-700 mt-2">Money Owed to Suppliers for Pending Purchase Orders</p>
+                        </div>
+
+                        <div className="bg-blue-50 border-2 border-blue-600 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-800">Accounts Receivable (AR)</span>
+                           <p className="text-2xl font-black text-blue-900 mt-2 font-mono">Rs. {(overview.accountsReceivable || 0).toLocaleString()}</p>
+                           <p className="text-[10px] text-blue-700 mt-2">Uncollected Sales Revenue / Pending Courier COD Payments</p>
                         </div>
                      </div>
                   </>
@@ -281,6 +309,147 @@ export default function AdminFinance() {
                         )}
                      </tbody>
                   </table>
+               </div>
+            </div>
+         )}
+
+         {/* Tab Content 4: Payment Gateway Reconciliation */}
+         {activeTab === 'reconciliation' && (
+            <div className="space-y-6">
+               <div className="bg-brand-grey border border-black p-6">
+                  <h3 className="text-sm font-black uppercase tracking-wider">Gateway Payment Reconciliation Ledger</h3>
+                  <p className="text-[10px] text-gray-500 font-mono mt-1">ADAHAN: Reconcile payments received across multiple gateways (COD, PayHere, Koko, Stripe, Cash, Card) against recorded sales.</p>
+               </div>
+
+               <div className="bg-white border border-black overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                     <thead>
+                        <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
+                           <th className="p-4">Payment Gateway / Method</th>
+                           <th className="p-4">Total Orders</th>
+                           <th className="p-4">Recorded Sales (LKR)</th>
+                           <th className="p-4">Cleared Payout (LKR)</th>
+                           <th className="p-4">Pending Settlement (LKR)</th>
+                           <th className="p-4">Reconciliation Status</th>
+                        </tr>
+                     </thead>
+                     <tbody className="divide-y divide-gray-200 text-xs font-mono">
+                        {loading ? (
+                           <tr>
+                              <td colSpan="6" className="p-12 text-center text-xs font-black uppercase tracking-widest animate-pulse">
+                                 Loading Gateway Reconciliations...
+                              </td>
+                           </tr>
+                        ) : reconciliations.length === 0 ? (
+                           <tr>
+                              <td colSpan="6" className="p-12 text-center text-gray-400 font-black uppercase tracking-widest">
+                                 No Gateway Transactions Logged
+                              </td>
+                           </tr>
+                        ) : (
+                           reconciliations.map((item) => (
+                              <tr key={item._id || item.paymentMethod} className="hover:bg-gray-50">
+                                 <td className="p-4 font-black">{item._id || 'Standard'}</td>
+                                 <td className="p-4 font-bold">{item.orderCount} orders</td>
+                                 <td className="p-4 font-bold">LKR {item.totalSales.toLocaleString()}</td>
+                                 <td className="p-4 text-emerald-700 font-bold">LKR {item.paidSales.toLocaleString()}</td>
+                                 <td className="p-4 text-amber-700 font-bold">LKR {item.pendingSales.toLocaleString()}</td>
+                                 <td className="p-4">
+                                    <span className={`px-2 py-0.5 text-[9px] font-black uppercase border ${item.pendingSales === 0 ? 'bg-green-100 border-green-600 text-green-700' : 'bg-amber-100 border-amber-600 text-amber-700'}`}>
+                                       {item.pendingSales === 0 ? 'Balanced / Reconciled' : 'Pending Settlement'}
+                                    </span>
+                                 </td>
+                              </tr>
+                           ))
+                        )}
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         )}
+
+         {/* Tab Content 5: Accounts Payable & Receivable (AP/AR) */}
+         {activeTab === 'apar' && (
+            <div className="space-y-8">
+               <div className="bg-brand-grey border border-black p-6">
+                  <h3 className="text-sm font-black uppercase tracking-wider">Accounts Payable & Accounts Receivable Ledger</h3>
+                  <p className="text-[10px] text-gray-500 font-mono mt-1">ADAHAN: Track money owed to suppliers (AP) vs pending customer & courier COD payments (AR).</p>
+               </div>
+
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Accounts Payable Table */}
+                  <div className="bg-white border border-black space-y-4 p-6">
+                     <div className="flex justify-between items-center border-b border-black pb-4">
+                        <div>
+                           <span className="text-[9px] font-black uppercase text-amber-700 tracking-wider">Liability</span>
+                           <h4 className="text-base font-black uppercase">Accounts Payable (AP)</h4>
+                        </div>
+                        <span className="px-3 py-1 bg-amber-100 border border-amber-600 text-amber-800 text-xs font-black">
+                           Supplier Owed: LKR {aparData?.payables?.reduce((acc, p) => acc + p.totalCost, 0).toLocaleString() || 0}
+                        </span>
+                     </div>
+                     <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs font-mono">
+                           <thead>
+                              <tr className="border-b border-black text-[9px] font-black uppercase tracking-wider">
+                                 <th className="py-2">PO #</th>
+                                 <th className="py-2">Supplier</th>
+                                 <th className="py-2 text-right">Amount (LKR)</th>
+                              </tr>
+                           </thead>
+                           <tbody className="divide-y divide-gray-200">
+                              {!aparData?.payables?.length ? (
+                                 <tr><td colSpan="3" className="py-6 text-center text-gray-400">No Pending Supplier Payables</td></tr>
+                              ) : (
+                                 aparData.payables.map(po => (
+                                    <tr key={po._id}>
+                                       <td className="py-3 font-bold">{po.poNumber}</td>
+                                       <td className="py-3">{po.supplier?.supplierName || 'Supplier'}</td>
+                                       <td className="py-3 text-right font-black text-amber-700">LKR {po.totalCost.toLocaleString()}</td>
+                                    </tr>
+                                 ))
+                              )}
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+
+                  {/* Accounts Receivable Table */}
+                  <div className="bg-white border border-black space-y-4 p-6">
+                     <div className="flex justify-between items-center border-b border-black pb-4">
+                        <div>
+                           <span className="text-[9px] font-black uppercase text-blue-700 tracking-wider">Asset</span>
+                           <h4 className="text-base font-black uppercase">Accounts Receivable (AR)</h4>
+                        </div>
+                        <span className="px-3 py-1 bg-blue-100 border border-blue-600 text-blue-800 text-xs font-black">
+                           Pending Sales: LKR {aparData?.receivables?.reduce((acc, r) => acc + r.totalPrice, 0).toLocaleString() || 0}
+                        </span>
+                     </div>
+                     <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs font-mono">
+                           <thead>
+                              <tr className="border-b border-black text-[9px] font-black uppercase tracking-wider">
+                                 <th className="py-2">Order #</th>
+                                 <th className="py-2">Method</th>
+                                 <th className="py-2 text-right">Amount (LKR)</th>
+                              </tr>
+                           </thead>
+                           <tbody className="divide-y divide-gray-200">
+                              {!aparData?.receivables?.length ? (
+                                 <tr><td colSpan="3" className="py-6 text-center text-gray-400">No Pending Customer Receivables</td></tr>
+                              ) : (
+                                 aparData.receivables.map(ord => (
+                                    <tr key={ord._id}>
+                                       <td className="py-3 font-bold">#{ord.orderNumber || ord._id.slice(-6).toUpperCase()}</td>
+                                       <td className="py-3">{ord.paymentMethod}</td>
+                                       <td className="py-3 text-right font-black text-blue-700">LKR {ord.totalPrice.toLocaleString()}</td>
+                                    </tr>
+                                 ))
+                              )}
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
                </div>
             </div>
          )}

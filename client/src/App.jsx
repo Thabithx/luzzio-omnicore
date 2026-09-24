@@ -41,7 +41,7 @@ const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminFAQ = lazy(() => import('./pages/admin/AdminFAQ'));
 const AdminContact = lazy(() => import('./pages/admin/AdminContact'));
 const AdminDraftOrders = lazy(() => import('./pages/admin/AdminDraftOrders'));
-const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
+const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
 
 // Omnicommerce Management Pages
 const AdminPOS = lazy(() => import('./pages/admin/AdminPOS'));
@@ -125,6 +125,7 @@ function App() {
           <Route path="/admin/orders/drafts" element={<AdminLayout><AdminDraftOrders /></AdminLayout>} />
           <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/faq" element={<AdminLayout><AdminFAQ /></AdminLayout>} />
+          <Route path="/admin/reviews" element={<AdminLayout><AdminReviews /></AdminLayout>} />
           <Route path="/admin/contact" element={<AdminLayout><AdminContact /></AdminLayout>} />
           <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
 

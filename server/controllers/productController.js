@@ -278,3 +278,79 @@ exports.deleteProductReview = async (req, res) => {
       res.status(400).json({ success: false, message: err.message });
    }
 };
+
+// SRIHARAN: Review & Engagement Moderation System
+// @desc    Get all reviews across all products for Admin Moderation
+// @route   GET /api/products/reviews/all
+// @access  Private/Admin
+exports.getAllReviewsAdmin = async (req, res) => {
+   try {
+      const products = await Product.find({ 'reviews.0': { $exists: true } }).select('name images reviews');
+
+      const allReviews = [];
+      products.forEach(p => {
+         p.reviews.forEach(r => {
+            allReviews.push({
+               productId: p._id,
+               productName: p.name,
+               productImage: p.images[0] || '',
+               reviewId: r._id,
+               name: r.name,
+               email: r.email,
+               rating: r.rating,
+               comment: r.comment,
+               isApproved: r.isApproved !== false,
+               adminResponse: r.adminResponse || '',
+               createdAt: r.createdAt
+            });
+         });
+      });
+
+      allReviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      res.status(200).json({
+         success: true,
+         count: allReviews.length,
+         data: allReviews
+      });
+   } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+   }
+};
+
+// @desc    Moderate review (Approve/Reject) or respond to review
+// @route   PUT /api/products/:productId/reviews/:reviewId/moderate
+// @access  Private/Admin
+exports.moderateProductReview = async (req, res) => {
+   try {
+      const { isApproved, adminResponse } = req.body;
+      const product = await Product.findById(req.params.productId);
+
+      if (!product) {
+         return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+
+      const review = product.reviews.id(req.params.reviewId);
+      if (!review) {
+         return res.status(404).json({ success: false, message: 'Review not found' });
+      }
+
+      if (typeof isApproved === 'boolean') {
+         review.isApproved = isApproved;
+      }
+      if (adminResponse !== undefined) {
+         review.adminResponse = adminResponse;
+      }
+
+      await product.save();
+      clearCache();
+
+      res.status(200).json({
+         success: true,
+         message: 'Review moderated successfully',
+         data: review
+      });
+   } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+   }
+};

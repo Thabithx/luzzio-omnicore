@@ -16,7 +16,8 @@ import {
    Truck,
    FileText,
    TrendingUp,
-   UserCheck
+   UserCheck,
+   Star
 } from 'lucide-react';
 import { cn } from '../utils/cn';
 
@@ -57,23 +58,28 @@ const AdminLayout = ({ children }) => {
       navigate('/login');
    };
 
-   const menuItems = [
-      { to: "/admin", icon: LayoutDashboard, label: "Command Center" },
-      { to: "/admin/pos", icon: Monitor, label: "POS Terminal" },
-      { to: "/admin/inventory", icon: Boxes, label: "Central Inventory" },
-      { to: "/admin/orders", icon: ShoppingBag, label: "Fulfillment & Sales" },
-      { to: "/admin/returns", icon: RotateCcw, label: "Returns & Exchanges" },
-      { to: "/admin/suppliers", icon: Truck, label: "Suppliers & Vendors" },
-      { to: "/admin/purchase-orders", icon: FileText, label: "Purchase Orders" },
-      { to: "/admin/finance", icon: TrendingUp, label: "Financial Engine" },
-      { to: "/admin/staff", icon: UserCheck, label: "Staff & Shifts" },
-      { to: "/admin/products", icon: Package, label: "Product Registry" },
-      { to: "/admin/categories", icon: Layers, label: "Classification Logic" },
-      { to: "/admin/users", icon: Users, label: "Client Registry" },
-      { to: "/admin/faq", icon: HelpCircle, label: "FAQ Management" },
-      { to: "/admin/contact", icon: MessageSquare, label: "Contact Messages" },
-      { to: "/admin/settings", icon: Settings, label: "Global Settings" },
+   // MAHATHIR: Role-Based Module Access Control Matrix
+   const allMenuItems = [
+      { to: "/admin", icon: LayoutDashboard, label: "Command Center", roles: ['admin', 'sales', 'warehouse'] },
+      { to: "/admin/pos", icon: Monitor, label: "POS Terminal", roles: ['admin', 'sales'] },
+      { to: "/admin/inventory", icon: Boxes, label: "Central Inventory", roles: ['admin', 'warehouse'] },
+      { to: "/admin/orders", icon: ShoppingBag, label: "Fulfillment & Sales", roles: ['admin', 'sales', 'warehouse'] },
+      { to: "/admin/returns", icon: RotateCcw, label: "Returns & Exchanges", roles: ['admin', 'warehouse', 'sales'] },
+      { to: "/admin/suppliers", icon: Truck, label: "Suppliers & Vendors", roles: ['admin', 'warehouse'] },
+      { to: "/admin/purchase-orders", icon: FileText, label: "Purchase Orders", roles: ['admin', 'warehouse'] },
+      { to: "/admin/finance", icon: TrendingUp, label: "Financial Engine", roles: ['admin'] },
+      { to: "/admin/staff", icon: UserCheck, label: "Staff & Shifts", roles: ['admin'] },
+      { to: "/admin/products", icon: Package, label: "Product Registry", roles: ['admin', 'sales', 'warehouse'] },
+      { to: "/admin/categories", icon: Layers, label: "Classification Logic", roles: ['admin', 'sales'] },
+      { to: "/admin/users", icon: Users, label: "Client Registry", roles: ['admin', 'sales'] },
+      { to: "/admin/reviews", icon: Star, label: "Review Moderation", roles: ['admin', 'sales'] },
+      { to: "/admin/faq", icon: HelpCircle, label: "FAQ Management", roles: ['admin', 'sales'] },
+      { to: "/admin/contact", icon: MessageSquare, label: "Contact Messages", roles: ['admin', 'sales'] },
+      { to: "/admin/settings", icon: Settings, label: "Global Settings", roles: ['admin'] },
    ];
+
+   const userRole = user?.role || 'admin';
+   const menuItems = allMenuItems.filter(item => item.roles.includes(userRole));
 
    return (
       <div className="flex min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white max-w-full overflow-x-hidden">

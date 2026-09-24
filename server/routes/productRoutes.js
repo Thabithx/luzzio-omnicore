@@ -6,11 +6,15 @@ const {
    updateProduct,
    deleteProduct,
    createProductReview,
-   deleteProductReview
+   deleteProductReview,
+   getAllReviewsAdmin,
+   moderateProductReview
 } = require('../controllers/productController');
 const { protect, admin, optionalProtect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
+
+router.get('/reviews/all', protect, admin, getAllReviewsAdmin);
 
 router.route('/')
    .get(getProducts)
@@ -26,5 +30,8 @@ router.route('/:id/reviews')
 
 router.route('/:id/reviews/:reviewId')
    .delete(protect, admin, deleteProductReview);
+
+router.route('/:id/reviews/:reviewId/moderate')
+   .put(protect, admin, moderateProductReview);
 
 module.exports = router;

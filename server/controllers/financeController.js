@@ -40,6 +40,20 @@ exports.getFinancialOverview = async (req, res) => {
       ]);
       const totalRefunds = Math.abs(refundAgg[0]?.total || 0);
 
+      // 4. Accounts Payable (AP) & Accounts Receivable (AR) (ADAHAN)
+      const PurchaseOrder = require('../models/PurchaseOrder');
+      const apOrders = await PurchaseOrder.aggregate([
+         { $match: { status: { $in: ['DRAFT', 'ORDERED'] } } },
+         { $group: { _id: null, total: { $sum: '$totalCost' } } }
+      ]);
+      const accountsPayable = apOrders[0]?.total || 0;
+
+      const arOrders = await Order.aggregate([
+         { $match: { isPaid: false, status: { $nin: ['cancelled', 'draft'] } } },
+         { $group: { _id: null, total: { $sum: '$totalPrice' } } }
+      ]);
+      const accountsReceivable = arOrders[0]?.total || 0;
+
       const netProfit = totalRevenue - totalExpenses - totalRefunds;
 
       res.status(200).json({
@@ -50,6 +64,8 @@ exports.getFinancialOverview = async (req, res) => {
             posRevenue,
             totalExpenses,
             totalRefunds,
+            accountsPayable,
+            accountsReceivable,
             netProfit
          }
       });
@@ -199,6 +215,70 @@ exports.deleteExpense = async (req, res) => {
       });
    } catch (error) {
       console.error('deleteExpense error:', error);
+      res.status(500).json({ success: false, message: error.message });
+   }
+};
+
+// ADAHAN: Payment Gateway Reconciliation across Cash, Card, Online Pay (PayHere/Koko/Stripe)
+// @desc    Get Gateway Payment Reconciliation Breakdown
+// @route   GET /api/finance/reconciliation
+// @access  Private (Admin)
+exports.getPaymentReconciliation = async (req, res) => {
+   try {
+      const gatewaySummary = await Order.aggregate([
+         { $match: { status: { $ne: 'cancelled' } } },
+         {
+            $group: {
+               _id: '$paymentMethod',
+               totalSales: { $sum: '$totalPrice' },
+               orderCount: { $sum: 1 },
+               paidSales: {
+                  $sum: { $cond: [{ $eq: ['$isPaid', true] }, '$totalPrice', 0] }
+               },
+               pendingSales: {
+                  $sum: { $cond: [{ $eq: ['$isPaid', false] }, '$totalPrice', 0] }
+               }
+            }
+         }
+      ]);
+
+      res.status(200).json({
+         success: true,
+         data: gatewaySummary
+      });
+   } catch (error) {
+      console.error('getPaymentReconciliation error:', error);
+      res.status(500).json({ success: false, message: error.message });
+   }
+};
+
+// ADAHAN: Accounts Payable (AP) & Accounts Receivable (AR) Breakdown
+// @desc    Get AP & AR detailed lists
+// @route   GET /api/finance/ap-ar
+// @access  Private (Admin)
+exports.getPayablesReceivables = async (req, res) => {
+   try {
+      const PurchaseOrder = require('../models/PurchaseOrder');
+
+      // Accounts Payable: Pending Supplier Purchase Orders
+      const payables = await PurchaseOrder.find({ status: { $in: ['DRAFT', 'ORDERED'] } })
+         .populate('supplier', 'supplierName contactPerson phone email')
+         .sort({ createdAt: -1 });
+
+      // Accounts Receivable: Uncollected Customer Orders
+      const receivables = await Order.find({ isPaid: false, status: { $nin: ['cancelled', 'draft'] } })
+         .populate('user', 'name email')
+         .sort({ createdAt: -1 });
+
+      res.status(200).json({
+         success: true,
+         data: {
+            payables,
+            receivables
+         }
+      });
+   } catch (error) {
+      console.error('getPayablesReceivables error:', error);
       res.status(500).json({ success: false, message: error.message });
    }
 };

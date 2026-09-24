@@ -9,11 +9,15 @@ const {
    getExpenses,
    createExpense,
    updateExpense,
-   deleteExpense
+   deleteExpense,
+   getPaymentReconciliation,
+   getPayablesReceivables
 } = require('../controllers/financeController');
 
 router.get('/overview', protect, authorize('admin'), getFinancialOverview);
 router.get('/revenue', protect, authorize('admin'), getRevenueTransactions);
+router.get('/reconciliation', protect, authorize('admin'), getPaymentReconciliation);
+router.get('/ap-ar', protect, authorize('admin'), getPayablesReceivables);
 router.get('/expenses', protect, authorize('admin'), getExpenses);
 router.post('/expenses', protect, authorize('admin'), createExpense);
 router.put('/expenses/:id', protect, authorize('admin'), updateExpense);
