@@ -91,6 +91,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
       sizeChart: ''
    });
    const [uploading, setUploading] = useState(false);
+   const [formError, setFormError] = useState('');
    const { token } = useAuth();
 
    // dnd-kit sensors
@@ -148,6 +149,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
             sizeChart: ''
          });
       }
+      setFormError('');
    }, [product, isOpen, categories]);
 
    if (!isOpen) return null;
@@ -203,8 +205,6 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
          });
       }
    };
-
-   const [formError, setFormError] = useState('');
 
    const handleSubmit = (e) => {
       e.preventDefault();
