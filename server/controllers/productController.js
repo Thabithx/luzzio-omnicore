@@ -1,6 +1,7 @@
 const Product = require('../models/Product');
 const { isDevStore } = require('../config/database');
 const devStore = require('../devStore');
+const { fail, blank, nonNeg, positive } = require('../utils/validate');
 
 // Performance: In-memory cache for high-traffic read operations
 const cache = {
@@ -135,6 +136,19 @@ exports.getProduct = async (req, res) => {
 // @access  Private/Admin
 exports.createProduct = async (req, res) => {
    try {
+      const { name, price, salePrice, stock, description } = req.body;
+
+      if (blank(name))        return fail(res, 'Product name is required');
+      if (blank(description)) return fail(res, 'Product description is required');
+      if (!positive(price))   return fail(res, 'Price must be a positive number');
+      if (stock !== undefined && stock !== '' && !nonNeg(stock)) {
+         return fail(res, 'Stock cannot be negative');
+      }
+      if (salePrice !== undefined && salePrice !== '') {
+         if (!nonNeg(salePrice))             return fail(res, 'Sale price cannot be negative');
+         if (Number(salePrice) >= Number(price)) return fail(res, 'Sale price must be less than the regular price');
+      }
+
       const product = await Product.create(req.body);
       clearCache();
 
@@ -156,6 +170,20 @@ exports.updateProduct = async (req, res) => {
 
       if (!product) {
          return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+
+      const { price, salePrice, stock, name, description } = req.body;
+
+      if (name !== undefined && blank(name))               return fail(res, 'Product name cannot be empty');
+      if (description !== undefined && blank(description)) return fail(res, 'Description cannot be empty');
+      if (price !== undefined && !positive(price))         return fail(res, 'Price must be a positive number');
+      if (stock !== undefined && stock !== '' && !nonNeg(stock)) {
+         return fail(res, 'Stock cannot be negative');
+      }
+      if (salePrice !== undefined && salePrice !== '') {
+         const effectivePrice = price !== undefined ? Number(price) : product.price;
+         if (!nonNeg(salePrice))                        return fail(res, 'Sale price cannot be negative');
+         if (Number(salePrice) >= effectivePrice)       return fail(res, 'Sale price must be less than the regular price');
       }
 
       product = await Product.findByIdAndUpdate(req.params.id, req.body, {

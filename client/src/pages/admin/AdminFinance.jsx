@@ -7,6 +7,7 @@ import { DollarSign, TrendingUp, TrendingDown, CreditCard, Plus, RefreshCw, Tras
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
+import { firstError, isBlank, isPositive } from '../../utils/formValidate';
 
 export default function AdminFinance() {
    const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'revenue' | 'expenses' | 'reconciliation' | 'apar'
@@ -61,8 +62,17 @@ export default function AdminFinance() {
 
    const handleExpenseSubmit = async (e) => {
       e.preventDefault();
-      if (!expenseForm.description || !expenseForm.amount) {
-         alert('Please enter a description and amount');
+
+      const error = firstError([
+         { condition: isBlank(expenseForm.description),    message: 'Description is required' },
+         { condition: expenseForm.description.trim().length < 3, message: 'Description must be at least 3 characters' },
+         { condition: isBlank(expenseForm.amount),         message: 'Amount is required' },
+         { condition: !isPositive(expenseForm.amount),     message: 'Amount must be a positive number greater than 0' },
+         { condition: isBlank(expenseForm.category),       message: 'Please select a category' },
+      ]);
+
+      if (error) {
+         alert(error);
          return;
       }
 
@@ -498,7 +508,8 @@ export default function AdminFinance() {
                         <Input
                            type="number"
                            required
-                           min="0"
+                           min="0.01"
+                           step="0.01"
                            value={expenseForm.amount}
                            onChange={(e) => setExpenseForm({ ...expenseForm, amount: e.target.value })}
                            className="font-mono text-base font-bold"

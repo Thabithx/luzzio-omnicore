@@ -8,6 +8,7 @@ import { Search, Boxes, AlertTriangle, RefreshCw, Plus, History, ArrowUpRight, A
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
+import { firstError, isBlank } from '../../utils/formValidate';
 
 export default function AdminInventory() {
    const [activeTab, setActiveTab] = useState('registry'); // 'registry' | 'history' | 'reports'
@@ -110,8 +111,17 @@ export default function AdminInventory() {
 
    const handleAdjustSubmit = async (e) => {
       e.preventDefault();
-      if (!selectedProduct || adjustData.quantityChange === 0) {
-         alert('Quantity change cannot be 0');
+
+      const qty = Number(adjustData.quantityChange);
+      const error = firstError([
+         { condition: !selectedProduct,                   message: 'No product selected' },
+         { condition: isBlank(adjustData.transactionType), message: 'Please select a transaction type' },
+         { condition: isNaN(qty) || qty === 0,             message: 'Quantity change cannot be 0' },
+         { condition: !Number.isFinite(qty),               message: 'Please enter a valid quantity number' },
+      ]);
+
+      if (error) {
+         alert(error);
          return;
       }
 
@@ -120,7 +130,7 @@ export default function AdminInventory() {
          await api.post('/inventory/adjust', {
             productId: selectedProduct._id,
             variantSize: adjustData.variantSize,
-            quantityChange: Number(adjustData.quantityChange),
+            quantityChange: qty,
             transactionType: adjustData.transactionType,
             notes: adjustData.notes
          });

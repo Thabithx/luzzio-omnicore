@@ -7,6 +7,7 @@ import { Search, Plus, Edit2, Trash2, Truck, RefreshCw, X, Phone, Mail, MapPin }
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
+import { firstError, isBlank, isEmail, isPhone } from '../../utils/formValidate';
 
 export default function AdminSuppliers() {
    const [suppliers, setSuppliers] = useState([]);
@@ -71,6 +72,21 @@ export default function AdminSuppliers() {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+
+      const error = firstError([
+         { condition: isBlank(formData.supplierName) || formData.supplierName.trim().length < 2,
+           message: 'Supplier name is required (at least 2 characters)' },
+         { condition: formData.email && !isEmail(formData.email),
+           message: 'Please enter a valid email address' },
+         { condition: formData.phone && !isPhone(formData.phone),
+           message: 'Please enter a valid phone number (7–20 digits)' },
+      ]);
+
+      if (error) {
+         alert(error);
+         return;
+      }
+
       try {
          if (editingSupplier) {
             await api.put(`/suppliers/${editingSupplier._id}`, formData);

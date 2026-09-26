@@ -8,6 +8,7 @@ const Supplier = require('../models/Supplier');
 const Product = require('../models/Product');
 const Expense = require('../models/Expense');
 const { updateCentralInventory } = require('./inventoryController');
+const { fail, blank, nonNeg, int } = require('../utils/validate');
 
 // @desc    Get all purchase orders
 // @route   GET /api/purchase-orders
@@ -62,8 +63,15 @@ exports.createPurchaseOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: `Product not found (ID: ${item.productId})` });
          }
 
-         const qty = Number(item.quantity) || 1;
-         const cost = Number(item.purchasePrice) || 0;
+         const qty = Number(item.quantity);
+         const cost = Number(item.purchasePrice);
+
+         if (!Number.isInteger(qty) || qty < 1) {
+            return fail(res, `Quantity for "${product.name}" must be a whole number of at least 1`);
+         }
+         if (isNaN(cost) || cost < 0) {
+            return fail(res, `Purchase price for "${product.name}" cannot be negative`);
+         }
 
          totalCost += qty * cost;
 

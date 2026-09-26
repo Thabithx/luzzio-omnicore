@@ -3,6 +3,7 @@
 // Handles creation, updates, and maintenance of procurement suppliers.
 
 const Supplier = require('../models/Supplier');
+const { fail, blank, validEmail, validPhone } = require('../utils/validate');
 
 // @desc    Get all suppliers
 // @route   GET /api/suppliers
@@ -43,12 +44,18 @@ exports.createSupplier = async (req, res) => {
    try {
       const { supplierName, contactPerson, phone, email, address, notes, status } = req.body;
 
-      if (!supplierName) {
-         return res.status(400).json({ success: false, message: 'Supplier name is required' });
+      if (!supplierName || String(supplierName).trim().length < 2) {
+         return fail(res, 'Supplier name is required and must be at least 2 characters');
+      }
+      if (email && !validEmail(email)) {
+         return fail(res, 'Please provide a valid email address');
+      }
+      if (phone && !validPhone(phone)) {
+         return fail(res, 'Please provide a valid phone number');
       }
 
       const supplier = await Supplier.create({
-         supplierName,
+         supplierName: supplierName.trim(),
          contactPerson,
          phone,
          email,

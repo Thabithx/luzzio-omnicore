@@ -6,6 +6,7 @@ const ReturnRequest = require('../models/ReturnRequest');
 const Order = require('../models/Order');
 const RevenueTransaction = require('../models/RevenueTransaction');
 const { updateCentralInventory } = require('./inventoryController');
+const { fail, int } = require('../utils/validate');
 
 // @desc    Create new return or exchange request
 // @route   POST /api/returns
@@ -25,13 +26,19 @@ exports.createReturnRequest = async (req, res) => {
 
       const returnNumber = `RET-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
 
-      const returnItems = items.map(item => ({
-         product: item.productId,
-         size: item.size || '',
-         quantity: Number(item.quantity) || 1,
-         reason: item.reason || 'Customer Return',
-         condition: item.condition || 'RESELLABLE'
-      }));
+      const returnItems = items.map((item, idx) => {
+         const qty = Number(item.quantity);
+         if (!Number.isInteger(qty) || qty < 1) {
+            throw new Error(`Item #${idx + 1}: quantity must be a whole number of at least 1`);
+         }
+         return {
+            product: item.productId,
+            size: item.size || '',
+            quantity: qty,
+            reason: item.reason || 'Customer Return',
+            condition: item.condition || 'RESELLABLE'
+         };
+      });
 
       const returnRequest = await ReturnRequest.create({
          returnNumber,
@@ -50,7 +57,7 @@ exports.createReturnRequest = async (req, res) => {
       });
    } catch (error) {
       console.error('createReturnRequest error:', error);
-      res.status(500).json({ success: false, message: error.message });
+      res.status(400).json({ success: false, message: error.message });
    }
 };
 

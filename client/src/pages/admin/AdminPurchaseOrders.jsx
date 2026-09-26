@@ -7,6 +7,7 @@ import { Search, Plus, FileText, CheckCircle, Truck, PackageCheck, RefreshCw, X 
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
+import { firstError, isBlank, isNonNeg, isInt } from '../../utils/formValidate';
 
 export default function AdminPurchaseOrders() {
    const [pos, setPos] = useState([]);
@@ -81,8 +82,24 @@ export default function AdminPurchaseOrders() {
 
    const handleCreateSubmit = async (e) => {
       e.preventDefault();
-      if (!poForm.supplierId || poForm.items.length === 0) {
-         alert('Please select a supplier and add at least one item');
+
+      // Validate PO form
+      const error = firstError([
+         { condition: isBlank(poForm.supplierId),          message: 'Please select a supplier' },
+         { condition: poForm.items.length === 0,           message: 'Add at least one item to the purchase order' },
+         { condition: poForm.items.some(i => isBlank(i.productId)), message: 'All items must have a product selected' },
+         {
+            condition: poForm.items.some(i => !isInt(i.quantity, 1)),
+            message: 'All item quantities must be whole numbers of at least 1'
+         },
+         {
+            condition: poForm.items.some(i => !isNonNeg(i.purchasePrice)),
+            message: 'Purchase prices cannot be negative'
+         },
+      ]);
+
+      if (error) {
+         alert(error);
          return;
       }
 

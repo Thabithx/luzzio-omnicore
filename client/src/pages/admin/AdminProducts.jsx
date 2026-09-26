@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { DndContext, closestCenter, MouseSensor, TouchSensor, useSensor, useSensors, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { firstError, isBlank, isPositive, isNonNeg } from '../../utils/formValidate';
 
 const SortableImage = ({ url, index, onRemove }) => {
    const {
@@ -203,11 +204,39 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
       }
    };
 
+   const [formError, setFormError] = useState('');
+
    const handleSubmit = (e) => {
       e.preventDefault();
+      setFormError('');
 
       // Calculate total stock from variants
       const totalStock = formData.variants?.reduce((sum, v) => sum + (parseInt(v.stock) || 0), 0) || 0;
+
+      // Validate
+      const error = firstError([
+         { condition: isBlank(formData.name),        message: 'Product name is required' },
+         { condition: isBlank(formData.description), message: 'Product description is required' },
+         { condition: !isPositive(formData.price),   message: 'Price must be a positive number' },
+         {
+            condition: formData.salePrice !== '' && formData.salePrice !== undefined && !isNonNeg(formData.salePrice),
+            message: 'Sale price cannot be negative'
+         },
+         {
+            condition: formData.salePrice !== '' && formData.salePrice !== undefined &&
+               Number(formData.salePrice) >= Number(formData.price),
+            message: 'Sale price must be less than the regular price'
+         },
+         {
+            condition: formData.variants?.some(v => (parseInt(v.stock) || 0) < 0),
+            message: 'Variant stock quantities cannot be negative'
+         },
+      ]);
+
+      if (error) {
+         setFormError(error);
+         return;
+      }
 
       // Prepare payload with number versions of stock
       const payload = {
@@ -252,6 +281,8 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                      <label className="text-small-brand text-gray-400">Acquisition Price (LKR)</label>
                      <Input
                         type="number"
+                        min="0.01"
+                        step="0.01"
                         value={formData.price}
                         onChange={e => setFormData({ ...formData, price: e.target.value })}
                         required
@@ -330,6 +361,8 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                      <label className="text-small-brand text-gray-400">Market Value / Sale Price (LKR)</label>
                      <Input
                         type="number"
+                        min="0"
+                        step="0.01"
                         value={formData.salePrice}
                         onChange={e => setFormData({ ...formData, salePrice: e.target.value })}
                         placeholder="Leave empty for no discount"
@@ -383,6 +416,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                                  <span className="text-[10px] font-black uppercase w-8">{variant.size}</span>
                                  <Input
                                     type="number"
+                                    min="0"
                                     placeholder="QTY"
                                     value={variant.stock}
                                     onChange={(e) => {
@@ -599,13 +633,20 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                   </div>
                </div>
 
-               <div className="pt-8 border-t border-black flex justify-end gap-1">
-                  <button type="button" onClick={onClose} className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] border border-black hover:bg-black hover:text-white transition-all">
-                     Abandon
-                  </button>
-                  <button type="submit" className="btn-brand px-12 py-5 font-black uppercase tracking-[0.2em]" disabled={uploading}>
-                     {product ? 'Authorize Update' : 'Initialize Entry'}
-                  </button>
+               <div className="pt-8 border-t border-black flex flex-col gap-3">
+                  {formError && (
+                     <p className="text-red-600 text-[11px] font-bold uppercase tracking-widest bg-red-50 border border-red-200 p-3">
+                        ⚠ {formError}
+                     </p>
+                  )}
+                  <div className="flex justify-end gap-1">
+                     <button type="button" onClick={onClose} className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] border border-black hover:bg-black hover:text-white transition-all">
+                        Abandon
+                     </button>
+                     <button type="submit" className="btn-brand px-12 py-5 font-black uppercase tracking-[0.2em]" disabled={uploading}>
+                        {product ? 'Authorize Update' : 'Initialize Entry'}
+                     </button>
+                  </div>
                </div>
             </form>
          </div>

@@ -141,6 +141,13 @@ exports.createExpense = async (req, res) => {
       if (!category || !description || amount === undefined) {
          return res.status(400).json({ success: false, message: 'Category, description, and amount are required' });
       }
+      if (String(description).trim().length < 3) {
+         return res.status(400).json({ success: false, message: 'Description must be at least 3 characters' });
+      }
+      const amt = Number(amount);
+      if (isNaN(amt) || amt <= 0) {
+         return res.status(400).json({ success: false, message: 'Amount must be a positive number greater than 0' });
+      }
 
       const expense = await Expense.create({
          category,
