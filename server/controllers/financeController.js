@@ -289,3 +289,102 @@ exports.getPayablesReceivables = async (req, res) => {
       res.status(500).json({ success: false, message: error.message });
    }
 };
+
+// ADAHAN: Profit & Loss (P&L) Statement and Cash Flow Summaries
+// @desc    Get complete P&L Statement and Cash Flow Breakdown
+// @route   GET /api/finance/profit-loss
+// @access  Private (Admin)
+exports.getProfitLossStatement = async (req, res) => {
+   try {
+      const PurchaseOrder = require('../models/PurchaseOrder');
+
+      // 1. Total Sales Revenues (Delivered & Paid orders)
+      const salesData = await Order.aggregate([
+         { $match: { status: { $ne: 'cancelled' } } },
+         {
+            $group: {
+               _id: null,
+               grossSales: { $sum: '$totalPrice' },
+               itemsRevenue: { $sum: '$itemsPrice' },
+               shippingRevenue: { $sum: '$shippingPrice' },
+               paidSales: { $sum: { $cond: [{ $eq: ['$isPaid', true] }, '$totalPrice', 0] } },
+               orderCount: { $sum: 1 }
+            }
+         }
+      ]);
+
+      const grossRevenue = salesData.length > 0 ? (salesData[0].grossSales || 0) : 0;
+      const collectedRevenue = salesData.length > 0 ? (salesData[0].paidSales || 0) : 0;
+
+      // 2. Cost of Goods Sold (COGS) from received Purchase Orders or estimated standard 55%
+      const poReceived = await PurchaseOrder.aggregate([
+         { $match: { status: 'RECEIVED' } },
+         { $group: { _id: null, totalCOGS: { $sum: '$totalCost' } } }
+      ]);
+      const actualCOGS = poReceived.length > 0 && poReceived[0].totalCOGS > 0 
+         ? poReceived[0].totalCOGS 
+         : Math.round(grossRevenue * 0.55);
+
+      const grossProfit = Math.max(0, grossRevenue - actualCOGS);
+      const grossMarginPercent = grossRevenue > 0 ? ((grossProfit / grossRevenue) * 100).toFixed(1) : 0;
+
+      // 3. Operating Expenses grouped by category
+      const expensesByCategory = await Expense.aggregate([
+         {
+            $group: {
+               _id: '$category',
+               total: { $sum: '$amount' },
+               count: { $sum: 1 }
+            }
+         }
+      ]);
+
+      let totalOperatingExpenses = 0;
+      const expenseBreakdown = {};
+      expensesByCategory.forEach(exp => {
+         expenseBreakdown[exp._id || 'Other'] = exp.total;
+         totalOperatingExpenses += exp.total;
+      });
+
+      // 4. Net Operating Profit & Margin
+      const netProfit = grossProfit - totalOperatingExpenses;
+      const netProfitMargin = grossRevenue > 0 ? ((netProfit / grossRevenue) * 100).toFixed(1) : 0;
+
+      // 5. Cash Flow Summary
+      const cashInflow = collectedRevenue;
+      const cashOutflow = totalOperatingExpenses + actualCOGS;
+      const netCashFlow = cashInflow - cashOutflow;
+
+      res.status(200).json({
+         success: true,
+         data: {
+            revenue: {
+               grossRevenue,
+               collectedRevenue,
+               orderCount: salesData.length > 0 ? salesData[0].orderCount : 0
+            },
+            cogs: {
+               totalCOGS: actualCOGS,
+               grossProfit,
+               grossMarginPercent: Number(grossMarginPercent)
+            },
+            expenses: {
+               totalExpenses: totalOperatingExpenses,
+               breakdown: expenseBreakdown
+            },
+            netIncome: {
+               netProfit,
+               netProfitMargin: Number(netProfitMargin)
+            },
+            cashFlow: {
+               inflow: cashInflow,
+               outflow: cashOutflow,
+               netCashFlow
+            }
+         }
+      });
+   } catch (error) {
+      console.error('getProfitLossStatement error:', error);
+      res.status(500).json({ success: false, message: error.message });
+   }
+};

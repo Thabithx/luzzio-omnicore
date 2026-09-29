@@ -9,7 +9,9 @@ import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 
 export default function AdminReturns() {
+   const [activeTab, setActiveTab] = useState('list'); // 'list' | 'reports'
    const [returns, setReturns] = useState([]);
+   const [reportData, setReportData] = useState(null);
    const [loading, setLoading] = useState(false);
    const [statusFilter, setStatusFilter] = useState('');
 
@@ -40,8 +42,54 @@ export default function AdminReturns() {
    const [creatingReturn, setCreatingReturn] = useState(false);
 
    useEffect(() => {
-      fetchReturns();
-   }, [statusFilter]);
+      if (activeTab === 'list') {
+         fetchReturns();
+      } else if (activeTab === 'reports') {
+         fetchReturnsReport();
+      }
+   }, [statusFilter, activeTab]);
+
+   const fetchReturnsReport = async () => {
+      setLoading(true);
+      try {
+         const res = await api.get('/returns/report');
+         setReportData(res.data.data);
+      } catch (err) {
+         console.error('Fetch returns report error:', err);
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   const exportReturnsCSV = () => {
+      if (!reportData) return;
+      let csv = "data:text/csv;charset=utf-8,Metric / Reason / Product,Count / Value (LKR),Category\n";
+      csv += `"Total Return Requests",${reportData.summary.totalRequests},"Summary"\n`;
+      csv += `"Approved Returns",${reportData.summary.approvedCount},"Summary"\n`;
+      csv += `"Rejected Returns",${reportData.summary.rejectedCount},"Summary"\n`;
+      csv += `"Total Refunded Amount",${reportData.summary.totalRefundedValue},"Financials"\n`;
+      csv += `"Overall Return Rate",${reportData.summary.returnRatePercent}%,"Rate"\n`;
+
+      Object.entries(reportData.reasonBreakdown || {}).forEach(([reason, count]) => {
+         csv += `"[Reason] ${reason}",${count},"Reason Breakdown"\n`;
+      });
+
+      Object.entries(reportData.conditionBreakdown || {}).forEach(([cond, count]) => {
+         csv += `"[Condition] ${cond}",${count},"Condition Breakdown"\n`;
+      });
+
+      Object.entries(reportData.productReturnCount || {}).forEach(([pName, count]) => {
+         csv += `"[Product] ${pName.replace(/"/g, '""')}",${count},"Product Returns"\n`;
+      });
+
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Returns_Exchange_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+   };
 
    const fetchOrdersForSelect = async () => {
       try {
@@ -148,44 +196,60 @@ export default function AdminReturns() {
                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400">Order Reverse Logistics</span>
                <h1 className="text-2xl font-black uppercase tracking-tight mt-1">Returns & Exchanges Engine</h1>
             </div>
-            <div className="flex items-center gap-4">
-               <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="p-2.5 bg-white text-black font-mono text-xs border border-white"
-               >
-                  <option value="">-- All Statuses --</option>
-                  <option value="REQUESTED">REQUESTED</option>
-                  <option value="RECEIVED">RECEIVED</option>
-                  <option value="INSPECTED">INSPECTED</option>
-                  <option value="APPROVED">APPROVED</option>
-                  <option value="REFUNDED">REFUNDED</option>
-                  <option value="EXCHANGED">EXCHANGED</option>
-                  <option value="REJECTED">REJECTED</option>
-               </select>
-               <Button onClick={openCreateModal} className="bg-white text-black font-black uppercase text-xs px-4 py-2 border border-white hover:bg-gray-200">
-                  + Log Return Request
-               </Button>
-               <Button onClick={fetchReturns} className="bg-brand-grey border border-white text-black">
-                  <RefreshCw size={16} />
-               </Button>
+            <div className="flex flex-wrap items-center gap-3">
+               <div className="flex items-center gap-2">
+                  <Button
+                     onClick={() => setActiveTab('list')}
+                     className={`text-xs font-black uppercase tracking-wider px-4 py-2 ${activeTab === 'list' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'}`}
+                  >
+                     Returns Ledger
+                  </Button>
+                  <Button
+                     onClick={() => setActiveTab('reports')}
+                     className={`text-xs font-black uppercase tracking-wider px-4 py-2 ${activeTab === 'reports' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'}`}
+                  >
+                     Returns Reports & Analytics
+                  </Button>
+               </div>
+               {activeTab === 'list' && (
+                  <>
+                     <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="p-2 bg-white text-black font-mono text-xs border border-white"
+                     >
+                        <option value="">-- All Statuses --</option>
+                        <option value="REQUESTED">REQUESTED</option>
+                        <option value="RECEIVED">RECEIVED</option>
+                        <option value="INSPECTED">INSPECTED</option>
+                        <option value="APPROVED">APPROVED</option>
+                        <option value="REFUNDED">REFUNDED</option>
+                        <option value="EXCHANGED">EXCHANGED</option>
+                        <option value="REJECTED">REJECTED</option>
+                     </select>
+                     <Button onClick={openCreateModal} className="bg-white text-black font-black uppercase text-xs px-3 py-2 border border-white hover:bg-gray-200">
+                        + Log Return
+                     </Button>
+                  </>
+               )}
             </div>
          </div>
 
-         {/* Returns Table */}
-         <div className="bg-white border border-black overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-               <thead>
-                  <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
-                     <th className="p-4">Return #</th>
-                     <th className="p-4">Original Order</th>
-                     <th className="p-4">Customer</th>
-                     <th className="p-4">Returned Items</th>
-                     <th className="p-4">Type</th>
-                     <th className="p-4">Status</th>
-                     <th className="p-4 text-right">Actions</th>
-                  </tr>
-               </thead>
+         {/* Tab Content 1: Returns Table */}
+         {activeTab === 'list' && (
+            <div className="bg-white border border-black overflow-x-auto">
+               <table className="w-full text-left border-collapse">
+                  <thead>
+                     <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
+                        <th className="p-4">Return #</th>
+                        <th className="p-4">Original Order</th>
+                        <th className="p-4">Customer</th>
+                        <th className="p-4">Returned Items</th>
+                        <th className="p-4">Type</th>
+                        <th className="p-4">Status</th>
+                        <th className="p-4 text-right">Actions</th>
+                     </tr>
+                  </thead>
                <tbody className="divide-y divide-gray-200 text-xs font-mono">
                   {loading ? (
                      <tr>
@@ -253,6 +317,94 @@ export default function AdminReturns() {
                </tbody>
             </table>
          </div>
+         )}
+
+         {/* Tab Content 2: Returns & Exchanges Analytical Reports */}
+         {activeTab === 'reports' && (
+            <div className="space-y-8">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border-2 border-black p-6">
+                  <div>
+                     <h3 className="text-lg font-black uppercase tracking-tight">Returns & Reverse Logistics Intelligence</h3>
+                     <p className="text-xs text-gray-500 mt-1">Product return frequencies, defect rates, restock efficiency, and refund totals</p>
+                  </div>
+                  <Button onClick={exportReturnsCSV} className="bg-black text-white text-xs font-black uppercase px-6 py-3">
+                     Download Returns Report (CSV)
+                  </Button>
+               </div>
+
+               {loading ? (
+                  <div className="py-20 text-center text-xs font-black uppercase tracking-widest animate-pulse">
+                     Compiling Reverse Logistics Analytics...
+                  </div>
+               ) : reportData ? (
+                  <>
+                     {/* Summary KPI Cards */}
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="bg-white border-2 border-black p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total Return Requests</span>
+                           <p className="text-2xl font-black mt-2 font-mono">{reportData.summary.totalRequests}</p>
+                           <p className="text-[10px] text-gray-400 mt-2">{reportData.summary.requestedCount} pending inspection</p>
+                        </div>
+
+                        <div className="bg-white border-2 border-black p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Approved & Restocked</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-green-600">{reportData.summary.approvedCount}</p>
+                           <p className="text-[10px] text-gray-400 mt-2">Auto-reconciled to central stock</p>
+                        </div>
+
+                        <div className="bg-white border-2 border-black p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total Refunded Value</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-red-600">LKR {reportData.summary.totalRefundedValue.toLocaleString()}</p>
+                           <p className="text-[10px] text-gray-400 mt-2">Returned capital issued</p>
+                        </div>
+
+                        <div className="bg-black text-white border-2 border-black p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Overall Return Rate</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-amber-400">{reportData.summary.returnRatePercent}%</p>
+                           <p className="text-[10px] text-gray-400 mt-2">Against {reportData.summary.totalOrders} total orders</p>
+                        </div>
+                     </div>
+
+                     {/* Analytics Tables */}
+                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Primary Return Reasons */}
+                        <div className="bg-white border-2 border-black p-6 space-y-4">
+                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Primary Return Reasons</h4>
+                           <div className="space-y-3 font-mono text-xs">
+                              {Object.entries(reportData.reasonBreakdown || {}).length === 0 ? (
+                                 <p className="text-gray-400 py-4 text-center">No reason data recorded</p>
+                              ) : (
+                                 Object.entries(reportData.reasonBreakdown).map(([reason, count]) => (
+                                    <div key={reason} className="flex justify-between items-center py-2 border-b border-gray-100">
+                                       <span className="font-bold">{reason}</span>
+                                       <span className="px-2 py-0.5 bg-gray-100 font-black">{count} units</span>
+                                    </div>
+                                 ))
+                              )}
+                           </div>
+                        </div>
+
+                        {/* Top Returned Products */}
+                        <div className="bg-white border-2 border-black p-6 space-y-4">
+                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Top Products Returned</h4>
+                           <div className="space-y-3 font-mono text-xs">
+                              {Object.entries(reportData.productReturnCount || {}).length === 0 ? (
+                                 <p className="text-gray-400 py-4 text-center">No product returns recorded</p>
+                              ) : (
+                                 Object.entries(reportData.productReturnCount).map(([pName, count]) => (
+                                    <div key={pName} className="flex justify-between items-center py-2 border-b border-gray-100">
+                                       <span className="font-bold truncate max-w-[250px]">{pName}</span>
+                                       <span className="px-2 py-0.5 bg-red-50 text-red-600 border border-red-200 font-black">{count} items</span>
+                                    </div>
+                                 ))
+                              )}
+                           </div>
+                        </div>
+                     </div>
+                  </>
+               ) : null}
+            </div>
+         )}
 
          {/* Inspection & Processing Modal */}
          {showModal && selectedReturn && (

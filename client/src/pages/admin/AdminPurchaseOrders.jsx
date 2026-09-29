@@ -10,9 +10,11 @@ import api from '../../services/api';
 import { firstError, isBlank, isNonNeg, isInt } from '../../utils/formValidate';
 
 export default function AdminPurchaseOrders() {
+   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'reports'
    const [pos, setPos] = useState([]);
    const [suppliers, setSuppliers] = useState([]);
    const [products, setProducts] = useState([]);
+   const [reportData, setReportData] = useState(null);
    const [loading, setLoading] = useState(false);
 
    // Modal State
@@ -33,9 +35,13 @@ export default function AdminPurchaseOrders() {
    const [submitting, setSubmitting] = useState(false);
 
    useEffect(() => {
-      fetchPOs();
-      fetchSuppliersAndProducts();
-   }, []);
+      if (activeTab === 'orders') {
+         fetchPOs();
+         fetchSuppliersAndProducts();
+      } else if (activeTab === 'reports') {
+         fetchSupplierReport();
+      }
+   }, [activeTab]);
 
    const fetchPOs = async () => {
       setLoading(true);
@@ -47,6 +53,34 @@ export default function AdminPurchaseOrders() {
       } finally {
          setLoading(false);
       }
+   };
+
+   const fetchSupplierReport = async () => {
+      setLoading(true);
+      try {
+         const res = await api.get('/analytics/order-supplier-report');
+         setReportData(res.data.data);
+      } catch (err) {
+         console.error('Fetch supplier report error:', err);
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   const exportSupplierCSV = () => {
+      if (!reportData?.suppliers?.supplierPerformance) return;
+      let csv = "data:text/csv;charset=utf-8,Supplier Name,Contact Person,Phone,Total POs,Completed POs,Total Spend (LKR),Items Ordered,Items Received,Fulfillment Rate (%)\n";
+      reportData.suppliers.supplierPerformance.forEach(s => {
+         csv += `"${s.supplierName.replace(/"/g, '""')}","${s.contactPerson || ''}","${s.phone || ''}",${s.totalPOs},${s.completedPOs},${s.totalSpend},${s.itemsOrdered},${s.itemsReceived},${s.fulfillmentRate}%\n`;
+      });
+
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Supplier_Performance_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
    };
 
    const fetchSuppliersAndProducts = async () => {
@@ -167,17 +201,36 @@ export default function AdminPurchaseOrders() {
                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400">Stock Procurement</span>
                <h1 className="text-2xl font-black uppercase tracking-tight mt-1">Purchase Orders & Intake</h1>
             </div>
-            <Button
-               onClick={() => setShowCreateModal(true)}
-               className="bg-white text-black text-xs font-black uppercase tracking-wider px-6 py-3 hover:bg-gray-200"
-            >
-               <Plus size={16} className="mr-2 inline" /> Create Purchase Order
-            </Button>
+            <div className="flex flex-wrap items-center gap-3">
+               <div className="flex items-center gap-2">
+                  <Button
+                     onClick={() => setActiveTab('orders')}
+                     className={`text-xs font-black uppercase tracking-wider px-4 py-2 ${activeTab === 'orders' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'}`}
+                  >
+                     Active POs
+                  </Button>
+                  <Button
+                     onClick={() => setActiveTab('reports')}
+                     className={`text-xs font-black uppercase tracking-wider px-4 py-2 ${activeTab === 'reports' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'}`}
+                  >
+                     Supplier Performance Reports
+                  </Button>
+               </div>
+               {activeTab === 'orders' && (
+                  <Button
+                     onClick={() => setShowCreateModal(true)}
+                     className="bg-white text-black text-xs font-black uppercase tracking-wider px-4 py-2 hover:bg-gray-200"
+                  >
+                     <Plus size={16} className="mr-1 inline" /> Create PO
+                  </Button>
+               )}
+            </div>
          </div>
 
-         {/* PO List Table */}
-         <div className="bg-white border border-black overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+         {/* Tab Content 1: PO List Table */}
+         {activeTab === 'orders' && (
+            <div className="bg-white border border-black overflow-x-auto">
+               <table className="w-full text-left border-collapse">
                <thead>
                   <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
                      <th className="p-4">PO Number</th>
@@ -253,6 +306,94 @@ export default function AdminPurchaseOrders() {
                </tbody>
             </table>
          </div>
+         )}
+
+         {/* Tab Content 2: Supplier Performance & Procurement Reports */}
+         {activeTab === 'reports' && (
+            <div className="space-y-8">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border-2 border-black p-6">
+                  <div>
+                     <h3 className="text-lg font-black uppercase tracking-tight">Supplier Performance & Fulfillment Analytics</h3>
+                     <p className="text-xs text-gray-500 mt-1">Vendor reliability, PO fulfillment velocity, spend volume, and item intake metrics</p>
+                  </div>
+                  <Button onClick={exportSupplierCSV} className="bg-black text-white text-xs font-black uppercase px-6 py-3">
+                     Download Supplier Report (CSV)
+                  </Button>
+               </div>
+
+               {loading ? (
+                  <div className="py-20 text-center text-xs font-black uppercase tracking-widest animate-pulse">
+                     Compiling Supplier Analytics...
+                  </div>
+               ) : reportData?.suppliers ? (
+                  <>
+                     {/* Summary KPI Cards */}
+                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div className="bg-white border-2 border-black p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total Active Suppliers</span>
+                           <p className="text-2xl font-black mt-2 font-mono">{reportData.suppliers.totalSuppliers}</p>
+                           <p className="text-[10px] text-gray-400 mt-2">Verified procurement partners</p>
+                        </div>
+
+                        <div className="bg-white border-2 border-black p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total POs Issued</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-blue-600">{reportData.suppliers.totalPOs}</p>
+                           <p className="text-[10px] text-gray-400 mt-2">Historical procurement volume</p>
+                        </div>
+
+                        <div className="bg-black text-white border-2 border-black p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Order Fulfillment Velocity</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-green-400">
+                              {reportData.orders?.orderFulfillmentRate || 100}%
+                           </p>
+                           <p className="text-[10px] text-gray-400 mt-2">Average order completion rate</p>
+                        </div>
+                     </div>
+
+                     {/* Supplier Breakdown Table */}
+                     <div className="bg-white border-2 border-black p-6 space-y-4">
+                        <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Supplier Fulfillment & Spend Matrix</h4>
+                        <div className="overflow-x-auto">
+                           <table className="w-full text-left text-xs font-mono">
+                              <thead>
+                                 <tr className="border-b border-black bg-gray-50 text-[10px] uppercase font-black">
+                                    <th className="p-3">Supplier Name</th>
+                                    <th className="p-3">Contact Person</th>
+                                    <th className="p-3">Total POs</th>
+                                    <th className="p-3">Completed POs</th>
+                                    <th className="p-3">Items Intake (Rec'd / Ordered)</th>
+                                    <th className="p-3">Total Spend (LKR)</th>
+                                    <th className="p-3 text-right">Fulfillment Rate</th>
+                                 </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-200">
+                                 {(!reportData.suppliers.supplierPerformance || reportData.suppliers.supplierPerformance.length === 0) ? (
+                                    <tr><td colSpan="7" className="p-6 text-center text-gray-400">No supplier performance data</td></tr>
+                                 ) : (
+                                    reportData.suppliers.supplierPerformance.map(s => (
+                                       <tr key={s.supplierId} className="hover:bg-gray-50">
+                                          <td className="p-3 font-bold font-sans">{s.supplierName}</td>
+                                          <td className="p-3 text-gray-500">{s.contactPerson || 'N/A'}</td>
+                                          <td className="p-3 font-bold">{s.totalPOs}</td>
+                                          <td className="p-3 text-green-600 font-bold">{s.completedPOs}</td>
+                                          <td className="p-3">{s.itemsReceived} / {s.itemsOrdered} units</td>
+                                          <td className="p-3 font-bold">LKR {s.totalSpend.toLocaleString()}</td>
+                                          <td className="p-3 text-right">
+                                             <span className={`px-2 py-0.5 font-bold ${Number(s.fulfillmentRate) >= 80 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+                                                {s.fulfillmentRate}%
+                                             </span>
+                                          </td>
+                                       </tr>
+                                    ))
+                                 )}
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                  </>
+               ) : null}
+            </div>
+         )}
 
          {/* Create PO Modal */}
          {showCreateModal && (

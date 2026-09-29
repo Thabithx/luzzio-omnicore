@@ -10,12 +10,13 @@ import api from '../../services/api';
 import { firstError, isBlank, isPositive } from '../../utils/formValidate';
 
 export default function AdminFinance() {
-   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'revenue' | 'expenses' | 'reconciliation' | 'apar'
+   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'revenue' | 'expenses' | 'reconciliation' | 'apar' | 'pnl'
    const [overview, setOverview] = useState(null);
    const [revenues, setRevenues] = useState([]);
    const [expenses, setExpenses] = useState([]);
    const [reconciliations, setReconciliations] = useState([]);
    const [aparData, setAparData] = useState(null);
+   const [pnlData, setPnlData] = useState(null);
    const [loading, setLoading] = useState(false);
 
    // Expense Modal State
@@ -52,12 +53,39 @@ export default function AdminFinance() {
          } else if (activeTab === 'apar') {
             const res = await api.get('/finance/ap-ar');
             setAparData(res.data.data || null);
+         } else if (activeTab === 'pnl') {
+            const res = await api.get('/finance/profit-loss');
+            setPnlData(res.data.data || null);
          }
       } catch (err) {
          console.error('Fetch finance data error:', err);
       } finally {
          setLoading(false);
       }
+   };
+
+   const exportPnlCSV = () => {
+      if (!pnlData) return;
+      let csv = "data:text/csv;charset=utf-8,Financial Line Item,Amount (LKR),Notes\n";
+      csv += `"Gross Sales Revenue",${pnlData.revenue.grossRevenue},"All sales channels"\n`;
+      csv += `"Cost of Goods Sold (COGS)",${pnlData.cogs.totalCOGS},"Estimated / PO Intake"\n`;
+      csv += `"Gross Profit",${pnlData.cogs.grossProfit},"Gross Margin: ${pnlData.cogs.grossMarginPercent}%"\n`;
+      csv += `"Total Operating Expenses",${pnlData.expenses.totalExpenses},"Sum of all categories"\n`;
+      Object.entries(pnlData.expenses.breakdown || {}).forEach(([cat, amt]) => {
+         csv += `"- Expense: ${cat}",${amt},"Operating Cost"\n`;
+      });
+      csv += `"Net Operating Profit",${pnlData.netIncome.netProfit},"Net Margin: ${pnlData.netIncome.netProfitMargin}%"\n`;
+      csv += `"Cash Flow Inflow",${pnlData.cashFlow.inflow},"Collected cash/card/online"\n`;
+      csv += `"Cash Flow Outflow",${pnlData.cashFlow.outflow},"Expenses + Inventory purchases"\n`;
+      csv += `"Net Cash Flow",${pnlData.cashFlow.netCashFlow},"Net liquidity balance"\n`;
+
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Profit_Loss_Statement_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
    };
 
    const handleExpenseSubmit = async (e) => {
@@ -144,6 +172,12 @@ export default function AdminFinance() {
                   className={`text-xs font-black uppercase tracking-wider px-4 py-2.5 ${activeTab === 'apar' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'}`}
                >
                   AP / AR
+               </Button>
+               <Button
+                  onClick={() => setActiveTab('pnl')}
+                  className={`text-xs font-black uppercase tracking-wider px-4 py-2.5 ${activeTab === 'pnl' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'}`}
+               >
+                  Profit & Loss (P&L)
                </Button>
             </div>
          </div>
@@ -461,6 +495,116 @@ export default function AdminFinance() {
                      </div>
                   </div>
                </div>
+            </div>
+         )}
+
+         {/* Tab Content 6: Profit & Loss (P&L) Statement & Cash Flow Summaries */}
+         {activeTab === 'pnl' && (
+            <div className="space-y-8">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border-2 border-black p-6">
+                  <div>
+                     <h3 className="text-lg font-black uppercase tracking-tight">Executive Profit & Loss (P&L) Statement</h3>
+                     <p className="text-xs text-gray-500 mt-1">Consolidated revenue, COGS, operating overheads, and cash flow liquidity</p>
+                  </div>
+                  <Button onClick={exportPnlCSV} className="bg-black text-white text-xs font-black uppercase px-6 py-3">
+                     Download P&L Statement (CSV)
+                  </Button>
+               </div>
+
+               {loading ? (
+                  <div className="py-20 text-center text-xs font-black uppercase tracking-widest animate-pulse">
+                     Calculating Comprehensive P&L Statement...
+                  </div>
+               ) : pnlData ? (
+                  <>
+                     {/* KPI Cards */}
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="bg-white border-2 border-black p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Gross Sales Revenue</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-black">LKR {pnlData.revenue.grossRevenue.toLocaleString()}</p>
+                           <p className="text-[10px] text-gray-400 mt-2">{pnlData.revenue.orderCount} total customer orders</p>
+                        </div>
+
+                        <div className="bg-white border-2 border-black p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Cost of Goods Sold (COGS)</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-amber-700">LKR {pnlData.cogs.totalCOGS.toLocaleString()}</p>
+                           <p className="text-[10px] text-gray-400 mt-2">Gross Margin: {pnlData.cogs.grossMarginPercent}%</p>
+                        </div>
+
+                        <div className="bg-white border-2 border-black p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Operating Expenses</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-red-600">LKR {pnlData.expenses.totalExpenses.toLocaleString()}</p>
+                           <p className="text-[10px] text-gray-400 mt-2">{Object.keys(pnlData.expenses.breakdown || {}).length} expense categories</p>
+                        </div>
+
+                        <div className={`border-2 border-black p-6 ${pnlData.netIncome.netProfit >= 0 ? 'bg-black text-white' : 'bg-red-50 text-red-900'}`}>
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60">Net Operating Profit</span>
+                           <p className={`text-2xl font-black mt-2 font-mono ${pnlData.netIncome.netProfit >= 0 ? 'text-green-400' : 'text-red-600'}`}>
+                              LKR {pnlData.netIncome.netProfit.toLocaleString()}
+                           </p>
+                           <p className="text-[10px] opacity-75 mt-2">Net Margin: {pnlData.netIncome.netProfitMargin}%</p>
+                        </div>
+                     </div>
+
+                     {/* Breakdown Sections */}
+                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* P&L Statement Table */}
+                        <div className="bg-white border-2 border-black p-6 space-y-4">
+                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Income Statement Summary</h4>
+                           <div className="space-y-3 text-xs font-mono">
+                              <div className="flex justify-between py-2 border-b border-gray-100 font-bold">
+                                 <span>1. Gross Sales Revenue</span>
+                                 <span>LKR {pnlData.revenue.grossRevenue.toLocaleString()}</span>
+                              </div>
+                              <div className="flex justify-between py-2 border-b border-gray-100 text-amber-800">
+                                 <span>2. Less: Cost of Goods Sold (COGS)</span>
+                                 <span>- LKR {pnlData.cogs.totalCOGS.toLocaleString()}</span>
+                              </div>
+                              <div className="flex justify-between py-2 border-b-2 border-black font-black bg-gray-50 px-2">
+                                 <span>= GROSS PROFIT</span>
+                                 <span>LKR {pnlData.cogs.grossProfit.toLocaleString()}</span>
+                              </div>
+                              <div className="flex justify-between py-2 border-b border-gray-100 text-red-600 font-bold">
+                                 <span>3. Less: Operating Expenses</span>
+                                 <span>- LKR {pnlData.expenses.totalExpenses.toLocaleString()}</span>
+                              </div>
+                              {Object.entries(pnlData.expenses.breakdown || {}).map(([cat, amt]) => (
+                                 <div key={cat} className="flex justify-between py-1 pl-4 text-gray-500 text-[11px]">
+                                    <span>• {cat}</span>
+                                    <span>LKR {amt.toLocaleString()}</span>
+                                 </div>
+                              ))}
+                              <div className={`flex justify-between py-3 border-t-2 border-black font-black text-sm px-2 ${pnlData.netIncome.netProfit >= 0 ? 'bg-green-50 text-green-900' : 'bg-red-50 text-red-900'}`}>
+                                 <span>= NET OPERATING INCOME</span>
+                                 <span>LKR {pnlData.netIncome.netProfit.toLocaleString()}</span>
+                              </div>
+                           </div>
+                        </div>
+
+                        {/* Cash Flow Summary Table */}
+                        <div className="bg-white border-2 border-black p-6 space-y-4">
+                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Cash Flow Liquidity Summary</h4>
+                           <div className="space-y-3 text-xs font-mono">
+                              <div className="flex justify-between py-2 border-b border-gray-100 text-green-700 font-bold">
+                                 <span>(+) Cash Inflows (Collected Sales)</span>
+                                 <span>+ LKR {pnlData.cashFlow.inflow.toLocaleString()}</span>
+                              </div>
+                              <div className="flex justify-between py-2 border-b border-gray-100 text-red-600 font-bold">
+                                 <span>(-) Cash Outflows (Overheads + Stock Purchases)</span>
+                                 <span>- LKR {pnlData.cashFlow.outflow.toLocaleString()}</span>
+                              </div>
+                              <div className={`flex justify-between py-3 border-t-2 border-black font-black text-sm px-2 ${pnlData.cashFlow.netCashFlow >= 0 ? 'bg-blue-50 text-blue-900' : 'bg-amber-50 text-amber-900'}`}>
+                                 <span>(=) NET CASH FLOW POSITION</span>
+                                 <span>LKR {pnlData.cashFlow.netCashFlow.toLocaleString()}</span>
+                              </div>
+                              <p className="text-[10px] text-gray-500 mt-4 leading-relaxed font-sans">
+                                 * Positive cash flow indicates solvent operational health. Negative balances indicate seasonal capital outlay in inventory acquisition.
+                              </p>
+                           </div>
+                        </div>
+                     </div>
+                  </>
+               ) : null}
             </div>
          )}
 

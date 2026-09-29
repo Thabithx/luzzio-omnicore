@@ -181,3 +181,80 @@ exports.processReturnStatus = async (req, res) => {
       res.status(500).json({ success: false, message: error.message });
    }
 };
+
+// SATHMIRA: Generate Returns & Exchange Analytical Reports
+// @desc    Get detailed Returns & Exchange performance report
+// @route   GET /api/returns/report
+// @access  Private (Admin / Warehouse / Sales)
+exports.getReturnsReport = async (req, res) => {
+   try {
+      const returns = await ReturnRequest.find()
+         .populate('originalOrder', 'totalPrice channel createdAt orderItems')
+         .populate('items.product', 'name price category sku');
+
+      const totalOrdersCount = await Order.countDocuments();
+
+      let totalRequests = returns.length;
+      let approvedCount = 0;
+      let rejectedCount = 0;
+      let requestedCount = 0;
+      let totalRefundedValue = 0;
+
+      const reasonBreakdown = {};
+      const productReturnCount = {};
+      const conditionBreakdown = { RESELLABLE: 0, DAMAGED: 0 };
+      const typeBreakdown = { RETURN: 0, EXCHANGE: 0 };
+
+      returns.forEach(ret => {
+         if (ret.status === 'APPROVED' || ret.status === 'REFUNDED') approvedCount++;
+         else if (ret.status === 'REJECTED') rejectedCount++;
+         else requestedCount++;
+
+         if (ret.requestType) {
+            typeBreakdown[ret.requestType] = (typeBreakdown[ret.requestType] || 0) + 1;
+         }
+
+         if (ret.refundAmount) {
+            totalRefundedValue += ret.refundAmount;
+         }
+
+         (ret.items || []).forEach(item => {
+            const reason = item.reason || 'Other';
+            reasonBreakdown[reason] = (reasonBreakdown[reason] || 0) + item.quantity;
+
+            const cond = item.condition || 'RESELLABLE';
+            conditionBreakdown[cond] = (conditionBreakdown[cond] || 0) + item.quantity;
+
+            if (item.product) {
+               const pName = item.product.name || 'Unknown Item';
+               productReturnCount[pName] = (productReturnCount[pName] || 0) + item.quantity;
+            }
+         });
+      });
+
+      const returnRate = totalOrdersCount > 0 ? ((totalRequests / totalOrdersCount) * 100).toFixed(1) : 0;
+
+      res.status(200).json({
+         success: true,
+         data: {
+            summary: {
+               totalRequests,
+               approvedCount,
+               rejectedCount,
+               requestedCount,
+               totalRefundedValue,
+               totalOrders: totalOrdersCount,
+               returnRatePercent: Number(returnRate)
+            },
+            typeBreakdown,
+            conditionBreakdown,
+            reasonBreakdown,
+            productReturnCount,
+            recentReturns: returns.slice(0, 10)
+         }
+      });
+   } catch (error) {
+      console.error('getReturnsReport error:', error);
+      res.status(500).json({ success: false, message: error.message });
+   }
+};
