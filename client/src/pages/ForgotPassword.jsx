@@ -5,12 +5,14 @@ import { Button } from '../components/ui/Button';
 import api from '../services/api';
 import Meta from '../components/ui/Meta';
 import { ChevronLeft, ShieldCheck } from 'lucide-react';
+import { useToast } from '../components/ui/Toast';
 
 export default function ForgotPassword() {
    const [email, setEmail] = useState('');
    const [loading, setLoading] = useState(false);
    const [message, setMessage] = useState('');
    const [error, setError] = useState('');
+   const { showToast } = useToast();
 
    const handleSubmit = async (e) => {
       e.preventDefault();
@@ -21,10 +23,13 @@ export default function ForgotPassword() {
       try {
          const res = await api.post('/auth/forgotpassword', { email });
          if (res.data.success) {
-            setMessage('A security code has been generated. Please check the system logs or contact administration.');
+            setMessage('A security code has been generated. Please check system logs or contact administration.');
+            showToast('Security code generated successfully.', 'success');
          }
       } catch (err) {
-         setError(err.response?.data?.message || 'Failed to initiate reset protocol.');
+         const errMsg = err.response?.data?.message || 'Failed to initiate reset protocol.';
+         setError(errMsg);
+         showToast(errMsg, 'error');
       } finally {
          setLoading(false);
       }

@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useAuth } from '../context/AuthContext';
 import Meta from '../components/ui/Meta';
+import { useToast } from '../components/ui/Toast';
 
 export function Register() {
    const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ export function Register() {
    const [error, setError] = useState('');
    const navigate = useNavigate();
    const { register } = useAuth();
+   const { showToast } = useToast();
 
    const handleChange = (e) => {
       setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,6 +27,7 @@ export function Register() {
    const handleSubmit = async (e) => {
       e.preventDefault();
       if (formData.password !== formData.confirmPassword) {
+         showToast('Passwords do not match', 'warning');
          return setError('Passwords do not match');
       }
 
@@ -38,9 +41,11 @@ export function Register() {
       );
 
       if (result.success) {
+         showToast('Account created successfully. Welcome to Luzzio!', 'success');
          navigate('/profile');
       } else {
          setError(result.message);
+         showToast(result.message || 'Registration failed', 'error');
          setLoading(false);
       }
    };

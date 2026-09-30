@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useAuth } from '../context/AuthContext';
 import Meta from '../components/ui/Meta';
+import { useToast } from '../components/ui/Toast';
 
 export function Login() {
    const [email, setEmail] = useState('');
@@ -12,6 +13,7 @@ export function Login() {
    const [error, setError] = useState('');
    const navigate = useNavigate();
    const { login } = useAuth();
+   const { showToast } = useToast();
 
    const handleSubmit = async (e) => {
       e.preventDefault();
@@ -21,6 +23,7 @@ export function Login() {
       const result = await login(email, password);
 
       if (result.success) {
+         showToast('Welcome back to Luzzio!', 'success');
          const user = JSON.parse(localStorage.getItem('user'));
          if (user?.role === 'admin') {
             navigate('/admin');
@@ -29,6 +32,7 @@ export function Login() {
          }
       } else {
          setError(result.message);
+         showToast(result.message || 'Authentication failed', 'error');
          setLoading(false);
       }
    };

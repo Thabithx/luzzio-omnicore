@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button';
 import api from '../services/api';
 import Meta from '../components/ui/Meta';
 import { ChevronLeft, Lock } from 'lucide-react';
+import { useToast } from '../components/ui/Toast';
 
 export default function ResetPassword() {
    const [code, setCode] = useState('');
@@ -13,10 +14,12 @@ export default function ResetPassword() {
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
    const navigate = useNavigate();
+   const { showToast } = useToast();
 
    const handleSubmit = async (e) => {
       e.preventDefault();
       if (password !== confirmPassword) {
+         showToast('Passwords do not match.', 'warning');
          return setError('Password verification failed. Inputs do not match.');
       }
 
@@ -26,10 +29,13 @@ export default function ResetPassword() {
       try {
          const res = await api.put(`/auth/resetpassword/${code}`, { password });
          if (res.data.success) {
+            showToast('Password reset successful. Please sign in.', 'success');
             navigate('/login', { state: { message: 'Password reset successful. Protocol updated.' } });
          }
       } catch (err) {
-         setError(err.response?.data?.message || 'Invalid or expired verification code.');
+         const errMsg = err.response?.data?.message || 'Invalid or expired verification code.';
+         setError(errMsg);
+         showToast(errMsg, 'error');
       } finally {
          setLoading(false);
       }
