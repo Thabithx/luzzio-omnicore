@@ -8,11 +8,15 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { firstError, isBlank, isEmail, isPhone } from '../../utils/formValidate';
+import { useToast } from '../../components/ui/Toast';
+import { useConfirm } from '../../components/ui/ConfirmModal';
 
 export default function AdminSuppliers() {
    const [suppliers, setSuppliers] = useState([]);
    const [loading, setLoading] = useState(false);
    const [search, setSearch] = useState('');
+   const { showToast } = useToast();
+   const confirm = useConfirm();
 
    // Modal State
    const [showModal, setShowModal] = useState(false);
@@ -83,30 +87,39 @@ export default function AdminSuppliers() {
       ]);
 
       if (error) {
-         alert(error);
+         showToast(error, 'warning');
          return;
       }
 
       try {
          if (editingSupplier) {
             await api.put(`/suppliers/${editingSupplier._id}`, formData);
+            showToast('Supplier updated successfully.', 'success');
          } else {
             await api.post('/suppliers', formData);
+            showToast('Supplier added successfully.', 'success');
          }
          setShowModal(false);
          fetchSuppliers();
       } catch (err) {
-         alert(err.response?.data?.message || 'Failed to save supplier');
+         showToast(err.response?.data?.message || 'Failed to save supplier.', 'error');
       }
    };
 
    const handleDelete = async (id) => {
-      if (!window.confirm('Are you sure you want to remove this supplier?')) return;
+      const yes = await confirm({
+         title: 'Remove Supplier',
+         message: 'This will permanently remove the supplier profile. Associated purchase orders will remain.',
+         confirmLabel: 'Remove Supplier',
+         danger: true
+      });
+      if (!yes) return;
       try {
          await api.delete(`/suppliers/${id}`);
          fetchSuppliers();
+         showToast('Supplier removed successfully.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Failed to delete supplier');
+         showToast(err.response?.data?.message || 'Failed to delete supplier.', 'error');
       }
    };
 

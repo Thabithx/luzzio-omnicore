@@ -9,6 +9,8 @@ import { DndContext, closestCenter, MouseSensor, TouchSensor, useSensor, useSens
 import { SortableContext, rectSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { firstError, isBlank, isPositive, isNonNeg } from '../../utils/formValidate';
+import { useToast } from '../../components/ui/Toast';
+import { useConfirm } from '../../components/ui/ConfirmModal';
 
 const SortableImage = ({ url, index, onRemove }) => {
    const {
@@ -93,6 +95,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
    const [uploading, setUploading] = useState(false);
    const [formError, setFormError] = useState('');
    const { token } = useAuth();
+   const { showToast } = useToast();
 
    // dnd-kit sensors
    const sensors = useSensors(
@@ -160,7 +163,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
 
       const currentImages = formData.images.filter(img => img !== '');
       if (currentImages.length + files.length > 10) {
-         alert('Maximum 10 images allowed per product');
+         showToast('Maximum 10 images allowed per product.', 'warning');
          return;
       }
 
@@ -184,7 +187,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
          });
       } catch (err) {
          console.error('Asset upload failed:', err);
-         alert('FAILED TO UPLOAD ARCHIVE ASSET: ' + (err.response?.data?.message || err.message));
+         showToast('Failed to upload product image: ' + (err.response?.data?.message || err.message), 'error');
       } finally {
          setUploading(false);
       }
@@ -508,7 +511,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                                        });
                                        setFormData({ ...formData, sizeChart: res.data.files[0].url });
                                     } catch (err) {
-                                       alert('Upload failed');
+                                       showToast('Size chart upload failed.', 'error');
                                     } finally {
                                        setUploading(false);
                                     }
@@ -661,6 +664,8 @@ const AdminProducts = () => {
    const [editingProduct, setEditingProduct] = useState(null);
    const [searchTerm, setSearchTerm] = useState('');
    const { token } = useAuth();
+   const { showToast } = useToast();
+   const confirm = useConfirm();
 
    const fetchData = async () => {
       try {
@@ -672,7 +677,7 @@ const AdminProducts = () => {
          setCategories(catRes.data.data);
       } catch (err) {
          console.error('Archive retrieval failed:', err);
-         alert('FAILED TO RETRIEVE ARCHIVE: ' + (err.response?.data?.message || err.message));
+         showToast('Failed to retrieve products catalog: ' + (err.response?.data?.message || err.message), 'error');
       }
    };
 
@@ -692,26 +697,35 @@ const AdminProducts = () => {
 
          if (editingProduct) {
             await api.put(`/products/${editingProduct._id}`, dataToSave);
+            showToast('Product updated successfully.', 'success');
          } else {
             await api.post('/products', dataToSave);
+            showToast('Product created successfully.', 'success');
          }
          setIsModalOpen(false);
          setEditingProduct(null);
          fetchData();
       } catch (err) {
          console.error('Archive synchronization failed:', err);
-         alert('ARCHIVE SYNCHRONIZATION FAILED: ' + (err.response?.data?.message || err.message));
+         showToast('Failed to save product: ' + (err.response?.data?.message || err.message), 'error');
       }
    };
 
    const handleDelete = async (id) => {
-      if (window.confirm('Confirm permanent deletion?')) {
-         try {
-            await api.delete(`/products/${id}`);
-            fetchData();
-         } catch (err) {
-            console.error('De-archiving failed:', err);
-         }
+      const yes = await confirm({
+         title: 'Delete Product',
+         message: 'This will permanently remove this product from the catalog. This action cannot be undone.',
+         confirmLabel: 'Delete Product',
+         danger: true
+      });
+      if (!yes) return;
+      try {
+         await api.delete(`/products/${id}`);
+         fetchData();
+         showToast('Product deleted successfully.', 'success');
+      } catch (err) {
+         console.error('De-archiving failed:', err);
+         showToast('Failed to delete product: ' + (err.response?.data?.message || err.message), 'error');
       }
    };
 

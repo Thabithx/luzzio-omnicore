@@ -4,6 +4,8 @@ import { Package, MapPin, User as UserIcon, Clock, ChevronRight, LogOut } from '
 import Meta from '../components/ui/Meta';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/ui/Toast';
+
 
 const OrderDetailsModal = ({ isOpen, onClose, order, user }) => {
    if (!isOpen || !order) return null;
@@ -137,6 +139,8 @@ export function Profile() {
    const [activeTab, setActiveTab] = useState('orders');
    const [searchParams] = useSearchParams();
    const { user, token, guestEmail, setGuestProfile, logout, updateUser, clearGuestProfile } = useAuth();
+   const { showToast } = useToast();
+
 
    // Profile Edit States
    const [editData, setEditData] = useState({
@@ -220,10 +224,10 @@ export function Profile() {
          const res = await api.put('/auth/profile', editData);
          if (res.data.success) {
             updateUser(res.data);
-            alert('Security Registry Updated.');
+            showToast('Profile updated successfully.', 'success');
          }
       } catch (err) {
-         alert(err.response?.data?.message || 'Update Protocol Failed.');
+         showToast(err.response?.data?.message || 'Failed to update profile.', 'error');
       } finally {
          setUpdating(false);
       }

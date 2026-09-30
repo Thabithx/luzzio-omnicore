@@ -7,6 +7,7 @@ import { Search, RotateCcw, CheckCircle, XCircle, RefreshCw, Eye, X, AlertCircle
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
+import { useToast } from '../../components/ui/Toast';
 
 export default function AdminReturns() {
    const [activeTab, setActiveTab] = useState('list'); // 'list' | 'reports'
@@ -14,6 +15,7 @@ export default function AdminReturns() {
    const [reportData, setReportData] = useState(null);
    const [loading, setLoading] = useState(false);
    const [statusFilter, setStatusFilter] = useState('');
+   const { showToast } = useToast();
 
    // Modal State
    const [showModal, setShowModal] = useState(false);
@@ -108,7 +110,7 @@ export default function AdminReturns() {
    const handleCreateReturnSubmit = async (e) => {
       e.preventDefault();
       if (!createForm.originalOrderId || !createForm.productId) {
-         alert('Please select an order and a product item');
+         showToast('Please select an order and a product item.', 'warning');
          return;
       }
 
@@ -138,8 +140,9 @@ export default function AdminReturns() {
             condition: 'RESELLABLE'
          });
          fetchReturns();
+         showToast('Return request created successfully.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Failed to create return request');
+         showToast(err.response?.data?.message || 'Failed to create return request.', 'error');
       } finally {
          setCreatingReturn(false);
       }
@@ -181,12 +184,14 @@ export default function AdminReturns() {
          await api.put(`/returns/${selectedReturn._id}/status`, statusUpdate);
          setShowModal(false);
          fetchReturns();
+         showToast('Return status updated successfully.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Failed to update return status');
+         showToast(err.response?.data?.message || 'Failed to update return status.', 'error');
       } finally {
          setSubmitting(false);
       }
    };
+
 
    return (
       <div className="space-y-8">

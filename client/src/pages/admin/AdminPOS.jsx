@@ -8,9 +8,11 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
 
 export default function AdminPOS() {
    const { user } = useAuth();
+   const { showToast } = useToast();
    const [products, setProducts] = useState([]);
    const [searchQuery, setSearchQuery] = useState('');
    const [loadingProducts, setLoadingProducts] = useState(false);
@@ -66,7 +68,7 @@ export default function AdminPOS() {
       }
 
       if (availableStock <= 0) {
-         alert(`Stock depleted for '${product.name}' (${sizeToUse || 'All'})`);
+         showToast(`Stock depleted for '${product.name}' (${sizeToUse || 'All'}).`, 'warning');
          return;
       }
 
@@ -74,7 +76,7 @@ export default function AdminPOS() {
       if (existingIndex > -1) {
          const currentQty = cart[existingIndex].qty;
          if (currentQty + 1 > availableStock) {
-            alert(`Cannot add more than available stock (${availableStock})`);
+            showToast(`Cannot add more than available stock (${availableStock}).`, 'warning');
             return;
          }
          const updated = [...cart];
@@ -103,7 +105,7 @@ export default function AdminPOS() {
       if (newQty <= 0) {
          updated.splice(index, 1);
       } else if (newQty > updated[index].maxStock) {
-         alert(`Stock limit reached (${updated[index].maxStock})`);
+         showToast(`Stock limit reached (${updated[index].maxStock}).`, 'warning');
       } else {
          updated[index].qty = newQty;
       }
@@ -139,22 +141,24 @@ export default function AdminPOS() {
          setSelectedCustomer(res.data.data);
          setShowCustomerModal(false);
          setNewCustomer({ name: '', phone: '', email: '' });
+         showToast('Customer profile created.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Failed to create customer');
+         showToast(err.response?.data?.message || 'Failed to create customer.', 'error');
       }
    };
 
    // Complete Sale
    const handleCheckout = async () => {
       if (cart.length === 0) {
-         alert('Cart is empty');
+         showToast('Cart is empty. Add products before checking out.', 'warning');
          return;
       }
 
       if (paymentMethod === 'CASH' && Number(cashTendered) < grandTotal) {
-         alert(`Cash tendered (Rs. ${cashTendered}) is less than total (Rs. ${grandTotal})`);
+         showToast(`Cash tendered (Rs. ${cashTendered}) is less than total (Rs. ${grandTotal.toFixed(2)}).`, 'warning');
          return;
       }
+
 
       setProcessing(true);
       setErrorMessage('');

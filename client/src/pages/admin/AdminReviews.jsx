@@ -6,6 +6,8 @@ import React, { useState, useEffect } from 'react';
 import { Star, CheckCircle, XCircle, Trash2, MessageSquare, RefreshCw, Eye, CornerDownRight } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import api from '../../services/api';
+import { useToast } from '../../components/ui/Toast';
+import { useConfirm } from '../../components/ui/ConfirmModal';
 
 export default function AdminReviews() {
    const [activeTab, setActiveTab] = useState('moderation'); // 'moderation' | 'reports'
@@ -15,6 +17,8 @@ export default function AdminReviews() {
    const [filter, setFilter] = useState('ALL'); // ALL | APPROVED | REJECTED
    const [replyModal, setReplyModal] = useState({ open: false, review: null, text: '' });
    const [submitting, setSubmitting] = useState(false);
+   const { showToast } = useToast();
+   const confirm = useConfirm();
 
    useEffect(() => {
       if (activeTab === 'moderation') {
@@ -79,19 +83,30 @@ export default function AdminReviews() {
          await api.put(`/products/${review.productId}/reviews/${review.reviewId}/moderate`, {
             isApproved: !currentStatus
          });
+         showToast(
+            currentStatus ? 'Review hidden from storefront.' : 'Review approved and published.',
+            currentStatus ? 'warning' : 'success'
+         );
          fetchReviews();
       } catch (err) {
-         alert('Failed to update review moderation status');
+         showToast('Failed to update review moderation status.', 'error');
       }
    };
 
    const handleDeleteReview = async (productId, reviewId) => {
-      if (!window.confirm('Are you sure you want to delete this review permanently?')) return;
+      const yes = await confirm({
+         title: 'Delete Review Permanently',
+         message: 'This action is irreversible. The customer review will be permanently removed from the product.',
+         confirmLabel: 'Delete Review',
+         danger: true
+      });
+      if (!yes) return;
       try {
          await api.delete(`/products/${productId}/reviews/${reviewId}`);
+         showToast('Review deleted successfully.', 'success');
          fetchReviews();
       } catch (err) {
-         alert('Failed to delete review');
+         showToast('Failed to delete review.', 'error');
       }
    };
 
@@ -104,9 +119,10 @@ export default function AdminReviews() {
             adminResponse: replyModal.text
          });
          setReplyModal({ open: false, review: null, text: '' });
+         showToast('Official response published successfully.', 'success');
          fetchReviews();
       } catch (err) {
-         alert('Failed to save admin response');
+         showToast('Failed to save admin response.', 'error');
       } finally {
          setSubmitting(false);
       }

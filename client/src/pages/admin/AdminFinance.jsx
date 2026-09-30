@@ -8,6 +8,8 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { firstError, isBlank, isPositive } from '../../utils/formValidate';
+import { useToast } from '../../components/ui/Toast';
+import { useConfirm } from '../../components/ui/ConfirmModal';
 
 export default function AdminFinance() {
    const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'revenue' | 'expenses' | 'reconciliation' | 'apar' | 'pnl'
@@ -18,6 +20,8 @@ export default function AdminFinance() {
    const [aparData, setAparData] = useState(null);
    const [pnlData, setPnlData] = useState(null);
    const [loading, setLoading] = useState(false);
+   const { showToast } = useToast();
+   const confirm = useConfirm();
 
    // Expense Modal State
    const [showExpenseModal, setShowExpenseModal] = useState(false);
@@ -100,7 +104,7 @@ export default function AdminFinance() {
       ]);
 
       if (error) {
-         alert(error);
+         showToast(error, 'warning');
          return;
       }
 
@@ -117,20 +121,28 @@ export default function AdminFinance() {
             notes: ''
          });
          fetchFinanceData();
+         showToast('Expense recorded successfully.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Failed to record expense');
+         showToast(err.response?.data?.message || 'Failed to record expense.', 'error');
       } finally {
          setSubmittingExpense(false);
       }
    };
 
    const handleDeleteExpense = async (id) => {
-      if (!window.confirm('Delete this expense entry?')) return;
+      const yes = await confirm({
+         title: 'Delete Expense Entry',
+         message: 'This will permanently remove this expense record from your financial ledger.',
+         confirmLabel: 'Delete Expense',
+         danger: true
+      });
+      if (!yes) return;
       try {
          await api.delete(`/finance/expenses/${id}`);
          fetchFinanceData();
+         showToast('Expense entry deleted.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Delete failed');
+         showToast(err.response?.data?.message || 'Delete failed.', 'error');
       }
    };
 

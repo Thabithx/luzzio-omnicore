@@ -5,10 +5,14 @@ import { Input } from './ui/Input';
 import { cn } from '../utils/cn';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from './ui/Toast';
+import { useConfirm } from './ui/ConfirmModal';
 
 export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDeleted }) {
    const { user } = useAuth();
    const isAdmin = user?.role === 'admin';
+   const { showToast } = useToast();
+   const confirm = useConfirm();
 
    const [isWritingReview, setIsWritingReview] = useState(false);
    const [sortBy, setSortBy] = useState('newest'); // newest, highest, lowest
@@ -41,7 +45,7 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
 
       const totalImages = formData.images.length + files.length;
       if (totalImages > 8) {
-         alert(`Maximum 8 images allowed. You can only add ${8 - formData.images.length} more.`);
+         showToast(`Maximum 8 images allowed. You can only add ${8 - formData.images.length} more.`, 'warning');
          return;
       }
 
@@ -65,10 +69,9 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
       } catch (err) {
          console.error('Upload failed:', err);
          const errorMsg = err.response?.data?.message || 'Failed to upload images. Check file sizes or format.';
-         alert(errorMsg);
+         showToast(errorMsg, 'error');
       } finally {
          setUploading(false);
-         // Reset file input so same file can be selected again if needed
          e.target.value = '';
       }
    };
@@ -80,6 +83,7 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
          const res = await api.post(`/products/${productId}/reviews`, formData);
          if (onReviewAdded) onReviewAdded(res.data.data);
          setSuccess(true);
+         showToast('Thank you! Your review has been submitted.', 'success');
          setFormData({ rating: 5, comment: '', images: [], name: '', email: '' });
          setTimeout(() => {
             setSuccess(false);
@@ -87,26 +91,29 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
          }, 2000);
       } catch (err) {
          console.error('Review submission error:', err);
-         alert(err.response?.data?.message || 'Failed to submit review');
+         showToast(err.response?.data?.message || 'Failed to submit review.', 'error');
       } finally {
          setSubmitting(false);
       }
    };
 
    const handleDeleteReview = async (reviewId) => {
-      if (!window.confirm('Are you sure you want to delete this review?')) return;
+      const yes = await confirm({
+         title: 'Delete Review',
+         message: 'Are you sure you want to delete this customer review?',
+         confirmLabel: 'Delete Review',
+         danger: true
+      });
+      if (!yes) return;
 
       try {
          setIsDeleting(reviewId);
          await api.delete(`/products/${productId}/reviews/${reviewId}`);
-         // We need to trigger an update - since Reviews is controlled by parent ProductDetail, 
-         // we should ideally have an onReviewDeleted prop or just refresh product.
-         // For now, let's assume the parent handles it if we can - but ProductDetail only has onReviewAdded.
-         // Let's reload page as a quick fix or if you want it smoother, we need parent update.
+         showToast('Review deleted successfully.', 'success');
          window.location.reload();
       } catch (err) {
          console.error('Failed to delete review:', err);
-         alert('Administrative bypass failed');
+         showToast('Failed to delete review.', 'error');
       } finally {
          setIsDeleting(null);
       }

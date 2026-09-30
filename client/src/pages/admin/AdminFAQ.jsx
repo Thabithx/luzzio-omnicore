@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Save, X, MoveUp, MoveDown } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
+import { useConfirm } from '../../components/ui/ConfirmModal';
 
 export default function AdminFAQ() {
    const { token } = useAuth();
@@ -16,6 +18,8 @@ export default function AdminFAQ() {
       order: 0,
       isPublished: true
    });
+   const { showToast } = useToast();
+   const confirm = useConfirm();
 
    const categories = ['Shipping', 'Returns', 'Payment', 'Products', 'Account', 'General'];
 
@@ -52,10 +56,11 @@ export default function AdminFAQ() {
             setFaqs([...faqs, res.data.data]);
             setIsAdding(false);
             resetForm();
+            showToast('FAQ article published successfully.', 'success');
          }
       } catch (error) {
          console.error('Error adding FAQ:', error);
-         alert('Failed to add FAQ');
+         showToast('Failed to add FAQ.', 'error');
       }
    };
 
@@ -77,24 +82,33 @@ export default function AdminFAQ() {
             setFaqs(faqs.map(faq => faq._id === id ? res.data.data : faq));
             setEditingId(null);
             resetForm();
+            showToast('FAQ updated successfully.', 'success');
          }
       } catch (error) {
          console.error('Error updating FAQ:', error);
-         alert('Failed to update FAQ');
+         showToast('Failed to update FAQ.', 'error');
       }
    };
 
    const handleDelete = async (id) => {
-      if (!confirm('Are you sure you want to delete this FAQ?')) return;
+      const yes = await confirm({
+         title: 'Delete FAQ Article',
+         message: 'This will permanently remove this FAQ from the knowledge base.',
+         confirmLabel: 'Delete FAQ',
+         danger: true
+      });
+      if (!yes) return;
 
       try {
          await api.delete(`/faq/${id}`);
          setFaqs(faqs.filter(faq => faq._id !== id));
+         showToast('FAQ deleted successfully.', 'success');
       } catch (error) {
          console.error('Error deleting FAQ:', error);
-         alert('Failed to delete FAQ');
+         showToast('Failed to delete FAQ.', 'error');
       }
    };
+
 
    const handleReorder = async (id, direction) => {
       const index = faqs.findIndex(f => f._id === id);

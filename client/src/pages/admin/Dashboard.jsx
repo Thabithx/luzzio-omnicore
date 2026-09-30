@@ -7,6 +7,7 @@ import { cn } from '../../utils/cn';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { useToast } from '../../components/ui/Toast';
 
 const StatCard = ({ label, value, icon: Icon, trend, accent }) => (
    <div className={cn('p-8 border border-black group transition-all duration-500', accent ? 'bg-black' : 'bg-white hover:bg-black')}>
@@ -94,6 +95,7 @@ const Dashboard = () => {
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [range, setRange] = useState('all');
    const { token } = useAuth();
+   const { showToast } = useToast();
 
    const fetchStats = async () => {
       setLoading(true);
@@ -167,7 +169,7 @@ const Dashboard = () => {
          link.click();
          document.body.removeChild(link);
       } catch (err) {
-         alert('Failed to generate consolidated analytics report');
+         showToast('Failed to generate consolidated analytics report.', 'error');
       }
    };
 

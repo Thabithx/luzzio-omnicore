@@ -9,6 +9,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { firstError, isBlank } from '../../utils/formValidate';
+import { useToast } from '../../components/ui/Toast';
 
 export default function AdminInventory() {
    const [activeTab, setActiveTab] = useState('registry'); // 'registry' | 'history' | 'reports'
@@ -18,6 +19,7 @@ export default function AdminInventory() {
    const [loading, setLoading] = useState(false);
    const [search, setSearch] = useState('');
    const [lowStockFilter, setLowStockFilter] = useState(false);
+   const { showToast } = useToast();
 
    // Manual adjustment modal state
    const [showAdjustModal, setShowAdjustModal] = useState(false);
@@ -121,7 +123,7 @@ export default function AdminInventory() {
       ]);
 
       if (error) {
-         alert(error);
+         showToast(error, 'warning');
          return;
       }
 
@@ -137,12 +139,14 @@ export default function AdminInventory() {
 
          setShowAdjustModal(false);
          fetchInventory();
+         showToast('Stock adjustment applied successfully.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Stock adjustment failed');
+         showToast(err.response?.data?.message || 'Stock adjustment failed.', 'error');
       } finally {
          setSubmittingAdjust(false);
       }
    };
+
 
    return (
       <div className="space-y-8">

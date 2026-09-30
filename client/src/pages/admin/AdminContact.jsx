@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { MessageSquare, Send, Trash2, X, Check } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
+import { useConfirm } from '../../components/ui/ConfirmModal';
 
 export default function AdminContact() {
    const { token } = useAuth();
@@ -11,6 +13,8 @@ export default function AdminContact() {
    const [replyText, setReplyText] = useState('');
    const [sending, setSending] = useState(false);
    const [filter, setFilter] = useState('all'); // all, pending, replied, closed
+   const { showToast } = useToast();
+   const confirm = useConfirm();
 
    useEffect(() => {
       fetchMessages();
@@ -42,11 +46,11 @@ export default function AdminContact() {
             ));
             setReplyText('');
             setSelectedMessage(null);
-            alert('Reply sent successfully!');
+            showToast('Reply sent successfully!', 'success');
          }
       } catch (error) {
          console.error('Error sending reply:', error);
-         alert('Failed to send reply');
+         showToast('Failed to send reply.', 'error');
       } finally {
          setSending(false);
       }
@@ -59,15 +63,22 @@ export default function AdminContact() {
             setMessages(messages.map(msg =>
                msg._id === messageId ? res.data.data : msg
             ));
+            showToast('Status updated.', 'info');
          }
       } catch (error) {
          console.error('Error updating status:', error);
-         alert('Failed to update status');
+         showToast('Failed to update status.', 'error');
       }
    };
 
    const handleDelete = async (messageId) => {
-      if (!confirm('Are you sure you want to delete this message?')) return;
+      const yes = await confirm({
+         title: 'Delete Contact Message',
+         message: 'This will permanently remove this customer message and cannot be undone.',
+         confirmLabel: 'Delete Message',
+         danger: true
+      });
+      if (!yes) return;
 
       try {
          await api.delete(`/contact/${messageId}`);
@@ -75,11 +86,13 @@ export default function AdminContact() {
          if (selectedMessage?._id === messageId) {
             setSelectedMessage(null);
          }
+         showToast('Message deleted.', 'success');
       } catch (error) {
          console.error('Error deleting message:', error);
-         alert('Failed to delete message');
+         showToast('Failed to delete message.', 'error');
       }
    };
+
 
    const filteredMessages = messages.filter(msg => {
       if (filter === 'all') return true;

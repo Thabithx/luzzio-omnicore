@@ -9,6 +9,7 @@ import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { firstError, isBlank, isEmail } from '../../utils/formValidate';
+import { useToast } from '../../components/ui/Toast';
 
 export default function AdminStaff() {
    const { user } = useAuth();
@@ -17,6 +18,7 @@ export default function AdminStaff() {
    const [attendance, setAttendance] = useState([]);
    const [shifts, setShifts] = useState([]);
    const [loading, setLoading] = useState(false);
+   const { showToast } = useToast();
 
    // Modals
    const [showStaffModal, setShowStaffModal] = useState(false);
@@ -73,20 +75,20 @@ export default function AdminStaff() {
    const handleClockIn = async () => {
       try {
          await api.post('/staff/attendance/clock-in', {});
-         alert('Clock In Successful!');
+         showToast('Clock In successful!', 'success');
          fetchStaffData();
       } catch (err) {
-         alert(err.response?.data?.message || 'Clock In failed');
+         showToast(err.response?.data?.message || 'Clock In failed.', 'error');
       }
    };
 
    const handleClockOut = async () => {
       try {
          await api.post('/staff/attendance/clock-out', {});
-         alert('Clock Out Successful!');
+         showToast('Clock Out successful!', 'success');
          fetchStaffData();
       } catch (err) {
-         alert(err.response?.data?.message || 'Clock Out failed');
+         showToast(err.response?.data?.message || 'Clock Out failed.', 'error');
       }
    };
 
@@ -105,7 +107,7 @@ export default function AdminStaff() {
       ]);
 
       if (error) {
-         alert(error);
+         showToast(error, 'warning');
          return;
       }
 
@@ -115,8 +117,9 @@ export default function AdminStaff() {
          setShowStaffModal(false);
          setStaffForm({ name: '', email: '', password: '', role: 'sales', employeeId: '', phone: '', address: '' });
          fetchStaffData();
+         showToast('Staff member created successfully.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Failed to create staff member');
+         showToast(err.response?.data?.message || 'Failed to create staff member.', 'error');
       } finally {
          setSubmitting(false);
       }
@@ -129,12 +132,14 @@ export default function AdminStaff() {
          await api.post('/staff/shifts', shiftForm);
          setShowShiftModal(false);
          fetchStaffData();
+         showToast('Shift scheduled successfully.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Failed to schedule shift');
+         showToast(err.response?.data?.message || 'Failed to schedule shift.', 'error');
       } finally {
          setSubmitting(false);
       }
    };
+
 
    return (
       <div className="space-y-8">

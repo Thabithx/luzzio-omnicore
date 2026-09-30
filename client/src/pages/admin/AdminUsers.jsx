@@ -4,12 +4,16 @@ import { cn } from '../../utils/cn';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
+import { useConfirm } from '../../components/ui/ConfirmModal';
 
 const AdminUsers = () => {
    const [users, setUsers] = useState([]);
    const [loading, setLoading] = useState(true);
    const [searchTerm, setSearchTerm] = useState('');
    const { token } = useAuth();
+   const { showToast } = useToast();
+   const confirm = useConfirm();
 
    const fetchUsers = async () => {
       try {
@@ -27,15 +31,23 @@ const AdminUsers = () => {
    }, []);
 
    const handleDelete = async (id) => {
-      if (window.confirm('PROTOCOL: REVOKING CLIENT ACCESS IS PERMANENT. PROCEED?')) {
-         try {
-            await api.delete(`/users/${id}`);
-            setUsers(users.filter(u => u._id !== id));
-         } catch (err) {
-            console.error('Error deleting user:', err);
-         }
+      const yes = await confirm({
+         title: 'Revoke Client Access',
+         message: 'This will permanently delete the customer account. This action cannot be undone.',
+         confirmLabel: 'Revoke Access',
+         danger: true
+      });
+      if (!yes) return;
+      try {
+         await api.delete(`/users/${id}`);
+         setUsers(users.filter(u => u._id !== id));
+         showToast('Client account permanently removed.', 'success');
+      } catch (err) {
+         console.error('Error deleting user:', err);
+         showToast('Failed to remove client account.', 'error');
       }
    };
+
 
    const filteredUsers = users.filter(u =>
       u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

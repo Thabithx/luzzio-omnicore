@@ -12,12 +12,15 @@ import { Lock, ArrowRight, ChevronLeft } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { KokoWidget } from '../components/ui/KokoWidget';
 import { SearchableSelect } from '../components/ui/SearchableSelect';
+import { useToast } from '../components/ui/Toast';
 
 
 export function Checkout() {
    const { cart, clearCart } = useCart();
    const { token, user, setGuestProfile } = useAuth();
    const navigate = useNavigate();
+   const { showToast } = useToast();
+
 
    const [formData, setFormData] = useState({
       email: '',
@@ -136,7 +139,7 @@ export function Checkout() {
                   window.payhere.onError = function onError(error) {
                      console.log("Error:" + error);
                      setLoading(false);
-                     alert("Payment failed or dismissed. Error: " + error);
+                     showToast("Payment failed or dismissed. Error: " + error, 'error');
                   };
 
                   window.payhere.startPayment(payment);
@@ -145,18 +148,17 @@ export function Checkout() {
                if (preGeneratedParams) {
                   startPayHere(preGeneratedParams);
                } else {
-                  // Fallback for unexpected missing params
                   try {
                      const payHereRes = await api.post('/payments/payhere/initiate', { orderId });
                      if (payHereRes.data.success) {
                         startPayHere(payHereRes.data.params);
                      } else {
-                        alert('Failed to initiate PayHere payment: ' + (payHereRes.data.message || 'Unknown error'));
+                        showToast('Failed to initiate PayHere payment: ' + (payHereRes.data.message || 'Unknown error'), 'error');
                         setLoading(false);
                      }
                   } catch (payErr) {
                      console.error('PayHere Init Failed:', payErr);
-                     alert('Failed to initiate PayHere payment');
+                     showToast('Failed to initiate PayHere payment.', 'error');
                      setLoading(false);
                   }
                }
@@ -165,12 +167,10 @@ export function Checkout() {
                const kokoParams = res.data.kokoParams;
 
                if (kokoParams) {
-                  // Create a temporary form to POST to Koko
                   const form = document.createElement('form');
                   form.method = 'POST';
                   form.action = kokoParams.kokoUrl;
 
-                  // Add all parameters as hidden inputs
                   Object.entries(kokoParams).forEach(([key, value]) => {
                      if (key !== 'kokoUrl') {
                         const input = document.createElement('input');
@@ -185,7 +185,6 @@ export function Checkout() {
                   form.submit();
                } else {
                   console.error('[CHECKOUT] Koko params missing from response');
-                  // Fallback: immediate success (legacy behavior)
                   clearCart();
                   setLoading(false);
                   navigate(`/payment-success?orderId=${orderId}&method=koko`);
@@ -197,19 +196,18 @@ export function Checkout() {
                navigate(`/payment-success?orderId=${orderId}`);
             }
             else {
-               // Fallback for Stripe or other methods
                clearCart();
                setLoading(false);
                navigate(`/payment-success?orderId=${orderId}`);
             }
          } else {
-            alert('Order creation failed: ' + (res.data.message || 'Unknown error'));
+            showToast('Order creation failed: ' + (res.data.message || 'Unknown error'), 'error');
             setLoading(false);
          }
       } catch (err) {
          console.error('Checkout protocol failure:', err);
          const errorMessage = err.response?.data?.message || err.message || 'Unknown checkout error';
-         alert(`Transaction failed: ${errorMessage}`);
+         showToast(`Transaction failed: ${errorMessage}`, 'error');
          setLoading(false);
       }
    };

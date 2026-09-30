@@ -8,6 +8,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { firstError, isBlank, isNonNeg, isInt } from '../../utils/formValidate';
+import { useToast } from '../../components/ui/Toast';
 
 export default function AdminPurchaseOrders() {
    const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'reports'
@@ -16,6 +17,7 @@ export default function AdminPurchaseOrders() {
    const [products, setProducts] = useState([]);
    const [reportData, setReportData] = useState(null);
    const [loading, setLoading] = useState(false);
+   const { showToast } = useToast();
 
    // Modal State
    const [showCreateModal, setShowCreateModal] = useState(false);
@@ -133,7 +135,7 @@ export default function AdminPurchaseOrders() {
       ]);
 
       if (error) {
-         alert(error);
+         showToast(error, 'warning');
          return;
       }
 
@@ -148,8 +150,9 @@ export default function AdminPurchaseOrders() {
             items: [{ productId: '', size: '', quantity: 1, purchasePrice: 0 }]
          });
          fetchPOs();
+         showToast('Purchase order created successfully.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Failed to create purchase order');
+         showToast(err.response?.data?.message || 'Failed to create purchase order.', 'error');
       } finally {
          setSubmitting(false);
       }
@@ -186,12 +189,14 @@ export default function AdminPurchaseOrders() {
 
          setShowReceiveModal(false);
          fetchPOs();
+         showToast('Stock intake received and inventory updated.', 'success');
       } catch (err) {
-         alert(err.response?.data?.message || 'Stock intake receiving failed');
+         showToast(err.response?.data?.message || 'Stock intake receiving failed.', 'error');
       } finally {
          setSubmitting(false);
       }
    };
+
 
    return (
       <div className="space-y-8">
