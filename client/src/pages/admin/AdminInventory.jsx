@@ -114,7 +114,7 @@ export default function AdminInventory() {
    const handleAdjustSubmit = async (e) => {
       e.preventDefault();
 
-      const qty = Number(adjustData.quantityChange);
+      let qty = Number(adjustData.quantityChange);
       const error = firstError([
          { condition: !selectedProduct,                   message: 'No product selected' },
          { condition: isBlank(adjustData.transactionType), message: 'Please select a transaction type' },
@@ -125,6 +125,12 @@ export default function AdminInventory() {
       if (error) {
          showToast(error, 'warning');
          return;
+      }
+
+      if (adjustData.transactionType === 'DAMAGED' || adjustData.transactionType === 'LOST') {
+         qty = -Math.abs(qty);
+      } else if (adjustData.transactionType === 'RESTOCK') {
+         qty = Math.abs(qty);
       }
 
       setSubmittingAdjust(true);
@@ -474,7 +480,11 @@ export default function AdminInventory() {
 
                      <div>
                         <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">
-                           Quantity Change (+ for increase, - for decrease)
+                           {adjustData.transactionType === 'DAMAGED' || adjustData.transactionType === 'LOST'
+                              ? 'Units Lost / Damaged (Will be subtracted from stock)'
+                              : adjustData.transactionType === 'RESTOCK'
+                              ? 'Units Restocked (Will be added to stock)'
+                              : 'Quantity Change (+ for increase, - for decrease)'}
                         </label>
                         <Input
                            type="number"

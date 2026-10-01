@@ -131,10 +131,19 @@ exports.adjustStock = async (req, res) => {
          });
       }
 
+      let numChange = Number(quantityChange);
+      if (transactionType === 'DAMAGED' || transactionType === 'LOST') {
+         // DAMAGED and LOST reduce central inventory stock
+         numChange = -Math.abs(numChange);
+      } else if (transactionType === 'RESTOCK') {
+         // RESTOCK increases central inventory stock
+         numChange = Math.abs(numChange);
+      }
+
       const result = await updateCentralInventory({
          productId,
          variantSize: variantSize || '',
-         quantityChange: Number(quantityChange),
+         quantityChange: numChange,
          transactionType,
          source: 'ADMIN',
          performedBy: req.user ? req.user._id : null,
