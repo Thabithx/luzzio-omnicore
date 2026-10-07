@@ -3,13 +3,15 @@
 // Consolidated accounting across both ONLINE and POS sales channels.
 
 import React, { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, TrendingDown, CreditCard, Plus, RefreshCw, Trash2, Edit2, X } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, CreditCard, Plus, RefreshCw, Trash2, Edit2, X, FileSpreadsheet } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { firstError, isBlank, isPositive } from '../../utils/formValidate';
 import { useToast } from '../../components/ui/Toast';
 import { useConfirm } from '../../components/ui/ConfirmModal';
+import { exportFinancePnlExcelReport } from '../../utils/excelExporter';
+
 
 export default function AdminFinance() {
    const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'revenue' | 'expenses' | 'reconciliation' | 'apar' | 'pnl'
@@ -66,6 +68,16 @@ export default function AdminFinance() {
       } finally {
          setLoading(false);
       }
+   };
+
+   const exportPnlExcel = () => {
+      if (!pnlData) return;
+      exportFinancePnlExcelReport({
+         pnlData,
+         expenses,
+         filename: `Luzzio_Profit_Loss_Statement_${new Date().toISOString().slice(0, 10)}.xlsx`
+      });
+      showToast('P&L Statement (.XLSX) exported successfully!', 'success');
    };
 
    const exportPnlCSV = () => {
@@ -518,9 +530,14 @@ export default function AdminFinance() {
                      <h3 className="text-lg font-black uppercase tracking-tight">Executive Profit & Loss (P&L) Statement</h3>
                      <p className="text-xs text-gray-500 mt-1">Consolidated revenue, COGS, operating overheads, and cash flow liquidity</p>
                   </div>
-                  <Button onClick={exportPnlCSV} className="bg-black text-white text-xs font-black uppercase px-6 py-3">
-                     Download P&L Statement (CSV)
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                     <Button onClick={exportPnlExcel} className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-sm">
+                        <FileSpreadsheet className="w-4 h-4" /> Download P&L Statement (.XLSX)
+                     </Button>
+                     <Button onClick={exportPnlCSV} variant="outline" className="border-black text-black text-xs font-black uppercase px-5 py-3">
+                        Download CSV
+                     </Button>
+                  </div>
                </div>
 
                {loading ? (

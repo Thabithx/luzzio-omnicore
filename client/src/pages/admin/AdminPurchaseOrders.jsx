@@ -3,12 +3,13 @@
 // Receiving stock automatically increases central inventory and updates accounting ledgers.
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, FileText, CheckCircle, Truck, PackageCheck, RefreshCw, X } from 'lucide-react';
+import { Search, Plus, FileText, CheckCircle, Truck, PackageCheck, RefreshCw, X, FileSpreadsheet } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { firstError, isBlank, isNonNeg, isInt } from '../../utils/formValidate';
 import { useToast } from '../../components/ui/Toast';
+import { exportSupplierPerformanceExcelReport } from '../../utils/excelExporter';
 
 export default function AdminPurchaseOrders() {
    const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'reports'
@@ -67,6 +68,16 @@ export default function AdminPurchaseOrders() {
       } finally {
          setLoading(false);
       }
+   };
+
+   const exportSupplierExcel = () => {
+      if (!reportData?.suppliers?.supplierPerformance) return;
+      exportSupplierPerformanceExcelReport({
+         supplierData: reportData.suppliers.supplierPerformance,
+         posList: pos,
+         filename: `Luzzio_Supplier_Performance_Report_${new Date().toISOString().slice(0, 10)}.xlsx`
+      });
+      showToast('Supplier Report (.XLSX) exported successfully!', 'success');
    };
 
    const exportSupplierCSV = () => {
@@ -321,9 +332,14 @@ export default function AdminPurchaseOrders() {
                      <h3 className="text-lg font-black uppercase tracking-tight">Supplier Performance & Fulfillment Analytics</h3>
                      <p className="text-xs text-gray-500 mt-1">Vendor reliability, PO fulfillment velocity, spend volume, and item intake metrics</p>
                   </div>
-                  <Button onClick={exportSupplierCSV} className="bg-black text-white text-xs font-black uppercase px-6 py-3">
-                     Download Supplier Report (CSV)
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                     <Button onClick={exportSupplierExcel} className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-sm">
+                        <FileSpreadsheet className="w-4 h-4" /> Download Supplier Report (.XLSX)
+                     </Button>
+                     <Button onClick={exportSupplierCSV} variant="outline" className="border-black text-black text-xs font-black uppercase px-5 py-3">
+                        Download CSV
+                     </Button>
+                  </div>
                </div>
 
                {loading ? (

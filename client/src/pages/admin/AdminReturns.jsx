@@ -3,11 +3,12 @@
 // Fully integrated with central order records and automated inventory restocking vs damaged item tracking.
 
 import React, { useState, useEffect } from 'react';
-import { Search, RotateCcw, CheckCircle, XCircle, RefreshCw, Eye, X, AlertCircle } from 'lucide-react';
+import { Search, RotateCcw, CheckCircle, XCircle, RefreshCw, Eye, X, AlertCircle, FileSpreadsheet } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { useToast } from '../../components/ui/Toast';
+import { exportReturnsAnalyticsExcelReport } from '../../utils/excelExporter';
 
 export default function AdminReturns() {
    const [activeTab, setActiveTab] = useState('list'); // 'list' | 'reports'
@@ -61,6 +62,18 @@ export default function AdminReturns() {
       } finally {
          setLoading(false);
       }
+   };
+
+   const exportReturnsExcel = () => {
+      if (!reportData) return;
+      exportReturnsAnalyticsExcelReport({
+         summary: reportData.summary,
+         byReason: reportData.reasonBreakdown,
+         byCondition: reportData.conditionBreakdown,
+         returnsList: returns,
+         filename: `Luzzio_Returns_Analytics_Report_${new Date().toISOString().slice(0, 10)}.xlsx`
+      });
+      showToast('Returns Report (.XLSX) exported successfully!', 'success');
    };
 
    const exportReturnsCSV = () => {
@@ -332,9 +345,14 @@ export default function AdminReturns() {
                      <h3 className="text-lg font-black uppercase tracking-tight">Returns & Reverse Logistics Intelligence</h3>
                      <p className="text-xs text-gray-500 mt-1">Product return frequencies, defect rates, restock efficiency, and refund totals</p>
                   </div>
-                  <Button onClick={exportReturnsCSV} className="bg-black text-white text-xs font-black uppercase px-6 py-3">
-                     Download Returns Report (CSV)
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                     <Button onClick={exportReturnsExcel} className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-sm">
+                        <FileSpreadsheet className="w-4 h-4" /> Download Returns Report (.XLSX)
+                     </Button>
+                     <Button onClick={exportReturnsCSV} variant="outline" className="border-black text-black text-xs font-black uppercase px-5 py-3">
+                        Download CSV
+                     </Button>
+                  </div>
                </div>
 
                {loading ? (

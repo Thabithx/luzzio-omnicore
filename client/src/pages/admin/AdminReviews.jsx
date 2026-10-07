@@ -3,11 +3,12 @@
 // Moderate, approve, respond to, and delete customer product reviews.
 
 import React, { useState, useEffect } from 'react';
-import { Star, CheckCircle, XCircle, Trash2, MessageSquare, RefreshCw, Eye, CornerDownRight } from 'lucide-react';
+import { Star, CheckCircle, XCircle, Trash2, MessageSquare, RefreshCw, Eye, CornerDownRight, FileSpreadsheet } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import api from '../../services/api';
 import { useToast } from '../../components/ui/Toast';
 import { useConfirm } from '../../components/ui/ConfirmModal';
+import { exportEngagementExcelReport } from '../../utils/excelExporter';
 
 export default function AdminReviews() {
    const [activeTab, setActiveTab] = useState('moderation'); // 'moderation' | 'reports'
@@ -50,6 +51,16 @@ export default function AdminReviews() {
       } finally {
          setLoading(false);
       }
+   };
+
+   const exportEngagementExcel = () => {
+      if (!reportData) return;
+      exportEngagementExcelReport({
+         reportData,
+         reviewsList: reviews,
+         filename: `Luzzio_Community_Engagement_Report_${new Date().toISOString().slice(0, 10)}.xlsx`
+      });
+      showToast('Engagement Report (.XLSX) exported successfully!', 'success');
    };
 
    const exportEngagementCSV = () => {
@@ -270,9 +281,14 @@ export default function AdminReviews() {
                      <h3 className="text-lg font-black uppercase tracking-tight">Customer Activity & Content Engagement Intelligence</h3>
                      <p className="text-xs text-gray-500 mt-1">Review sentiment metrics, FAQ knowledge base coverage, and user account breakdown</p>
                   </div>
-                  <Button onClick={exportEngagementCSV} className="bg-black text-white text-xs font-black uppercase px-6 py-3">
-                     Download Engagement Report (CSV)
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                     <Button onClick={exportEngagementExcel} className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-sm">
+                        <FileSpreadsheet className="w-4 h-4" /> Download Engagement Report (.XLSX)
+                     </Button>
+                     <Button onClick={exportEngagementCSV} variant="outline" className="border-black text-black text-xs font-black uppercase px-5 py-3">
+                        Download CSV
+                     </Button>
+                  </div>
                </div>
 
                {loading ? (
