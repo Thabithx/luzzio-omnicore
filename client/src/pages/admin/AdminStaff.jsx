@@ -8,8 +8,9 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { firstError, isBlank, isEmail } from '../../utils/formValidate';
+import { firstError, isBlank, isEmail, isPhone } from '../../utils/formValidate';
 import { useToast } from '../../components/ui/Toast';
+
 
 export default function AdminStaff() {
    const { user } = useAuth();
@@ -104,6 +105,8 @@ export default function AdminStaff() {
          { condition: isBlank(staffForm.password),                   message: 'Password is required' },
          { condition: staffForm.password.length < 6,                 message: 'Password must be at least 6 characters' },
          { condition: isBlank(staffForm.role),                       message: 'Please select a role' },
+         { condition: isBlank(staffForm.phone),                      message: 'Phone number is required' },
+         { condition: !isPhone(staffForm.phone),                     message: 'Please enter a valid phone number (7–20 digits)' },
       ]);
 
       if (error) {
@@ -392,9 +395,11 @@ export default function AdminStaff() {
                      </div>
 
                      <div>
-                        <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">Phone Number</label>
+                        <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">Phone Number *</label>
                         <Input
                            type="tel"
+                           required
+                           placeholder="e.g. 0771234567 or +94771234567"
                            value={staffForm.phone}
                            onChange={(e) => setStaffForm({ ...staffForm, phone: e.target.value })}
                         />

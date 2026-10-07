@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import {
    TrendingUp, ShoppingBag, Users, DollarSign, ArrowRight, Loader2, X,
-   Monitor, Boxes, RotateCcw, FileText, AlertTriangle, UserCheck, TrendingDown
+   Monitor, Boxes, RotateCcw, FileText, AlertTriangle, UserCheck, TrendingDown, FileSpreadsheet
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { useToast } from '../../components/ui/Toast';
+import { exportMultiSheetExcelReport } from '../../utils/excelExporter';
+
 
 const StatCard = ({ label, value, icon: Icon, trend, accent }) => (
    <div className={cn('p-8 border border-black group transition-all duration-500', accent ? 'bg-black' : 'bg-white hover:bg-black')}>
@@ -142,6 +144,26 @@ const Dashboard = () => {
       { id:'6month', label:'6 Months' }, { id:'year', label:'Year' }, { id:'all', label:'All Time' }
    ];
 
+   const exportComprehensiveExcelReport = async () => {
+      try {
+         showToast('Generating multi-sheet executive report...', 'info');
+         const res = await api.get('/analytics/comprehensive-report');
+         if (res.data.success && res.data.data) {
+            const { summaryData, inventoryData, posSalesData } = res.data.data;
+            exportMultiSheetExcelReport({
+               summaryData,
+               inventoryData,
+               posSalesData,
+               filename: `Luzzio_Executive_Report_${new Date().toISOString().slice(0, 10)}.xlsx`
+            });
+            showToast('Executive multi-sheet report generated successfully!', 'success');
+         }
+      } catch (err) {
+         console.error('Failed to export comprehensive report:', err);
+         showToast('Failed to export comprehensive Excel report.', 'error');
+      }
+   };
+
    const exportConsolidatedReportCSV = async () => {
       try {
          const res = await api.get('/analytics/consolidated-report');
@@ -181,12 +203,19 @@ const Dashboard = () => {
                <h1 className='text-5xl font-black uppercase tracking-tighter leading-none'>Command Center</h1>
             </div>
             <div className='flex flex-col items-start md:items-end gap-4'>
-               <div className='flex items-center gap-2'>
+               <div className='flex flex-wrap items-center gap-2'>
+                  <button
+                     onClick={exportComprehensiveExcelReport}
+                     className='bg-black text-white text-[10px] font-black uppercase tracking-widest px-5 py-2.5 border border-black hover:bg-gray-900 transition-all flex items-center gap-2 shadow-sm'
+                  >
+                     <FileSpreadsheet size={14} />
+                     Download Multi-Sheet Report (.XLSX)
+                  </button>
                   <button
                      onClick={exportConsolidatedReportCSV}
-                     className='bg-black text-white text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-black hover:bg-gray-800'
+                     className='bg-white text-black text-[10px] font-black uppercase tracking-widest px-4 py-2.5 border border-black hover:bg-black hover:text-white transition-all'
                   >
-                     Export Consolidated Report (CSV)
+                     Export Summary (CSV)
                   </button>
                   <div className='flex items-center bg-brand-grey border border-black p-1'>
                      {ranges.map((r) => (
@@ -199,6 +228,7 @@ const Dashboard = () => {
                <p className='text-[10px] font-bold uppercase tracking-widest text-gray-400'>Session: 0x{token?.slice(-4).toUpperCase() || 'SYS'}</p>
             </div>
          </div>
+
 
          <div>
             <p className='text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 mb-4'>{rangeLabels[range]} — Storefront Performance</p>
@@ -244,7 +274,9 @@ const Dashboard = () => {
                   <h2 className='text-xl font-black uppercase tracking-tight'>Recent Orders</h2>
                   <span className='px-2 py-0.5 bg-black text-white text-[9px] font-black uppercase'>Live</span>
                </div>
-               <Link to='/admin/orders' className='text-small-brand border-b border-black pb-1 hover:opacity-50 transition-opacity'>View Full Registry</Link>
+               <Link to='/admin/orders' className='px-4 py-2 bg-black text-white text-[9px] font-black uppercase tracking-widest border border-black hover:bg-white hover:text-black transition-all inline-flex items-center gap-2 shadow-sm'>
+                  View Full Registry <ArrowRight size={12} />
+               </Link>
             </div>
             <div className='overflow-x-auto border border-black'>
                <table className='w-full text-left min-w-[700px]'>

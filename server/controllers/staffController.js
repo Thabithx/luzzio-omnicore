@@ -4,7 +4,7 @@
 const User = require('../models/User');
 const Attendance = require('../models/Attendance');
 const Shift = require('../models/Shift');
-const { fail, blank, validEmail } = require('../utils/validate');
+const { fail, blank, validEmail, validPhone } = require('../utils/validate');
 
 // @desc    Get all staff users (ADMIN, SALES, WAREHOUSE)
 // @route   GET /api/staff
@@ -45,10 +45,14 @@ exports.createStaffMember = async (req, res) => {
       if (String(password).length < 6) {
          return fail(res, 'Password must be at least 6 characters');
       }
+      if (phone && !validPhone(phone)) {
+         return fail(res, 'Please provide a valid phone number (7–20 digits)');
+      }
       const validRoles = ['admin', 'sales', 'warehouse'];
       if (!validRoles.includes(role)) {
          return fail(res, `Role must be one of: ${validRoles.join(', ')}`);
       }
+
 
       const existing = await User.findOne({ email: email.trim().toLowerCase() });
       if (existing) {

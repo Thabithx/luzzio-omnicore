@@ -4,12 +4,14 @@
 // and auditable stock movement history ledger.
 
 import React, { useState, useEffect } from 'react';
-import { Search, Boxes, AlertTriangle, RefreshCw, Plus, History, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { Search, Boxes, AlertTriangle, RefreshCw, Plus, History, ArrowUpRight, ArrowDownRight, FileSpreadsheet } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { firstError, isBlank } from '../../utils/formValidate';
 import { useToast } from '../../components/ui/Toast';
+import { exportMultiSheetExcelReport } from '../../utils/excelExporter';
+
 
 export default function AdminInventory() {
    const [activeTab, setActiveTab] = useState('registry'); // 'registry' | 'history' | 'reports'
@@ -78,6 +80,26 @@ export default function AdminInventory() {
       }
    };
 
+   const exportComprehensiveExcelReport = async () => {
+      try {
+         showToast('Generating multi-sheet inventory & POS audit workbook...', 'info');
+         const res = await api.get('/analytics/comprehensive-report');
+         if (res.data.success && res.data.data) {
+            const { summaryData, inventoryData, posSalesData } = res.data.data;
+            exportMultiSheetExcelReport({
+               summaryData,
+               inventoryData,
+               posSalesData,
+               filename: `Luzzio_Inventory_Valuation_Report_${new Date().toISOString().slice(0, 10)}.xlsx`
+            });
+            showToast('Multi-sheet inventory report generated successfully!', 'success');
+         }
+      } catch (err) {
+         console.error('Failed to export comprehensive report:', err);
+         showToast('Failed to export inventory Excel report.', 'error');
+      }
+   };
+
    const exportCSV = () => {
       if (!products.length) return;
       let csvContent = "data:text/csv;charset=utf-8,SKU,Product Name,Central Stock,Unit Price (LKR),Total Valuation (LKR)\n";
@@ -94,6 +116,7 @@ export default function AdminInventory() {
       link.click();
       document.body.removeChild(link);
    };
+
 
    const handleSearchSubmit = (e) => {
       e.preventDefault();
@@ -375,14 +398,20 @@ export default function AdminInventory() {
          {/* Tab Content: Reports & Valuation */}
          {activeTab === 'reports' && (
             <div className="space-y-6">
-               <div className="flex justify-between items-center bg-brand-grey p-6 border border-black">
+               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brand-grey p-6 border border-black">
                   <div>
                      <h3 className="text-lg font-black uppercase">Stock Valuation & Inventory Movement Reports</h3>
-                     <p className="text-[10px] text-gray-500 font-mono mt-1">DULARA: Real-time inventory valuation summary and movement ledger.</p>
+                     <p className="text-[10px] text-gray-500 font-mono mt-1">DULARA: Real-time inventory valuation summary and multi-sheet audit ledger.</p>
                   </div>
-                  <Button onClick={exportCSV} className="bg-black text-white text-xs font-black uppercase px-6 py-3">
-                     Download Stock Valuation CSV
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                     <Button onClick={exportComprehensiveExcelReport} className="bg-black text-white text-xs font-black uppercase px-6 py-3 flex items-center gap-2">
+                        <FileSpreadsheet size={14} />
+                        Download Multi-Sheet Report (.XLSX)
+                     </Button>
+                     <Button onClick={exportCSV} className="bg-white text-black border border-black hover:bg-black hover:text-white text-xs font-black uppercase px-6 py-3 transition-all">
+                        Download Stock Valuation CSV
+                     </Button>
+                  </div>
                </div>
 
                {reportData && (
