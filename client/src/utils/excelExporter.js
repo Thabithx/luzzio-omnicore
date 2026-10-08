@@ -3,8 +3,8 @@ import * as XLSX from 'xlsx';
 /**
  * LUZZIO ENTERPRISE MULTI-SHEET EXCEL EXPORT SUITE
  * 
- * Provides detailed, visually structured multi-sheet Excel (.xlsx) workbooks
- * with clear section banners, KPI summaries, totals, and column widths.
+ * Provides detailed, perfectly aligned multi-sheet Excel (.xlsx) workbooks
+ * formatted for clean viewing across Microsoft Excel, Apple Numbers, and Google Sheets.
  */
 
 // ============================================================================
@@ -20,35 +20,30 @@ export const exportMultiSheetExcelReport = ({
 
    // --- Sheet 1: Dashboard / Executive Summary ---
    const summaryRows = [
-      ['════════════════════════════════════════════════════════════════════════════════════════════════════'],
-      ['👑 LUZZIO OMNICOMMERCE ENTERPRISE PLATFORM — EXECUTIVE KPI & AUDIT SUMMARY'],
-      ['════════════════════════════════════════════════════════════════════════════════════════════════════'],
+      ['LUZZIO OMNICOMMERCE ENTERPRISE PLATFORM - EXECUTIVE KPI & AUDIT SUMMARY'],
       ['Brand & Enterprise:', 'LUZZIO Luxury Apparel & Footwear'],
       ['Report Classification:', 'Consolidated Management & Operations Audit'],
       ['Generated On:', new Date().toLocaleString()],
       ['System Environment:', 'OmniCore v2.4 Enterprise Production'],
       [],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
-      ['📦 SECTION 1: INVENTORY & STOCK VALUATION METRICS', 'METRIC VALUE', 'UNIT / CURRENCY'],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
+      ['SECTION 1: INVENTORY & STOCK VALUATION METRICS'],
+      ['Metric Name', 'Metric Value', 'Unit / Currency'],
       ['Total Catalog Products Registered', summaryData.totalProducts ?? 0, 'Unique SKUs'],
       ['Total Physical Stock In-Warehouse', summaryData.totalStockUnits ?? 0, 'Units'],
       ['Total Inventory Asset Valuation', Number(summaryData.totalInventoryValue ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), 'LKR'],
       ['Low-Stock Warning Products (<= Threshold)', summaryData.lowStockProducts ?? 0, 'SKUs'],
       ['Out-of-Stock Products (0 Units Remaining)', summaryData.outOfStockProducts ?? 0, 'SKUs'],
       [],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
-      ['💳 SECTION 2: POINT OF SALE (POS) & SALES PERFORMANCE', 'METRIC VALUE', 'UNIT / CURRENCY'],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
+      ['SECTION 2: POINT OF SALE (POS) & SALES PERFORMANCE'],
+      ['Metric Name', 'Metric Value', 'Unit / Currency'],
       ['Total POS Revenue (In-Store)', Number(summaryData.totalPOSSales ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), 'LKR'],
       ['Total POS Orders / Transactions', summaryData.numberPOSOrders ?? 0, 'Transactions'],
       ['Total Physical Items Sold (All Channels)', summaryData.totalItemsSold ?? 0, 'Units'],
       ['Total Discounts Issued to Customers', Number(summaryData.totalDiscounts ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), 'LKR'],
       ['Total Tax Collected', Number(summaryData.totalTax ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), 'LKR'],
       [],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
-      ['📊 SECTION 3: REVENUE BREAKDOWN BY PAYMENT METHOD', 'TOTAL REVENUE (LKR)', 'TRANSACTIONS COUNT'],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────']
+      ['SECTION 3: REVENUE BREAKDOWN BY PAYMENT METHOD'],
+      ['Payment Method', 'Total Revenue (LKR)', 'Transactions Count']
    ];
 
    if (summaryData.salesByPaymentMethod && Array.isArray(summaryData.salesByPaymentMethod) && summaryData.salesByPaymentMethod.length > 0) {
@@ -64,11 +59,10 @@ export const exportMultiSheetExcelReport = ({
    }
 
    summaryRows.push([]);
-   summaryRows.push(['════════════════════════════════════════════════════════════════════════════════════════════════════']);
-   summaryRows.push(['LUZZIO OMNICORE AUTOMATED AUDIT SYSTEM — CONFIDENTIAL EXECUTIVE REPORT']);
+   summaryRows.push(['LUZZIO OMNICORE AUTOMATED AUDIT SYSTEM - CONFIDENTIAL EXECUTIVE REPORT']);
 
    const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
-   wsSummary['!cols'] = [{ wch: 55 }, { wch: 32 }, { wch: 25 }];
+   wsSummary['!cols'] = [{ wch: 45 }, { wch: 24 }, { wch: 22 }];
    XLSX.utils.book_append_sheet(wb, wsSummary, 'Dashboard & Summary');
 
    // --- Sheet 2: Inventory Report ---
@@ -76,7 +70,7 @@ export const exportMultiSheetExcelReport = ({
       'SKU', 'Barcode', 'Product Name', 'Category', 'Unit Price (LKR)', 'Sale Price (LKR)', 'Current Stock (Units)', 'Stock Status', 'Inventory Value (LKR)'
    ];
    const inventoryRows = [
-      ['👑 LUZZIO CENTRALIZED INVENTORY & STOCK VALUATION AUDIT'],
+      ['LUZZIO CENTRALIZED INVENTORY & STOCK VALUATION AUDIT'],
       [`Generated On: ${new Date().toLocaleString()}`],
       [],
       inventoryHeaders
@@ -98,7 +92,7 @@ export const exportMultiSheetExcelReport = ({
          item.price || 0,
          item.salePrice || 0,
          item.stock || 0,
-         item.stockStatus || (item.stock === 0 ? '❌ OUT OF STOCK' : item.stock <= 10 ? '⚠️ LOW STOCK' : '✅ IN STOCK'),
+         item.stockStatus || (item.stock === 0 ? 'OUT OF STOCK' : item.stock <= 10 ? 'LOW STOCK' : 'IN STOCK'),
          val
       ]);
    });
@@ -111,7 +105,7 @@ export const exportMultiSheetExcelReport = ({
 
    const wsInventory = XLSX.utils.aoa_to_sheet(inventoryRows);
    wsInventory['!cols'] = [
-      { wch: 18 }, { wch: 18 }, { wch: 38 }, { wch: 22 }, { wch: 18 }, { wch: 18 }, { wch: 22 }, { wch: 18 }, { wch: 24 }
+      { wch: 18 }, { wch: 18 }, { wch: 36 }, { wch: 22 }, { wch: 16 }, { wch: 16 }, { wch: 20 }, { wch: 16 }, { wch: 22 }
    ];
    XLSX.utils.book_append_sheet(wb, wsInventory, 'Inventory Report');
 
@@ -120,7 +114,7 @@ export const exportMultiSheetExcelReport = ({
       'Date & Time', 'Order No.', 'Product Name', 'SKU', 'Size Variant', 'Qty Sold', 'Unit Price (LKR)', 'Discount (LKR)', 'Tax (LKR)', 'Total Amount (LKR)', 'Payment Method', 'Cashier / Terminal User', 'Customer Identification'
    ];
    const posRows = [
-      ['👑 LUZZIO POINT OF SALE (POS) SALES & CASHIER AUDIT REGISTER'],
+      ['LUZZIO POINT OF SALE (POS) SALES & CASHIER AUDIT REGISTER'],
       [`Generated On: ${new Date().toLocaleString()}`],
       [],
       posHeaders
@@ -162,7 +156,7 @@ export const exportMultiSheetExcelReport = ({
 
    const wsPOS = XLSX.utils.aoa_to_sheet(posRows);
    wsPOS['!cols'] = [
-      { wch: 22 }, { wch: 22 }, { wch: 34 }, { wch: 16 }, { wch: 14 }, { wch: 12 }, { wch: 16 }, { wch: 14 }, { wch: 14 }, { wch: 20 }, { wch: 18 }, { wch: 24 }, { wch: 28 }
+      { wch: 20 }, { wch: 20 }, { wch: 32 }, { wch: 16 }, { wch: 14 }, { wch: 12 }, { wch: 16 }, { wch: 14 }, { wch: 14 }, { wch: 20 }, { wch: 18 }, { wch: 22 }, { wch: 26 }
    ];
    XLSX.utils.book_append_sheet(wb, wsPOS, 'POS Sales');
 
@@ -182,16 +176,13 @@ export const exportFinancePnlExcelReport = ({
 
    // --- Sheet 1: Income Statement Summary ---
    const incomeRows = [
-      ['════════════════════════════════════════════════════════════════════════════════════════════════════'],
-      ['📈 LUZZIO EXECUTIVE PROFIT & LOSS (P&L) STATEMENT & CASH FLOW AUDIT'],
-      ['════════════════════════════════════════════════════════════════════════════════════════════════════'],
+      ['LUZZIO EXECUTIVE PROFIT & LOSS (P&L) STATEMENT & CASH FLOW AUDIT'],
       ['Corporate Entity:', 'LUZZIO Luxury Apparel & Footwear'],
       ['Accounting Period:', 'All-Time Real-Time Ledger Summary'],
       ['Generated On:', new Date().toLocaleString()],
       [],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
-      ['💰 INCOME STATEMENT SUMMARY', 'AMOUNT (LKR)', 'MARGIN / PERCENTAGE', 'AUDIT CLASSIFICATION'],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
+      ['INCOME STATEMENT SUMMARY'],
+      ['Financial Line Item', 'Amount (LKR)', 'Margin / Percentage', 'Audit Classification'],
       ['1. Gross Sales Revenue (All Channels)', Number(pnlData.revenue?.grossRevenue || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), '100.0%', 'Primary Revenue Inflow'],
       ['2. Less: Cost of Goods Sold (COGS)', Number(pnlData.cogs?.totalCOGS || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), `${pnlData.cogs?.cogsPercent || 55}%`, 'Direct Cost of Inventory Sold'],
       ['= GROSS OPERATING PROFIT', Number(pnlData.cogs?.grossProfit || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), `${pnlData.cogs?.grossMarginPercent || 45}%`, 'Gross Margin Yield'],
@@ -199,22 +190,21 @@ export const exportFinancePnlExcelReport = ({
       ['3. Less: Operating Expenses (OPEX)', Number(pnlData.expenses?.totalExpenses || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), `${pnlData.expenses?.expenseRatio || 0}%`, 'Operating Overhead'],
       ['= NET OPERATING PROFIT (EBITDA)', Number(pnlData.netIncome?.netProfit || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), `${pnlData.netIncome?.netProfitMargin || 0}%`, 'Net Income Bottom Line'],
       [],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
-      ['💵 LIQUIDITY & CASH FLOW ANALYSIS', 'AMOUNT (LKR)', 'METRIC STATUS', 'NOTES'],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
+      ['LIQUIDITY & CASH FLOW ANALYSIS'],
+      ['Cash Flow Line Item', 'Amount (LKR)', 'Metric Status', 'Notes'],
       ['Total Cash Inflow (Collected)', Number(pnlData.cashFlow?.inflow || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), 'Cash & Digital Deposits', 'Settled payments'],
       ['Total Cash Outflow (Disbursed)', Number(pnlData.cashFlow?.outflow || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), 'Operational Disbursements', 'Expenses & Vendor settlements'],
-      ['= NET CASH FLOW BALANCE', Number(pnlData.cashFlow?.netCashFlow || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), (pnlData.cashFlow?.netCashFlow || 0) >= 0 ? '✅ POSITIVE SURPLUS' : '⚠️ DEFICIT', 'Net operational treasury balance']
+      ['= NET CASH FLOW BALANCE', Number(pnlData.cashFlow?.netCashFlow || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }), (pnlData.cashFlow?.netCashFlow || 0) >= 0 ? 'POSITIVE SURPLUS' : 'DEFICIT', 'Net operational treasury balance']
    ];
 
    const wsIncome = XLSX.utils.aoa_to_sheet(incomeRows);
-   wsIncome['!cols'] = [{ wch: 45 }, { wch: 28 }, { wch: 25 }, { wch: 35 }];
+   wsIncome['!cols'] = [{ wch: 45 }, { wch: 24 }, { wch: 22 }, { wch: 32 }];
    XLSX.utils.book_append_sheet(wb, wsIncome, 'P&L Statement');
 
    // --- Sheet 2: Operating Expenses Ledger ---
    const expenseHeaders = ['Date', 'Category', 'Description', 'Amount (LKR)', 'Payment Method', 'Reference Code', 'Notes'];
    const expenseRows = [
-      ['📉 LUZZIO OPERATING EXPENSE BREAKDOWN LEDGER'],
+      ['LUZZIO OPERATING EXPENSE BREAKDOWN LEDGER'],
       [`Generated On: ${new Date().toLocaleString()}`],
       [],
       expenseHeaders
@@ -248,7 +238,7 @@ export const exportFinancePnlExcelReport = ({
    }
 
    const wsExpenses = XLSX.utils.aoa_to_sheet(expenseRows);
-   wsExpenses['!cols'] = [{ wch: 16 }, { wch: 22 }, { wch: 35 }, { wch: 22 }, { wch: 18 }, { wch: 18 }, { wch: 28 }];
+   wsExpenses['!cols'] = [{ wch: 16 }, { wch: 20 }, { wch: 30 }, { wch: 20 }, { wch: 18 }, { wch: 18 }, { wch: 26 }];
    XLSX.utils.book_append_sheet(wb, wsExpenses, 'Operating Expenses');
 
    XLSX.writeFile(wb, filename);
@@ -270,7 +260,7 @@ export const exportSupplierPerformanceExcelReport = ({
       'Supplier / Vendor Name', 'Contact Person', 'Email Address', 'Phone', 'Address / Location', 'Total POs Issued', 'Completed POs', 'Total Procurement Spend (LKR)', 'Items Ordered', 'Items Received', 'Fulfillment Rate (%)'
    ];
    const suppRows = [
-      ['🚚 LUZZIO VENDOR & SUPPLIER FULFILLMENT AUDIT'],
+      ['LUZZIO VENDOR & SUPPLIER FULFILLMENT AUDIT'],
       [`Generated On: ${new Date().toLocaleString()}`],
       [],
       suppHeaders
@@ -309,7 +299,7 @@ export const exportSupplierPerformanceExcelReport = ({
 
    const wsSupp = XLSX.utils.aoa_to_sheet(suppRows);
    wsSupp['!cols'] = [
-      { wch: 30 }, { wch: 22 }, { wch: 26 }, { wch: 18 }, { wch: 28 }, { wch: 18 }, { wch: 18 }, { wch: 30 }, { wch: 16 }, { wch: 16 }, { wch: 22 }
+      { wch: 28 }, { wch: 20 }, { wch: 24 }, { wch: 16 }, { wch: 26 }, { wch: 18 }, { wch: 18 }, { wch: 28 }, { wch: 14 }, { wch: 14 }, { wch: 20 }
    ];
    XLSX.utils.book_append_sheet(wb, wsSupp, 'Supplier Performance');
 
@@ -318,7 +308,7 @@ export const exportSupplierPerformanceExcelReport = ({
       'PO Number', 'Supplier', 'Order Date', 'Expected Date', 'Status', 'Total Cost (LKR)', 'Items Count', 'Received Items', 'Audit Notes'
    ];
    const poRows = [
-      ['📑 LUZZIO PURCHASE ORDERS (PO) PROCUREMENT REGISTER'],
+      ['LUZZIO PURCHASE ORDERS (PO) PROCUREMENT REGISTER'],
       [`Generated On: ${new Date().toLocaleString()}`],
       [],
       poHeaders
@@ -357,7 +347,7 @@ export const exportSupplierPerformanceExcelReport = ({
 
    const wsPO = XLSX.utils.aoa_to_sheet(poRows);
    wsPO['!cols'] = [
-      { wch: 22 }, { wch: 28 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 24 }, { wch: 14 }, { wch: 14 }, { wch: 32 }
+      { wch: 20 }, { wch: 26 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 22 }, { wch: 14 }, { wch: 14 }, { wch: 30 }
    ];
    XLSX.utils.book_append_sheet(wb, wsPO, 'Purchase Orders Register');
 
@@ -380,23 +370,19 @@ export const exportReturnsAnalyticsExcelReport = ({
 
    // --- Sheet 1: Returns Summary & Reasons ---
    const summaryRows = [
-      ['════════════════════════════════════════════════════════════════════════════════════════════════════'],
-      ['🔄 LUZZIO REVERSE LOGISTICS, RETURNS & QUALITY AUDIT REPORT'],
-      ['════════════════════════════════════════════════════════════════════════════════════════════════════'],
+      ['LUZZIO REVERSE LOGISTICS, RETURNS & QUALITY AUDIT REPORT'],
       ['Generated On:', new Date().toLocaleString()],
       [],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
-      ['📊 RETURN KPI METRIC', 'VALUE', 'CLASSIFICATION'],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
+      ['RETURN KPI METRICS'],
+      ['Metric Name', 'Metric Value', 'Classification'],
       ['Total Return Requests Submitted', summary.totalRequests || 0, 'Return Inbound'],
       ['Approved Return Requests', summary.approvedCount || 0, 'Validated Claims'],
       ['Rejected Return Requests', summary.rejectedCount || 0, 'Rejected Ineligible'],
       ['Total Refund Value Disbursed', Number(summary.totalRefundedValue || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' LKR', 'Financial Impact'],
       ['Overall Return Rate Percentage', `${summary.returnRatePercent || 0}%`, 'Quality Benchmark'],
       [],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
-      ['⚠️ RETURN REASONS BREAKDOWN', 'INCIDENTS COUNT', 'PERCENTAGE OF TOTAL'],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────']
+      ['RETURN REASONS BREAKDOWN'],
+      ['Reason Category', 'Incidents Count', 'Percentage of Total']
    ];
 
    const totalReqs = summary.totalRequests || 1;
@@ -409,9 +395,8 @@ export const exportReturnsAnalyticsExcelReport = ({
    });
 
    summaryRows.push([]);
-   summaryRows.push(['────────────────────────────────────────────────────────────────────────────────────────────────────']);
-   summaryRows.push(['📦 ITEM INTAKE CONDITION BREAKDOWN', 'INCIDENTS COUNT', 'STATUS']);
-   summaryRows.push(['────────────────────────────────────────────────────────────────────────────────────────────────────']);
+   summaryRows.push(['ITEM INTAKE CONDITION BREAKDOWN']);
+   summaryRows.push(['Condition State', 'Incidents Count', 'Inventory Action']);
    Object.entries(byCondition).forEach(([cond, count]) => {
       summaryRows.push([
          cond,
@@ -421,13 +406,13 @@ export const exportReturnsAnalyticsExcelReport = ({
    });
 
    const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
-   wsSummary['!cols'] = [{ wch: 45 }, { wch: 28 }, { wch: 30 }];
+   wsSummary['!cols'] = [{ wch: 42 }, { wch: 24 }, { wch: 26 }];
    XLSX.utils.book_append_sheet(wb, wsSummary, 'Returns KPI & Reasons');
 
    // --- Sheet 2: Return Claims Register ---
    const claimHeaders = ['Return #', 'Order #', 'Customer Email', 'Type', 'Status', 'Refund (LKR)', 'Reason', 'Date'];
    const claimRows = [
-      ['📋 LUZZIO RETURN CLAIMS DETAILED REGISTER'],
+      ['LUZZIO RETURN CLAIMS DETAILED REGISTER'],
       [`Generated On: ${new Date().toLocaleString()}`],
       [],
       claimHeaders
@@ -460,7 +445,7 @@ export const exportReturnsAnalyticsExcelReport = ({
    }
 
    const wsClaims = XLSX.utils.aoa_to_sheet(claimRows);
-   wsClaims['!cols'] = [{ wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 16 }, { wch: 18 }, { wch: 20 }, { wch: 28 }, { wch: 18 }];
+   wsClaims['!cols'] = [{ wch: 18 }, { wch: 18 }, { wch: 26 }, { wch: 14 }, { wch: 16 }, { wch: 18 }, { wch: 25 }, { wch: 16 }];
    XLSX.utils.book_append_sheet(wb, wsClaims, 'Return Claims Register');
 
    XLSX.writeFile(wb, filename);
@@ -480,33 +465,30 @@ export const exportEngagementExcelReport = ({
 
    // --- Sheet 1: Executive Engagement Summary ---
    const summaryRows = [
-      ['════════════════════════════════════════════════════════════════════════════════════════════════════'],
-      ['⭐ LUZZIO COMMUNITY ENGAGEMENT, MODERATION & KNOWLEDGE BASE AUDIT'],
-      ['════════════════════════════════════════════════════════════════════════════════════════════════════'],
+      ['LUZZIO COMMUNITY ENGAGEMENT, MODERATION & KNOWLEDGE BASE AUDIT'],
       ['Generated On:', new Date().toLocaleString()],
       [],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
-      ['📊 COMMUNITY & MODERATION METRIC', 'VALUE', 'NOTES'],
-      ['────────────────────────────────────────────────────────────────────────────────────────────────────'],
+      ['COMMUNITY & MODERATION METRICS'],
+      ['Metric Name', 'Metric Value', 'Notes'],
       ['Total Registered Customers', reportData.users?.customers || 0, 'Active Client Accounts'],
       ['Total Authorized Staff Users', reportData.users?.staffUsers || 0, 'Admin / Sales / Warehouse Staff'],
       ['Total Product Reviews Submitted', reportData.reviews?.totalReviews || 0, 'Customer Submissions'],
       ['Approved Reviews (Storefront Visible)', reportData.reviews?.approvedReviews || 0, 'Published Content'],
       ['Pending / Hidden Reviews', reportData.reviews?.rejectedReviews || 0, 'Moderated / Quarantined'],
       ['Review Approval Quality Rate', `${reportData.reviews?.approvalRate || 0}%`, 'Storefront Moderation Benchmark'],
-      ['Global Average Storefront Rating', `★ ${reportData.reviews?.avgGlobalRating || '5.0'} / 5.0 Stars`, 'Customer Satisfaction'],
+      ['Global Average Storefront Rating', `${reportData.reviews?.avgGlobalRating || '5.0'} / 5.0 Stars`, 'Customer Satisfaction'],
       ['Total FAQ Knowledge Base Articles', reportData.faqs?.totalFAQs || 0, 'Support Articles'],
       ['Published Live FAQ Articles', reportData.faqs?.publishedFAQs || 0, 'Client-facing Help Articles']
    ];
 
    const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
-   wsSummary['!cols'] = [{ wch: 45 }, { wch: 25 }, { wch: 35 }];
+   wsSummary['!cols'] = [{ wch: 42 }, { wch: 22 }, { wch: 32 }];
    XLSX.utils.book_append_sheet(wb, wsSummary, 'Community & Moderation KPIs');
 
    // --- Sheet 2: Reviews Log ---
    const reviewHeaders = ['Product Name', 'Author', 'Email', 'Rating (1-5)', 'Status', 'Review Comment', 'Date'];
    const reviewRows = [
-      ['⭐ LUZZIO PRODUCT REVIEWS MODERATION LEDGER'],
+      ['LUZZIO PRODUCT REVIEWS MODERATION LEDGER'],
       [`Generated On: ${new Date().toLocaleString()}`],
       [],
       reviewHeaders
@@ -518,8 +500,8 @@ export const exportEngagementExcelReport = ({
             r.productName || r.product?.name || 'Product',
             r.authorName || r.user?.name || r.name || 'Anonymous Client',
             r.userEmail || r.user?.email || r.email || 'N/A',
-            r.rating ? `★ ${r.rating}` : '★ 5',
-            r.isApproved ? '✅ APPROVED' : '⏳ PENDING/HIDDEN',
+            r.rating ? `${r.rating} / 5` : '5 / 5',
+            r.isApproved ? 'APPROVED' : 'PENDING/HIDDEN',
             r.comment || '',
             r.createdAt ? new Date(r.createdAt).toLocaleDateString() : 'N/A'
          ]);
@@ -528,12 +510,12 @@ export const exportEngagementExcelReport = ({
       // Total Row
       reviewRows.push([]);
       reviewRows.push([
-         'TOTAL REVIEWS:', `${reviewsList.length} Entries`, '', `Avg Rating: ★ ${reportData.reviews?.avgGlobalRating || '5.0'}`, '', '', ''
+         'TOTAL REVIEWS:', `${reviewsList.length} Entries`, '', `Avg Rating: ${reportData.reviews?.avgGlobalRating || '5.0'} / 5`, '', '', ''
       ]);
    }
 
    const wsReviews = XLSX.utils.aoa_to_sheet(reviewRows);
-   wsReviews['!cols'] = [{ wch: 30 }, { wch: 22 }, { wch: 26 }, { wch: 16 }, { wch: 20 }, { wch: 45 }, { wch: 18 }];
+   wsReviews['!cols'] = [{ wch: 28 }, { wch: 20 }, { wch: 24 }, { wch: 14 }, { wch: 18 }, { wch: 40 }, { wch: 16 }];
    XLSX.utils.book_append_sheet(wb, wsReviews, 'Reviews Moderation Log');
 
    XLSX.writeFile(wb, filename);
