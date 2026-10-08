@@ -175,7 +175,7 @@ const Dashboard = () => {
                <div className='flex flex-wrap items-center gap-2'>
                   <button
                      onClick={exportComprehensiveExcelReport}
-                     className='bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest px-5 py-2.5 border-0 hover:bg-emerald-500 transition-all flex items-center gap-2 shadow-md'
+                     className='bg-black text-white text-[10px] font-black uppercase tracking-widest px-5 py-2.5 border border-black hover:bg-gray-900 transition-all flex items-center gap-2 shadow-sm'
                   >
                      <FileSpreadsheet size={14} />
                      Download Multi-Sheet Report (.XLSX)

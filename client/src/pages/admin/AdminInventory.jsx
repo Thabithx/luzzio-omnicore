@@ -379,13 +379,13 @@ export default function AdminInventory() {
          {/* Tab Content: Reports & Valuation */}
          {activeTab === 'reports' && (
             <div className="space-y-6">
-               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-slate-900 to-slate-700 p-6 border border-black">
+               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brand-grey p-6 border border-black">
                   <div>
-                     <h3 className="text-lg font-black uppercase text-white">Stock Valuation & Inventory Movement Reports</h3>
-                     <p className="text-[10px] text-slate-300 mt-1">Real-time inventory valuation summary and multi-sheet audit ledger.</p>
+                     <h3 className="text-lg font-black uppercase">Stock Valuation & Inventory Movement Reports</h3>
+                     <p className="text-[10px] text-gray-500 mt-1">Real-time inventory valuation summary and multi-sheet audit ledger.</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                     <Button onClick={exportComprehensiveExcelReport} className="bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-black uppercase px-6 py-3 flex items-center gap-2 shadow-lg border-0">
+                     <Button onClick={exportComprehensiveExcelReport} className="bg-black text-white text-xs font-black uppercase px-6 py-3 flex items-center gap-2">
                         <FileSpreadsheet size={14} />
                         Download Multi-Sheet Report (.XLSX)
                      </Button>
@@ -394,20 +394,20 @@ export default function AdminInventory() {
 
                {reportData && (
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                     <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 space-y-1">
-                        <p className="text-[10px] font-black uppercase text-blue-500">Total Products</p>
-                        <p className="text-2xl font-black text-blue-900">{reportData.totalProducts}</p>
+                     <div className="p-6 bg-white border border-black space-y-1">
+                        <p className="text-[10px] font-black uppercase text-gray-400">Total Products</p>
+                        <p className="text-2xl font-black">{reportData.totalProducts}</p>
                      </div>
-                     <div className="p-6 bg-gradient-to-br from-violet-50 to-violet-100 border-2 border-violet-200 space-y-1">
-                        <p className="text-[10px] font-black uppercase text-violet-500">Total Units in Stock</p>
-                        <p className="text-2xl font-black text-violet-900">{reportData.totalStockCount.toLocaleString()} units</p>
+                     <div className="p-6 bg-white border border-black space-y-1">
+                        <p className="text-[10px] font-black uppercase text-gray-400">Total Units in Stock</p>
+                        <p className="text-2xl font-black">{reportData.totalStockCount.toLocaleString()} units</p>
                      </div>
-                     <div className="p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 border-2 border-emerald-200 space-y-1">
-                        <p className="text-[10px] font-black uppercase text-emerald-600">Total Inventory Valuation</p>
+                     <div className="p-6 bg-white border border-black space-y-1">
+                        <p className="text-[10px] font-black uppercase text-gray-400">Total Inventory Valuation</p>
                         <p className="text-2xl font-black text-emerald-700">LKR {reportData.totalStockValuation.toLocaleString()}</p>
                      </div>
-                     <div className="p-6 bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 space-y-1">
-                        <p className="text-[10px] font-black uppercase text-red-500">Low Stock Items</p>
+                     <div className="p-6 bg-white border border-black space-y-1">
+                        <p className="text-[10px] font-black uppercase text-gray-400">Low Stock Items</p>
                         <p className="text-2xl font-black text-red-600">{reportData.lowStockCount}</p>
                      </div>
                   </div>
@@ -416,25 +416,25 @@ export default function AdminInventory() {
                {/* Category Valuation Breakdown */}
                {reportData?.valuationByCategory && (
                   <div className="bg-white border border-black">
-                     <div className="p-4 bg-gradient-to-r from-slate-800 to-slate-600 border-b border-black">
-                        <h4 className="text-xs font-black uppercase tracking-wider text-white">Category-Wise Valuation Breakdown</h4>
+                     <div className="p-4 bg-brand-grey border-b border-black">
+                        <h4 className="text-xs font-black uppercase tracking-wider">Category-Wise Valuation Breakdown</h4>
                      </div>
                      <table className="w-full text-left border-collapse">
                         <thead>
-                           <tr className="border-b border-black bg-slate-50 text-[9px] font-black uppercase tracking-wider">
+                           <tr className="border-b border-black bg-gray-50 text-[9px] font-black uppercase tracking-wider">
                               <th className="p-4">Category</th>
                               <th className="p-4">Products</th>
                               <th className="p-4">Total Stock</th>
                               <th className="p-4 text-right">Category Valuation (LKR)</th>
                            </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100 text-xs font-mono">
-                           {Object.entries(reportData.valuationByCategory).map(([cat, info], i) => (
-                              <tr key={cat} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
+                        <tbody className="divide-y divide-gray-200 text-xs font-mono">
+                           {Object.entries(reportData.valuationByCategory).map(([cat, info]) => (
+                              <tr key={cat}>
                                  <td className="p-4 font-black">{cat}</td>
-                                 <td className="p-4 text-blue-700 font-bold">{info.count} items</td>
-                                 <td className="p-4 text-violet-700 font-bold">{info.stock} units</td>
-                                 <td className="p-4 text-right font-black text-emerald-700">LKR {info.valuation.toLocaleString()}</td>
+                                 <td className="p-4">{info.count} items</td>
+                                 <td className="p-4">{info.stock} units</td>
+                                 <td className="p-4 text-right font-black">LKR {info.valuation.toLocaleString()}</td>
                               </tr>
                            ))}
                         </tbody>
