@@ -80,29 +80,6 @@ export default function AdminFinance() {
       showToast('P&L Statement (.XLSX) exported successfully!', 'success');
    };
 
-   const exportPnlCSV = () => {
-      if (!pnlData) return;
-      let csv = "data:text/csv;charset=utf-8,Financial Line Item,Amount (LKR),Notes\n";
-      csv += `"Gross Sales Revenue",${pnlData.revenue.grossRevenue},"All sales channels"\n`;
-      csv += `"Cost of Goods Sold (COGS)",${pnlData.cogs.totalCOGS},"Estimated / PO Intake"\n`;
-      csv += `"Gross Profit",${pnlData.cogs.grossProfit},"Gross Margin: ${pnlData.cogs.grossMarginPercent}%"\n`;
-      csv += `"Total Operating Expenses",${pnlData.expenses.totalExpenses},"Sum of all categories"\n`;
-      Object.entries(pnlData.expenses.breakdown || {}).forEach(([cat, amt]) => {
-         csv += `"- Expense: ${cat}",${amt},"Operating Cost"\n`;
-      });
-      csv += `"Net Operating Profit",${pnlData.netIncome.netProfit},"Net Margin: ${pnlData.netIncome.netProfitMargin}%"\n`;
-      csv += `"Cash Flow Inflow",${pnlData.cashFlow.inflow},"Collected cash/card/online"\n`;
-      csv += `"Cash Flow Outflow",${pnlData.cashFlow.outflow},"Expenses + Inventory purchases"\n`;
-      csv += `"Net Cash Flow",${pnlData.cashFlow.netCashFlow},"Net liquidity balance"\n`;
-
-      const encodedUri = encodeURI(csv);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `Profit_Loss_Statement_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-   };
 
    const handleExpenseSubmit = async (e) => {
       e.preventDefault();
@@ -525,17 +502,14 @@ export default function AdminFinance() {
          {/* Tab Content 6: Profit & Loss (P&L) Statement & Cash Flow Summaries */}
          {activeTab === 'pnl' && (
             <div className="space-y-8">
-               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border-2 border-black p-6">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-slate-900 to-slate-700 border-2 border-slate-900 p-6">
                   <div>
-                     <h3 className="text-lg font-black uppercase tracking-tight">Executive Profit & Loss (P&L) Statement</h3>
-                     <p className="text-xs text-gray-500 mt-1">Consolidated revenue, COGS, operating overheads, and cash flow liquidity</p>
+                     <h3 className="text-lg font-black uppercase tracking-tight text-white">Executive Profit & Loss (P&L) Statement</h3>
+                     <p className="text-xs text-slate-300 mt-1">Consolidated revenue, COGS, operating overheads, and cash flow liquidity</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                     <Button onClick={exportPnlExcel} className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-sm">
+                     <Button onClick={exportPnlExcel} className="bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-lg border-0">
                         <FileSpreadsheet className="w-4 h-4" /> Download P&L Statement (.XLSX)
-                     </Button>
-                     <Button onClick={exportPnlCSV} variant="outline" className="border-black text-black text-xs font-black uppercase px-5 py-3">
-                        Download CSV
                      </Button>
                   </div>
                </div>
@@ -548,30 +522,30 @@ export default function AdminFinance() {
                   <>
                      {/* KPI Cards */}
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Gross Sales Revenue</span>
-                           <p className="text-2xl font-black mt-2 font-mono text-black">LKR {pnlData.revenue.grossRevenue.toLocaleString()}</p>
-                           <p className="text-[10px] text-gray-400 mt-2">{pnlData.revenue.orderCount} total customer orders</p>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-500">Gross Sales Revenue</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-blue-900">LKR {pnlData.revenue.grossRevenue.toLocaleString()}</p>
+                           <p className="text-[10px] text-blue-400 mt-2">{pnlData.revenue.orderCount} total customer orders</p>
                         </div>
 
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Cost of Goods Sold (COGS)</span>
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-100 border-2 border-amber-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-600">Cost of Goods Sold (COGS)</span>
                            <p className="text-2xl font-black mt-2 font-mono text-amber-700">LKR {pnlData.cogs.totalCOGS.toLocaleString()}</p>
-                           <p className="text-[10px] text-gray-400 mt-2">Gross Margin: {pnlData.cogs.grossMarginPercent}%</p>
+                           <p className="text-[10px] text-amber-400 mt-2">Gross Margin: {pnlData.cogs.grossMarginPercent}%</p>
                         </div>
 
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Operating Expenses</span>
+                        <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-red-500">Operating Expenses</span>
                            <p className="text-2xl font-black mt-2 font-mono text-red-600">LKR {pnlData.expenses.totalExpenses.toLocaleString()}</p>
-                           <p className="text-[10px] text-gray-400 mt-2">{Object.keys(pnlData.expenses.breakdown || {}).length} expense categories</p>
+                           <p className="text-[10px] text-red-400 mt-2">{Object.keys(pnlData.expenses.breakdown || {}).length} expense categories</p>
                         </div>
 
-                        <div className={`border-2 border-black p-6 ${pnlData.netIncome.netProfit >= 0 ? 'bg-black text-white' : 'bg-red-50 text-red-900'}`}>
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60">Net Operating Profit</span>
-                           <p className={`text-2xl font-black mt-2 font-mono ${pnlData.netIncome.netProfit >= 0 ? 'text-green-400' : 'text-red-600'}`}>
+                        <div className={`border-2 p-6 ${pnlData.netIncome.netProfit >= 0 ? 'bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-500' : 'bg-gradient-to-br from-red-500 to-rose-700 border-red-500'}`}>
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70">Net Operating Profit</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-white">
                               LKR {pnlData.netIncome.netProfit.toLocaleString()}
                            </p>
-                           <p className="text-[10px] opacity-75 mt-2">Net Margin: {pnlData.netIncome.netProfitMargin}%</p>
+                           <p className="text-[10px] text-white/70 mt-2">Net Margin: {pnlData.netIncome.netProfitMargin}%</p>
                         </div>
                      </div>
 

@@ -1,4 +1,3 @@
-// MAHATHIR
 // Staff management dashboard: employee profiles, RBAC roles (ADMIN, SALES, WAREHOUSE),
 // daily attendance clock-in / clock-out tracking, and shift scheduling.
 

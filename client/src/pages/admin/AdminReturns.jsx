@@ -76,36 +76,6 @@ export default function AdminReturns() {
       showToast('Returns Report (.XLSX) exported successfully!', 'success');
    };
 
-   const exportReturnsCSV = () => {
-      if (!reportData) return;
-      let csv = "data:text/csv;charset=utf-8,Metric / Reason / Product,Count / Value (LKR),Category\n";
-      csv += `"Total Return Requests",${reportData.summary.totalRequests},"Summary"\n`;
-      csv += `"Approved Returns",${reportData.summary.approvedCount},"Summary"\n`;
-      csv += `"Rejected Returns",${reportData.summary.rejectedCount},"Summary"\n`;
-      csv += `"Total Refunded Amount",${reportData.summary.totalRefundedValue},"Financials"\n`;
-      csv += `"Overall Return Rate",${reportData.summary.returnRatePercent}%,"Rate"\n`;
-
-      Object.entries(reportData.reasonBreakdown || {}).forEach(([reason, count]) => {
-         csv += `"[Reason] ${reason}",${count},"Reason Breakdown"\n`;
-      });
-
-      Object.entries(reportData.conditionBreakdown || {}).forEach(([cond, count]) => {
-         csv += `"[Condition] ${cond}",${count},"Condition Breakdown"\n`;
-      });
-
-      Object.entries(reportData.productReturnCount || {}).forEach(([pName, count]) => {
-         csv += `"[Product] ${pName.replace(/"/g, '""')}",${count},"Product Returns"\n`;
-      });
-
-      const encodedUri = encodeURI(csv);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `Returns_Exchange_Report_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-   };
-
    const fetchOrdersForSelect = async () => {
       try {
          const res = await api.get('/orders?limit=50&excludeStatus=draft');
@@ -340,17 +310,14 @@ export default function AdminReturns() {
          {/* Tab Content 2: Returns & Exchanges Analytical Reports */}
          {activeTab === 'reports' && (
             <div className="space-y-8">
-               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border-2 border-black p-6">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-rose-900 to-rose-700 border-2 border-rose-900 p-6">
                   <div>
-                     <h3 className="text-lg font-black uppercase tracking-tight">Returns & Reverse Logistics Intelligence</h3>
-                     <p className="text-xs text-gray-500 mt-1">Product return frequencies, defect rates, restock efficiency, and refund totals</p>
+                     <h3 className="text-lg font-black uppercase tracking-tight text-white">Returns & Reverse Logistics Intelligence</h3>
+                     <p className="text-xs text-rose-200 mt-1">Product return frequencies, defect rates, restock efficiency, and refund totals</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                     <Button onClick={exportReturnsExcel} className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-sm">
+                     <Button onClick={exportReturnsExcel} className="bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-lg border-0">
                         <FileSpreadsheet className="w-4 h-4" /> Download Returns Report (.XLSX)
-                     </Button>
-                     <Button onClick={exportReturnsCSV} variant="outline" className="border-black text-black text-xs font-black uppercase px-5 py-3">
-                        Download CSV
                      </Button>
                   </div>
                </div>
@@ -363,28 +330,28 @@ export default function AdminReturns() {
                   <>
                      {/* Summary KPI Cards */}
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total Return Requests</span>
-                           <p className="text-2xl font-black mt-2 font-mono">{reportData.summary.totalRequests}</p>
-                           <p className="text-[10px] text-gray-400 mt-2">{reportData.summary.requestedCount} pending inspection</p>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-500">Total Return Requests</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-blue-900">{reportData.summary.totalRequests}</p>
+                           <p className="text-[10px] text-blue-400 mt-2">{reportData.summary.requestedCount} pending inspection</p>
                         </div>
 
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Approved & Restocked</span>
-                           <p className="text-2xl font-black mt-2 font-mono text-green-600">{reportData.summary.approvedCount}</p>
-                           <p className="text-[10px] text-gray-400 mt-2">Auto-reconciled to central stock</p>
+                        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-2 border-emerald-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-600">Approved & Restocked</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-emerald-700">{reportData.summary.approvedCount}</p>
+                           <p className="text-[10px] text-emerald-400 mt-2">Auto-reconciled to central stock</p>
                         </div>
 
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total Refunded Value</span>
+                        <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-red-500">Total Refunded Value</span>
                            <p className="text-2xl font-black mt-2 font-mono text-red-600">LKR {reportData.summary.totalRefundedValue.toLocaleString()}</p>
-                           <p className="text-[10px] text-gray-400 mt-2">Returned capital issued</p>
+                           <p className="text-[10px] text-red-400 mt-2">Returned capital issued</p>
                         </div>
 
-                        <div className="bg-black text-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Overall Return Rate</span>
-                           <p className="text-2xl font-black mt-2 font-mono text-amber-400">{reportData.summary.returnRatePercent}%</p>
-                           <p className="text-[10px] text-gray-400 mt-2">Against {reportData.summary.totalOrders} total orders</p>
+                        <div className="bg-gradient-to-br from-amber-500 to-orange-600 border-2 border-amber-500 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-100">Overall Return Rate</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-white">{reportData.summary.returnRatePercent}%</p>
+                           <p className="text-[10px] text-amber-100 mt-2">Against {reportData.summary.totalOrders} total orders</p>
                         </div>
                      </div>
 
@@ -392,7 +359,10 @@ export default function AdminReturns() {
                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Primary Return Reasons */}
                         <div className="bg-white border-2 border-black p-6 space-y-4">
-                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Primary Return Reasons</h4>
+                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3 flex items-center gap-2">
+                              <span className="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+                              Primary Return Reasons
+                           </h4>
                            <div className="space-y-3 font-mono text-xs">
                               {Object.entries(reportData.reasonBreakdown || {}).length === 0 ? (
                                  <p className="text-gray-400 py-4 text-center">No reason data recorded</p>
@@ -400,7 +370,7 @@ export default function AdminReturns() {
                                  Object.entries(reportData.reasonBreakdown).map(([reason, count]) => (
                                     <div key={reason} className="flex justify-between items-center py-2 border-b border-gray-100">
                                        <span className="font-bold">{reason}</span>
-                                       <span className="px-2 py-0.5 bg-gray-100 font-black">{count} units</span>
+                                       <span className="px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 font-black">{count} units</span>
                                     </div>
                                  ))
                               )}
@@ -409,7 +379,10 @@ export default function AdminReturns() {
 
                         {/* Top Returned Products */}
                         <div className="bg-white border-2 border-black p-6 space-y-4">
-                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Top Products Returned</h4>
+                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3 flex items-center gap-2">
+                              <span className="w-3 h-3 rounded-full bg-orange-500 inline-block"></span>
+                              Top Products Returned
+                           </h4>
                            <div className="space-y-3 font-mono text-xs">
                               {Object.entries(reportData.productReturnCount || {}).length === 0 ? (
                                  <p className="text-gray-400 py-4 text-center">No product returns recorded</p>

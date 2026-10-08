@@ -80,22 +80,6 @@ export default function AdminPurchaseOrders() {
       showToast('Supplier Report (.XLSX) exported successfully!', 'success');
    };
 
-   const exportSupplierCSV = () => {
-      if (!reportData?.suppliers?.supplierPerformance) return;
-      let csv = "data:text/csv;charset=utf-8,Supplier Name,Contact Person,Phone,Total POs,Completed POs,Total Spend (LKR),Items Ordered,Items Received,Fulfillment Rate (%)\n";
-      reportData.suppliers.supplierPerformance.forEach(s => {
-         csv += `"${s.supplierName.replace(/"/g, '""')}","${s.contactPerson || ''}","${s.phone || ''}",${s.totalPOs},${s.completedPOs},${s.totalSpend},${s.itemsOrdered},${s.itemsReceived},${s.fulfillmentRate}%\n`;
-      });
-
-      const encodedUri = encodeURI(csv);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `Supplier_Performance_Report_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-   };
-
    const fetchSuppliersAndProducts = async () => {
       try {
          const [supRes, prodRes] = await Promise.all([
@@ -327,17 +311,14 @@ export default function AdminPurchaseOrders() {
          {/* Tab Content 2: Supplier Performance & Procurement Reports */}
          {activeTab === 'reports' && (
             <div className="space-y-8">
-               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border-2 border-black p-6">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-blue-900 to-indigo-700 border-2 border-blue-900 p-6">
                   <div>
-                     <h3 className="text-lg font-black uppercase tracking-tight">Supplier Performance & Fulfillment Analytics</h3>
-                     <p className="text-xs text-gray-500 mt-1">Vendor reliability, PO fulfillment velocity, spend volume, and item intake metrics</p>
+                     <h3 className="text-lg font-black uppercase tracking-tight text-white">Supplier Performance & Fulfillment Analytics</h3>
+                     <p className="text-xs text-blue-200 mt-1">Vendor reliability, PO fulfillment velocity, spend volume, and item intake metrics</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                     <Button onClick={exportSupplierExcel} className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-sm">
+                     <Button onClick={exportSupplierExcel} className="bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-lg border-0">
                         <FileSpreadsheet className="w-4 h-4" /> Download Supplier Report (.XLSX)
-                     </Button>
-                     <Button onClick={exportSupplierCSV} variant="outline" className="border-black text-black text-xs font-black uppercase px-5 py-3">
-                        Download CSV
                      </Button>
                   </div>
                </div>
@@ -350,34 +331,37 @@ export default function AdminPurchaseOrders() {
                   <>
                      {/* Summary KPI Cards */}
                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total Active Suppliers</span>
-                           <p className="text-2xl font-black mt-2 font-mono">{reportData.suppliers.totalSuppliers}</p>
-                           <p className="text-[10px] text-gray-400 mt-2">Verified procurement partners</p>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-500">Total Active Suppliers</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-blue-900">{reportData.suppliers.totalSuppliers}</p>
+                           <p className="text-[10px] text-blue-400 mt-2">Verified procurement partners</p>
                         </div>
 
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total POs Issued</span>
-                           <p className="text-2xl font-black mt-2 font-mono text-blue-600">{reportData.suppliers.totalPOs}</p>
-                           <p className="text-[10px] text-gray-400 mt-2">Historical procurement volume</p>
+                        <div className="bg-gradient-to-br from-violet-50 to-indigo-100 border-2 border-violet-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">Total POs Issued</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-violet-900">{reportData.suppliers.totalPOs}</p>
+                           <p className="text-[10px] text-violet-400 mt-2">Historical procurement volume</p>
                         </div>
 
-                        <div className="bg-black text-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Order Fulfillment Velocity</span>
-                           <p className="text-2xl font-black mt-2 font-mono text-green-400">
+                        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 border-2 border-emerald-500 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-100">Order Fulfillment Velocity</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-white">
                               {reportData.orders?.orderFulfillmentRate || 100}%
                            </p>
-                           <p className="text-[10px] text-gray-400 mt-2">Average order completion rate</p>
+                           <p className="text-[10px] text-emerald-100 mt-2">Average order completion rate</p>
                         </div>
                      </div>
 
                      {/* Supplier Breakdown Table */}
                      <div className="bg-white border-2 border-black p-6 space-y-4">
-                        <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Supplier Fulfillment & Spend Matrix</h4>
+                        <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3 flex items-center gap-2">
+                           <span className="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>
+                           Supplier Fulfillment & Spend Matrix
+                        </h4>
                         <div className="overflow-x-auto">
                            <table className="w-full text-left text-xs font-mono">
                               <thead>
-                                 <tr className="border-b border-black bg-gray-50 text-[10px] uppercase font-black">
+                                 <tr className="border-b border-black bg-slate-50 text-[10px] uppercase font-black">
                                     <th className="p-3">Supplier Name</th>
                                     <th className="p-3">Contact Person</th>
                                     <th className="p-3">Total POs</th>
@@ -387,20 +371,20 @@ export default function AdminPurchaseOrders() {
                                     <th className="p-3 text-right">Fulfillment Rate</th>
                                  </tr>
                               </thead>
-                              <tbody className="divide-y divide-gray-200">
+                              <tbody className="divide-y divide-gray-100">
                                  {(!reportData.suppliers.supplierPerformance || reportData.suppliers.supplierPerformance.length === 0) ? (
                                     <tr><td colSpan="7" className="p-6 text-center text-gray-400">No supplier performance data</td></tr>
                                  ) : (
-                                    reportData.suppliers.supplierPerformance.map(s => (
-                                       <tr key={s.supplierId} className="hover:bg-gray-50">
+                                    reportData.suppliers.supplierPerformance.map((s, i) => (
+                                       <tr key={s.supplierId} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
                                           <td className="p-3 font-bold font-sans">{s.supplierName}</td>
                                           <td className="p-3 text-gray-500">{s.contactPerson || 'N/A'}</td>
-                                          <td className="p-3 font-bold">{s.totalPOs}</td>
-                                          <td className="p-3 text-green-600 font-bold">{s.completedPOs}</td>
-                                          <td className="p-3">{s.itemsReceived} / {s.itemsOrdered} units</td>
+                                          <td className="p-3 font-bold text-violet-700">{s.totalPOs}</td>
+                                          <td className="p-3 text-emerald-600 font-bold">{s.completedPOs}</td>
+                                          <td className="p-3 text-blue-700">{s.itemsReceived} / {s.itemsOrdered} units</td>
                                           <td className="p-3 font-bold">LKR {s.totalSpend.toLocaleString()}</td>
                                           <td className="p-3 text-right">
-                                             <span className={`px-2 py-0.5 font-bold ${Number(s.fulfillmentRate) >= 80 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+                                             <span className={`px-2 py-0.5 font-bold ${Number(s.fulfillmentRate) >= 80 ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300'}`}>
                                                 {s.fulfillmentRate}%
                                              </span>
                                           </td>

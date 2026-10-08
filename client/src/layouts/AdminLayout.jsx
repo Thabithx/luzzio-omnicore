@@ -58,7 +58,7 @@ const AdminLayout = ({ children }) => {
       navigate('/login');
    };
 
-   // MAHATHIR: Role-Based Module Access Control Matrix
+   // Role-Based Module Access Control Matrix
    const allMenuItems = [
       { to: "/admin", icon: LayoutDashboard, label: "Command Center", roles: ['admin', 'sales', 'warehouse'] },
       { to: "/admin/pos", icon: Monitor, label: "POS Terminal", roles: ['admin', 'sales'] },
@@ -85,10 +85,10 @@ const AdminLayout = ({ children }) => {
       <div className="flex min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white max-w-full overflow-x-hidden">
          {/* Sidebar */}
          <aside className="fixed left-0 top-0 h-full w-72 bg-white border-r border-black z-50 print:hidden flex flex-col">
-            <div className="p-10 border-b border-black">
+            <div className="h-[81px] flex items-center px-8 border-b border-black">
                <Link to="/" className="block">
                   <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">Luzzio</h1>
-                  <p className="text-[9px] text-gray-400 mt-2 font-black uppercase tracking-[0.3em]">Administrator</p>
+                  <p className="text-[9px] text-gray-400 mt-1 font-black uppercase tracking-[0.3em]">Administrator</p>
                </Link>
             </div>
 
@@ -117,7 +117,7 @@ const AdminLayout = ({ children }) => {
 
          {/* Main Content */}
          <main className="flex-1 ml-0 md:ml-72 min-h-screen relative print:ml-0 print:min-h-0 overflow-x-hidden">
-            <header className="px-6 md:px-12 py-10 border-b border-black flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-40 print:hidden">
+            <header className="h-[81px] px-6 md:px-12 border-b border-black flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-40 print:hidden">
                <div>
                   <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">
                      Luzzio / {menuItems.find(i => i.to === location.pathname)?.label || "Protocol"}

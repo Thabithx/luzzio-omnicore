@@ -164,37 +164,6 @@ const Dashboard = () => {
       }
    };
 
-   const exportConsolidatedReportCSV = async () => {
-      try {
-         const res = await api.get('/analytics/consolidated-report');
-         const d = res.data.data?.executiveSummary;
-         if (!d) return;
-
-         let csv = "data:text/csv;charset=utf-8,Module / KPI Dimension,Consolidated Value,Performance Indicator\n";
-         csv += `"Gross Omnicommerce Revenue",LKR ${d.grossRevenue.toLocaleString()},"Sales & Commerce"\n`;
-         csv += `"Total Orders Processed",${d.orderCount},"Fulfillment"\n`;
-         csv += `"Net Operating Profit",LKR ${d.netProfit.toLocaleString()},"Profitability"\n`;
-         csv += `"Net Profit Margin",${d.profitMarginPercent}%,"Margin Efficiency"\n`;
-         csv += `"Total Inventory Units",${d.totalStockUnits.toLocaleString()} units,"Warehouse Capacity"\n`;
-         csv += `"Central Stock Valuation",LKR ${d.totalStockValuation.toLocaleString()},"Asset Value"\n`;
-         csv += `"Low-Stock Warnings",${d.lowStockCount} items,"Stock Alerts"\n`;
-         csv += `"Total Returns / Exchanges",${d.totalReturns},"Reverse Logistics"\n`;
-         csv += `"Return Rate Percentage",${d.returnRatePercent}%,"Product Quality"\n`;
-         csv += `"Active Staff Headcount",${d.totalStaff} members,"Human Resources"\n`;
-         csv += `"Active Clock-Ins Today",${d.activeClockIns},"Workforce Attendance"\n`;
-
-         const encodedUri = encodeURI(csv);
-         const link = document.createElement("a");
-         link.setAttribute("href", encodedUri);
-         link.setAttribute("download", `Consolidated_Executive_Report_${new Date().toISOString().slice(0, 10)}.csv`);
-         document.body.appendChild(link);
-         link.click();
-         document.body.removeChild(link);
-      } catch (err) {
-         showToast('Failed to generate consolidated analytics report.', 'error');
-      }
-   };
-
    return (
       <div className='space-y-12'>
          <div className='flex flex-col md:flex-row md:justify-between md:items-end border-b border-black pb-8 gap-8'>
@@ -206,16 +175,10 @@ const Dashboard = () => {
                <div className='flex flex-wrap items-center gap-2'>
                   <button
                      onClick={exportComprehensiveExcelReport}
-                     className='bg-black text-white text-[10px] font-black uppercase tracking-widest px-5 py-2.5 border border-black hover:bg-gray-900 transition-all flex items-center gap-2 shadow-sm'
+                     className='bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest px-5 py-2.5 border-0 hover:bg-emerald-500 transition-all flex items-center gap-2 shadow-md'
                   >
                      <FileSpreadsheet size={14} />
                      Download Multi-Sheet Report (.XLSX)
-                  </button>
-                  <button
-                     onClick={exportConsolidatedReportCSV}
-                     className='bg-white text-black text-[10px] font-black uppercase tracking-widest px-4 py-2.5 border border-black hover:bg-black hover:text-white transition-all'
-                  >
-                     Export Summary (CSV)
                   </button>
                   <div className='flex items-center bg-brand-grey border border-black p-1'>
                      {ranges.map((r) => (

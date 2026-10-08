@@ -50,6 +50,12 @@ export default function AdminFAQ() {
    };
 
    const handleAdd = async () => {
+      if (!formData.question.trim()) return showToast('Question is required.', 'error');
+      if (!formData.answer.trim()) return showToast('Answer is required.', 'error');
+      const orderNum = Number(formData.order);
+      if (isNaN(orderNum) || !Number.isInteger(orderNum) || orderNum < 0) {
+         return showToast('Order must be a non-negative whole number.', 'error');
+      }
       try {
          const res = await api.post('/faq', formData);
          if (res.data.success) {
@@ -76,6 +82,12 @@ export default function AdminFAQ() {
    };
 
    const handleUpdate = async (id) => {
+      if (!formData.question.trim()) return showToast('Question is required.', 'error');
+      if (!formData.answer.trim()) return showToast('Answer is required.', 'error');
+      const orderNum = Number(formData.order);
+      if (isNaN(orderNum) || !Number.isInteger(orderNum) || orderNum < 0) {
+         return showToast('Order must be a non-negative whole number.', 'error');
+      }
       try {
          const res = await api.put(`/faq/${id}`, formData);
          if (res.data.success) {
@@ -199,6 +211,8 @@ export default function AdminFAQ() {
                         type="number"
                         name="order"
                         placeholder="Order"
+                        min="0"
+                        step="1"
                         value={formData.order}
                         onChange={handleInputChange}
                         className="border border-black px-4 py-3 text-[11px] font-medium"
@@ -265,6 +279,8 @@ export default function AdminFAQ() {
                               <input
                                  type="number"
                                  name="order"
+                                 min="0"
+                                 step="1"
                                  value={formData.order}
                                  onChange={handleInputChange}
                                  className="border border-black px-4 py-3 text-[11px] font-medium"

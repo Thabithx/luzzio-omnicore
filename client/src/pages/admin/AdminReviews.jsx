@@ -63,32 +63,6 @@ export default function AdminReviews() {
       showToast('Engagement Report (.XLSX) exported successfully!', 'success');
    };
 
-   const exportEngagementCSV = () => {
-      if (!reportData) return;
-      let csv = "data:text/csv;charset=utf-8,Category / Metric,Value,Description\n";
-      csv += `"Total Registered Customers",${reportData.users.customers},"User Accounts"\n`;
-      csv += `"Total Staff Users",${reportData.users.staffUsers},"Admin/Sales/Warehouse"\n`;
-      csv += `"Total Reviews Submitted",${reportData.reviews.totalReviews},"Customer Feedback"\n`;
-      csv += `"Approved Reviews",${reportData.reviews.approvedReviews},"Moderated & Live"\n`;
-      csv += `"Rejected / Hidden Reviews",${reportData.reviews.rejectedReviews},"Hidden from Storefront"\n`;
-      csv += `"Review Approval Rate",${reportData.reviews.approvalRate}%,"Moderation Quality"\n`;
-      csv += `"Average Store Rating",${reportData.reviews.avgGlobalRating} / 5.0,"Global Star Rating"\n`;
-      csv += `"Total FAQ Items",${reportData.faqs.totalFAQs},"Knowledge Base"\n`;
-      csv += `"Published FAQs",${reportData.faqs.publishedFAQs},"Active Articles"\n`;
-
-      Object.entries(reportData.faqs.faqCategoryBreakdown || {}).forEach(([cat, count]) => {
-         csv += `"[FAQ Category] ${cat}",${count},"FAQ Articles"\n`;
-      });
-
-      const encodedUri = encodeURI(csv);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `User_Review_FAQ_Engagement_Report_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-   };
-
    const handleToggleApprove = async (review, currentStatus) => {
       try {
          await api.put(`/products/${review.productId}/reviews/${review.reviewId}/moderate`, {
@@ -276,17 +250,14 @@ export default function AdminReviews() {
          {/* Tab Content 2: Engagement & Moderation Analytics Reports */}
          {activeTab === 'reports' && (
             <div className="space-y-8">
-               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border-2 border-black p-6">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-violet-900 to-indigo-700 border-2 border-violet-900 p-6">
                   <div>
-                     <h3 className="text-lg font-black uppercase tracking-tight">Customer Activity & Content Engagement Intelligence</h3>
-                     <p className="text-xs text-gray-500 mt-1">Review sentiment metrics, FAQ knowledge base coverage, and user account breakdown</p>
+                     <h3 className="text-lg font-black uppercase tracking-tight text-white">Customer Activity & Content Engagement Intelligence</h3>
+                     <p className="text-xs text-violet-200 mt-1">Review sentiment metrics, FAQ knowledge base coverage, and user account breakdown</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                     <Button onClick={exportEngagementExcel} className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-sm">
+                     <Button onClick={exportEngagementExcel} className="bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-black uppercase px-5 py-3 flex items-center gap-2 shadow-lg border-0">
                         <FileSpreadsheet className="w-4 h-4" /> Download Engagement Report (.XLSX)
-                     </Button>
-                     <Button onClick={exportEngagementCSV} variant="outline" className="border-black text-black text-xs font-black uppercase px-5 py-3">
-                        Download CSV
                      </Button>
                   </div>
                </div>
@@ -299,32 +270,32 @@ export default function AdminReviews() {
                   <>
                      {/* Summary KPI Cards */}
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Registered Customers</span>
-                           <p className="text-2xl font-black mt-2 font-mono">{reportData.users.customers}</p>
-                           <p className="text-[10px] text-gray-400 mt-2">Active store accounts</p>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-500">Registered Customers</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-blue-900">{reportData.users.customers}</p>
+                           <p className="text-[10px] text-blue-400 mt-2">Active store accounts</p>
                         </div>
 
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total Reviews</span>
-                           <p className="text-2xl font-black mt-2 font-mono">{reportData.reviews.totalReviews}</p>
-                           <p className="text-[10px] text-gray-400 mt-2">{reportData.reviews.approvedReviews} approved ({reportData.reviews.approvalRate}%)</p>
+                        <div className="bg-gradient-to-br from-violet-50 to-violet-100 border-2 border-violet-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">Total Reviews</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-violet-900">{reportData.reviews.totalReviews}</p>
+                           <p className="text-[10px] text-violet-400 mt-2">{reportData.reviews.approvedReviews} approved ({reportData.reviews.approvalRate}%)</p>
                         </div>
 
-                        <div className="bg-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Average Store Rating</span>
-                           <p className="text-2xl font-black mt-2 font-mono text-amber-500">
+                        <div className="bg-gradient-to-br from-amber-50 to-yellow-100 border-2 border-amber-200 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-600">Average Store Rating</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-amber-700">
                               ★ {reportData.reviews.avgGlobalRating} / 5.0
                            </p>
-                           <p className="text-[10px] text-gray-400 mt-2">Overall product satisfaction</p>
+                           <p className="text-[10px] text-amber-400 mt-2">Overall product satisfaction</p>
                         </div>
 
-                        <div className="bg-black text-white border-2 border-black p-6">
-                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">FAQ Articles Published</span>
-                           <p className="text-2xl font-black mt-2 font-mono text-green-400">
+                        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 border-2 border-emerald-500 p-6">
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-100">FAQ Articles Published</span>
+                           <p className="text-2xl font-black mt-2 font-mono text-white">
                               {reportData.faqs.publishedFAQs} / {reportData.faqs.totalFAQs}
                            </p>
-                           <p className="text-[10px] text-gray-400 mt-2">{Object.keys(reportData.faqs.faqCategoryBreakdown || {}).length} support categories</p>
+                           <p className="text-[10px] text-emerald-100 mt-2">{Object.keys(reportData.faqs.faqCategoryBreakdown || {}).length} support categories</p>
                         </div>
                      </div>
 
@@ -332,14 +303,17 @@ export default function AdminReviews() {
                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Rating Star Distribution */}
                         <div className="bg-white border-2 border-black p-6 space-y-4">
-                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Star Rating Sentiment Breakdown</h4>
+                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3 flex items-center gap-2">
+                              <span className="w-3 h-3 rounded-full bg-amber-400 inline-block"></span>
+                              Star Rating Sentiment Breakdown
+                           </h4>
                            <div className="space-y-3 font-mono text-xs">
                               {[5, 4, 3, 2, 1].map(stars => (
                                  <div key={stars} className="flex items-center justify-between py-1.5 border-b border-gray-100">
                                     <span className="font-bold flex items-center gap-1">
                                        <Star size={12} className="fill-amber-400 text-amber-400 inline" /> {stars} Star Ratings
                                     </span>
-                                    <span className="px-2 py-0.5 bg-gray-100 font-black">
+                                    <span className={`px-2 py-0.5 font-black ${stars >= 4 ? 'bg-amber-50 text-amber-700 border border-amber-200' : stars === 3 ? 'bg-gray-100 text-gray-700' : 'bg-red-50 text-red-600 border border-red-200'}`}>
                                        {reportData.reviews.ratingDistribution?.[stars] || 0} reviews
                                     </span>
                                  </div>
@@ -349,7 +323,10 @@ export default function AdminReviews() {
 
                         {/* Top Rated Products */}
                         <div className="bg-white border-2 border-black p-6 space-y-4">
-                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Top Rated Products</h4>
+                           <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3 flex items-center gap-2">
+                              <span className="w-3 h-3 rounded-full bg-violet-500 inline-block"></span>
+                              Top Rated Products
+                           </h4>
                            <div className="space-y-3 font-mono text-xs">
                               {(!reportData.reviews.topRatedProducts || reportData.reviews.topRatedProducts.length === 0) ? (
                                  <p className="text-gray-400 py-4 text-center">No rated products yet</p>
