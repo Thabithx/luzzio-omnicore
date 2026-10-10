@@ -66,18 +66,41 @@ exports.createReturnRequest = async (req, res) => {
 // @access  Private (Admin / Warehouse / Sales)
 exports.getReturnRequests = async (req, res) => {
    try {
-      const { status, requestType } = req.query;
+      const { status, requestType, search } = req.query;
       const query = {};
 
       if (status) query.status = status;
       if (requestType) query.requestType = requestType;
 
-      const returns = await ReturnRequest.find(query)
+      if (search && search.trim()) {
+         const s = search.trim();
+         query.$or = [
+            { returnNumber: { $regex: s, $options: 'i' } },
+            { notes: { $regex: s, $options: 'i' } },
+            { 'items.reason': { $regex: s, $options: 'i' } }
+         ];
+      }
+
+      let returns = await ReturnRequest.find(query)
          .populate('originalOrder', 'orderNumber totalPrice email createdAt')
          .populate('customer', 'name email phone')
          .populate('items.product', 'name images price')
          .populate('processedBy', 'name')
          .sort({ createdAt: -1 });
+
+      if (search && search.trim()) {
+         const sLower = search.trim().toLowerCase();
+         returns = returns.filter(r => {
+            const retNumMatch = r.returnNumber?.toLowerCase().includes(sLower);
+            const notesMatch = r.notes?.toLowerCase().includes(sLower);
+            const orderNumMatch = r.originalOrder?.orderNumber?.toLowerCase().includes(sLower) || r.originalOrder?._id?.toString().toLowerCase().includes(sLower);
+            const custNameMatch = r.customer?.name?.toLowerCase().includes(sLower);
+            const custEmailMatch = r.customer?.email?.toLowerCase().includes(sLower);
+            const custPhoneMatch = r.customer?.phone?.toLowerCase().includes(sLower);
+            const productMatch = r.items?.some(it => it.product?.name?.toLowerCase().includes(sLower) || it.reason?.toLowerCase().includes(sLower));
+            return retNumMatch || notesMatch || orderNumMatch || custNameMatch || custEmailMatch || custPhoneMatch || productMatch;
+         });
+      }
 
       res.status(200).json({
          success: true,

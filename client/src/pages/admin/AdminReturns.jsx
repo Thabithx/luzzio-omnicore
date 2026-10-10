@@ -16,6 +16,7 @@ export default function AdminReturns() {
    const [reportData, setReportData] = useState(null);
    const [loading, setLoading] = useState(false);
    const [statusFilter, setStatusFilter] = useState('');
+   const [searchTerm, setSearchTerm] = useState('');
    const { showToast } = useToast();
 
    // Modal State
@@ -134,7 +135,9 @@ export default function AdminReturns() {
    const fetchReturns = async () => {
       setLoading(true);
       try {
-         const res = await api.get(`/returns?status=${statusFilter}`);
+         const query = new URLSearchParams();
+         if (statusFilter) query.append('status', statusFilter);
+         const res = await api.get(`/returns?${query.toString()}`);
          setReturns(res.data.data || []);
       } catch (err) {
          console.error('Fetch returns error:', err);
@@ -142,6 +145,22 @@ export default function AdminReturns() {
          setLoading(false);
       }
    };
+
+   const filteredReturns = returns.filter((r) => {
+      if (!searchTerm.trim()) return true;
+      const q = searchTerm.toLowerCase();
+      const retNum = (r.returnNumber || '').toLowerCase();
+      const orderNum = (r.originalOrder?.orderNumber || (r.originalOrder?._id ? r.originalOrder._id.slice(-6) : '')).toLowerCase();
+      const custName = (r.customer?.name || '').toLowerCase();
+      const custEmail = (r.customer?.email || '').toLowerCase();
+      const custPhone = (r.customer?.phone || '').toLowerCase();
+      const notes = (r.notes || '').toLowerCase();
+      const itemMatch = r.items?.some(it =>
+         (it.product?.name || '').toLowerCase().includes(q) ||
+         (it.reason || '').toLowerCase().includes(q)
+      );
+      return retNum.includes(q) || orderNum.includes(q) || custName.includes(q) || custEmail.includes(q) || custPhone.includes(q) || notes.includes(q) || itemMatch;
+   });
 
    const openInspectModal = (ret) => {
       setSelectedReturn(ret);
@@ -225,34 +244,71 @@ export default function AdminReturns() {
 
          {/* Tab Content 1: Returns Table */}
          {activeTab === 'list' && (
-            <div className="bg-white border border-black overflow-x-auto">
-               <table className="w-full text-left border-collapse">
-                  <thead>
-                     <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
-                        <th className="p-4">Return #</th>
-                        <th className="p-4">Original Order</th>
-                        <th className="p-4">Customer</th>
-                        <th className="p-4">Returned Items</th>
-                        <th className="p-4">Type</th>
-                        <th className="p-4">Status</th>
-                        <th className="p-4 text-right">Actions</th>
-                     </tr>
-                  </thead>
-               <tbody className="divide-y divide-gray-200 text-xs font-mono">
-                  {loading ? (
-                     <tr>
-                        <td colSpan="7" className="p-12 text-center text-xs font-black uppercase tracking-widest animate-pulse">
-                           Loading Return Requests...
-                        </td>
-                     </tr>
-                  ) : returns.length === 0 ? (
-                     <tr>
-                        <td colSpan="7" className="p-12 text-center text-gray-400 font-black uppercase tracking-widest">
-                           No Returns or Exchange Requests Logged
-                        </td>
-                     </tr>
-                  ) : (
-                     returns.map((r) => (
+            <div className="space-y-4">
+               {/* Bihandu's Search & Live Filter Toolbar */}
+               <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white border border-black p-4">
+                  <div className="relative flex-1">
+                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                     <input
+                        type="text"
+                        placeholder="Search returns by Return #, Order #, Customer, Phone, or Product name..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-10 py-2.5 border border-black text-xs font-mono bg-brand-grey placeholder-gray-400 focus:outline-none focus:bg-white"
+                     />
+                     {searchTerm && (
+                        <button
+                           onClick={() => setSearchTerm('')}
+                           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black p-1"
+                           title="Clear search"
+                        >
+                           <X size={14} />
+                        </button>
+                     )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                     <span className="text-[10px] font-black uppercase tracking-wider text-gray-500 whitespace-nowrap bg-brand-grey px-3 py-2 border border-black/10">
+                        {filteredReturns.length} of {returns.length} Matches
+                     </span>
+                     {searchTerm && (
+                        <button
+                           onClick={() => setSearchTerm('')}
+                           className="text-[9px] font-black uppercase tracking-wider px-3 py-2 border border-black bg-black text-white hover:bg-gray-800"
+                        >
+                           Clear
+                        </button>
+                     )}
+                  </div>
+               </div>
+
+               <div className="bg-white border border-black overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                     <thead>
+                        <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
+                           <th className="p-4">Return #</th>
+                           <th className="p-4">Original Order</th>
+                           <th className="p-4">Customer</th>
+                           <th className="p-4">Returned Items</th>
+                           <th className="p-4">Type</th>
+                           <th className="p-4">Status</th>
+                           <th className="p-4 text-right">Actions</th>
+                        </tr>
+                     </thead>
+                     <tbody className="divide-y divide-gray-200 text-xs font-mono">
+                        {loading ? (
+                           <tr>
+                              <td colSpan="7" className="p-12 text-center text-xs font-black uppercase tracking-widest animate-pulse">
+                                 Loading Return Requests...
+                              </td>
+                           </tr>
+                        ) : filteredReturns.length === 0 ? (
+                           <tr>
+                              <td colSpan="7" className="p-12 text-center text-gray-400 font-black uppercase tracking-widest">
+                                 {searchTerm ? `No returns match search query "${searchTerm}"` : 'No Returns or Exchange Requests Logged'}
+                              </td>
+                           </tr>
+                        ) : (
+                           filteredReturns.map((r) => (
                         <tr key={r._id} className="hover:bg-gray-50">
                            <td className="p-4 font-black">
                               <p className="font-sans text-xs">{r.returnNumber}</p>
@@ -305,7 +361,8 @@ export default function AdminReturns() {
                </tbody>
             </table>
          </div>
-         )}
+      </div>
+   )}
 
          {/* Tab Content 2: Returns & Exchanges Analytical Reports */}
          {activeTab === 'reports' && (
