@@ -12,10 +12,12 @@ const {
    getAttendance,
    getShifts,
    createShift,
-   updateShift
+   updateShift,
+   getStaffLeaderboard
 } = require('../controllers/staffController');
 
 router.get('/', protect, authorize('admin'), getStaff);
+router.get('/leaderboard', protect, authorize('admin', 'sales', 'warehouse'), getStaffLeaderboard);
 router.post('/', protect, authorize('admin'), createStaffMember);
 router.put('/:id', protect, authorize('admin'), updateStaffMember);
 

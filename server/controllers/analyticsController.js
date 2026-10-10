@@ -109,10 +109,38 @@ exports.getOrderSupplierReport = async (req, res) => {
          }
       });
 
-      const supplierPerformance = Object.values(supplierStats).map(s => ({
-         ...s,
-         fulfillmentRate: s.itemsOrdered > 0 ? ((s.itemsReceived / s.itemsOrdered) * 100).toFixed(1) : 100
-      }));
+      const supplierPerformance = Object.values(supplierStats).map(s => {
+         const fulfillmentRate = s.itemsOrdered > 0 ? Number(((s.itemsReceived / s.itemsOrdered) * 100).toFixed(1)) : 100;
+         const completionRate = s.totalPOs > 0 ? Number(((s.completedPOs / s.totalPOs) * 100).toFixed(1)) : 100;
+         const score = Math.min(100, Math.max(0, Math.round(fulfillmentRate * 0.65 + completionRate * 0.35)));
+
+         let grade = 'GRADE_A';
+         let gradeLabel = 'Grade A (Preferred Partner)';
+         let riskLevel = 'LOW';
+         if (score < 50) {
+            grade = 'GRADE_D';
+            gradeLabel = 'Grade D (High Risk / Inconsistent)';
+            riskLevel = 'HIGH';
+         } else if (score < 75) {
+            grade = 'GRADE_C';
+            gradeLabel = 'Grade C (Needs Monitoring)';
+            riskLevel = 'MEDIUM';
+         } else if (score < 90) {
+            grade = 'GRADE_B';
+            gradeLabel = 'Grade B (Reliable Vendor)';
+            riskLevel = 'LOW';
+         }
+
+         return {
+            ...s,
+            fulfillmentRate,
+            completionRate,
+            score,
+            grade,
+            gradeLabel,
+            riskLevel
+         };
+      });
 
       res.status(200).json({
          success: true,

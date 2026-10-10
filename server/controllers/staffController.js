@@ -311,3 +311,89 @@ exports.updateShift = async (req, res) => {
       res.status(500).json({ success: false, message: error.message });
    }
 };
+
+// MAHATHIR: Staff Performance & Sales Attribution Leaderboard
+// @desc    Get staff sales attribution and cashier performance leaderboard
+// @route   GET /api/staff/leaderboard
+// @access  Private (Admin / Sales)
+exports.getStaffLeaderboard = async (req, res) => {
+   try {
+      const Order = require('../models/Order');
+
+      const staffList = await User.find({ role: { $in: ['admin', 'sales', 'warehouse'] } })
+         .select('name email role employeeId phone')
+         .lean();
+
+      // Aggregate all paid orders (POS + Online) by cashier or processed user
+      const salesAgg = await Order.aggregate([
+         { $match: { isPaid: true, status: { $ne: 'cancelled' } } },
+         {
+            $group: {
+               _id: '$cashierId',
+               totalRevenue: { $sum: '$totalPrice' },
+               ordersCount: { $sum: 1 },
+               itemsSold: { $sum: { $size: '$orderItems' } }
+            }
+         }
+      ]);
+
+      const salesMap = {};
+      salesAgg.forEach(s => {
+         if (s._id) salesMap[s._id.toString()] = s;
+      });
+
+      // Also compute unassigned/direct online sales
+      const unassignedStats = salesAgg.find(s => !s._id) || { totalRevenue: 0, ordersCount: 0, itemsSold: 0 };
+
+      // Map metrics for every staff member
+      const leaderboard = staffList.map(staff => {
+         const stats = salesMap[staff._id.toString()] || { totalRevenue: 0, ordersCount: 0, itemsSold: 0 };
+         const aov = stats.ordersCount > 0 ? Math.round(stats.totalRevenue / stats.ordersCount) : 0;
+
+         let tier = 'BRONZE';
+         let rating = 3.5;
+         if (stats.totalRevenue > 150000 || stats.ordersCount >= 15) {
+            tier = 'PLATINUM';
+            rating = 5.0;
+         } else if (stats.totalRevenue > 50000 || stats.ordersCount >= 8) {
+            tier = 'GOLD';
+            rating = 4.8;
+         } else if (stats.totalRevenue > 15000 || stats.ordersCount >= 3) {
+            tier = 'SILVER';
+            rating = 4.2;
+         }
+
+         return {
+            staffId: staff._id,
+            name: staff.name,
+            email: staff.email,
+            role: staff.role,
+            phone: staff.phone || 'N/A',
+            employeeId: staff.employeeId || 'STF-' + staff._id.toString().slice(-4).toUpperCase(),
+            totalRevenue: stats.totalRevenue,
+            ordersCount: stats.ordersCount,
+            itemsSold: stats.itemsSold,
+            aov,
+            tier,
+            rating
+         };
+      }).sort((a, b) => b.totalRevenue - a.totalRevenue || b.ordersCount - a.ordersCount);
+
+      res.status(200).json({
+         success: true,
+         count: leaderboard.length,
+         data: {
+            leaderboard,
+            summary: {
+               totalStaff: staffList.length,
+               activeCashiers: leaderboard.filter(s => s.ordersCount > 0).length,
+               topPerformer: leaderboard[0] || null,
+               onlineUnassignedRevenue: unassignedStats.totalRevenue
+            }
+         }
+      });
+   } catch (error) {
+      console.error('getStaffLeaderboard error:', error);
+      res.status(500).json({ success: false, message: error.message });
+   }
+};

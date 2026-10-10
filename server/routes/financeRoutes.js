@@ -12,7 +12,9 @@ const {
    deleteExpense,
    getPaymentReconciliation,
    getPayablesReceivables,
-   getProfitLossStatement
+   getProfitLossStatement,
+   recordCashDrawerSession,
+   getCashDrawerSessions
 } = require('../controllers/financeController');
 
 router.get('/overview', protect, authorize('admin'), getFinancialOverview);
@@ -20,6 +22,8 @@ router.get('/revenue', protect, authorize('admin'), getRevenueTransactions);
 router.get('/profit-loss', protect, authorize('admin'), getProfitLossStatement);
 router.get('/reconciliation', protect, authorize('admin'), getPaymentReconciliation);
 router.get('/ap-ar', protect, authorize('admin'), getPayablesReceivables);
+router.get('/cash-drawer-sessions', protect, authorize('admin', 'sales'), getCashDrawerSessions);
+router.post('/cash-drawer-reconcile', protect, authorize('admin', 'sales'), recordCashDrawerSession);
 router.get('/expenses', protect, authorize('admin'), getExpenses);
 router.post('/expenses', protect, authorize('admin'), createExpense);
 router.put('/expenses/:id', protect, authorize('admin'), updateExpense);

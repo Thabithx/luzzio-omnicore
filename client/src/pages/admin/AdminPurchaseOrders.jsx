@@ -352,20 +352,30 @@ export default function AdminPurchaseOrders() {
                         </div>
                      </div>
 
-                     {/* Supplier Breakdown Table */}
+                     {/* THABITH: Supplier Breakdown Table & Reliability Scorecard */}
                      <div className="bg-white border-2 border-black p-6 space-y-4">
-                        <h4 className="text-sm font-black uppercase tracking-wider border-b border-black pb-3">Supplier Fulfillment & Spend Matrix</h4>
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-black pb-3">
+                           <div>
+                              <div className="flex items-center gap-2">
+                                 <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Procurement Intelligence</span>
+                                 <span className="text-[8px] font-bold uppercase bg-black text-white px-2 py-0.5">Thabith</span>
+                              </div>
+                              <h4 className="text-sm font-black uppercase tracking-wider mt-0.5">Supplier Reliability Scorecard & Spend Matrix</h4>
+                           </div>
+                           <span className="text-[9px] font-mono text-gray-400">Weighted: 65% Fulfillment Accuracy + 35% PO Completion Velocity</span>
+                        </div>
+
                         <div className="overflow-x-auto">
                            <table className="w-full text-left text-xs font-mono">
                               <thead>
                                  <tr className="border-b border-black bg-gray-50 text-[10px] uppercase font-black">
                                     <th className="p-3">Supplier Name</th>
-                                    <th className="p-3">Contact Person</th>
+                                    <th className="p-3">Contact</th>
                                     <th className="p-3">Total POs</th>
-                                    <th className="p-3">Completed POs</th>
-                                    <th className="p-3">Items Intake (Rec'd / Ordered)</th>
+                                    <th className="p-3">Intake (Rec'd / Ordered)</th>
                                     <th className="p-3">Total Spend (LKR)</th>
-                                    <th className="p-3 text-right">Fulfillment Rate</th>
+                                    <th className="p-3">Fulfillment</th>
+                                    <th className="p-3 text-right">Reliability Scorecard</th>
                                  </tr>
                               </thead>
                               <tbody className="divide-y divide-gray-200">
@@ -374,16 +384,44 @@ export default function AdminPurchaseOrders() {
                                  ) : (
                                     reportData.suppliers.supplierPerformance.map(s => (
                                        <tr key={s.supplierId} className="hover:bg-gray-50">
-                                          <td className="p-3 font-bold font-sans">{s.supplierName}</td>
-                                          <td className="p-3 text-gray-500">{s.contactPerson || 'N/A'}</td>
-                                          <td className="p-3 font-bold">{s.totalPOs}</td>
-                                          <td className="p-3 text-green-600 font-bold">{s.completedPOs}</td>
+                                          <td className="p-3 font-bold font-sans">
+                                             <p className="font-black text-xs">{s.supplierName}</p>
+                                             <span className="text-[9px] text-gray-400 font-mono">ID: {String(s.supplierId).slice(-6).toUpperCase()}</span>
+                                          </td>
+                                          <td className="p-3 text-gray-500">
+                                             <p>{s.contactPerson || 'N/A'}</p>
+                                             <p className="text-[9px] text-gray-400">{s.phone || 'No phone'}</p>
+                                          </td>
+                                          <td className="p-3 font-bold">
+                                             <span>{s.totalPOs} POs</span>
+                                             <span className="text-[9px] text-green-700 block">({s.completedPOs} fulfilled)</span>
+                                          </td>
                                           <td className="p-3">{s.itemsReceived} / {s.itemsOrdered} units</td>
                                           <td className="p-3 font-bold">LKR {s.totalSpend.toLocaleString()}</td>
-                                          <td className="p-3 text-right">
-                                             <span className={`px-2 py-0.5 font-bold ${Number(s.fulfillmentRate) >= 80 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+                                          <td className="p-3">
+                                             <span className={`px-2 py-0.5 text-[9px] font-bold ${Number(s.fulfillmentRate) >= 80 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
                                                 {s.fulfillmentRate}%
                                              </span>
+                                          </td>
+                                          <td className="p-3 text-right">
+                                             <div className="inline-flex flex-col items-end">
+                                                <div className="flex items-center gap-1.5">
+                                                   <span className={`px-2 py-0.5 text-[9px] font-black uppercase border ${
+                                                      s.grade === 'GRADE_A'
+                                                         ? 'bg-emerald-100 border-emerald-600 text-emerald-800'
+                                                         : s.grade === 'GRADE_B'
+                                                         ? 'bg-blue-100 border-blue-600 text-blue-800'
+                                                         : s.grade === 'GRADE_C'
+                                                         ? 'bg-amber-100 border-amber-600 text-amber-800'
+                                                         : 'bg-red-100 border-red-600 text-red-800'
+                                                   }`}>
+                                                      {s.gradeLabel || `Score: ${s.score || 100}%`}
+                                                   </span>
+                                                </div>
+                                                <span className="text-[9px] font-bold text-gray-400 mt-0.5 font-mono">
+                                                   Rating: {s.score !== undefined ? `${s.score}/100` : '100/100'}
+                                                </span>
+                                             </div>
                                           </td>
                                        </tr>
                                     ))

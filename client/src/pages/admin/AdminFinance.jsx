@@ -35,7 +35,17 @@ export default function AdminFinance() {
       reference: '',
       notes: ''
    });
-   const [submittingExpense, setSubmittingExpense] = useState(false);
+   const [drawerSessions, setDrawerSessions] = useState([]);
+   const [drawerForm, setDrawerForm] = useState({
+      cashierName: '',
+      shiftType: 'FULL_DAY',
+      openingFloat: '',
+      cashSales: '',
+      cashPayouts: '0',
+      actualClosingCash: '',
+      notes: ''
+   });
+   const [submittingDrawer, setSubmittingDrawer] = useState(false);
 
    useEffect(() => {
       fetchFinanceData();
@@ -54,8 +64,17 @@ export default function AdminFinance() {
             const res = await api.get('/finance/expenses');
             setExpenses(res.data.data || []);
          } else if (activeTab === 'reconciliation') {
-            const res = await api.get('/finance/reconciliation');
-            setReconciliations(res.data.data || []);
+            const [reconRes, drawerRes] = await Promise.all([
+               api.get('/finance/reconciliation'),
+               api.get('/finance/cash-drawer-sessions')
+            ]);
+            setReconciliations(reconRes.data.data || []);
+            setDrawerSessions(drawerRes.data.data || []);
+            // Prepopulate cash sales from recorded CASH transactions if available
+            const cashData = (reconRes.data.data || []).find(r => (r._id || '').toUpperCase() === 'CASH');
+            if (cashData && !drawerForm.cashSales) {
+               setDrawerForm(prev => ({ ...prev, cashSales: String(cashData.paidSales || cashData.totalSales || 0) }));
+            }
          } else if (activeTab === 'apar') {
             const res = await api.get('/finance/ap-ar');
             setAparData(res.data.data || null);
@@ -115,6 +134,42 @@ export default function AdminFinance() {
          showToast(err.response?.data?.message || 'Failed to record expense.', 'error');
       } finally {
          setSubmittingExpense(false);
+      }
+   };
+
+   const handleDrawerSubmit = async (e) => {
+      e.preventDefault();
+      if (!drawerForm.cashierName.trim()) {
+         showToast('Cashier name is required.', 'warning');
+         return;
+      }
+      if (drawerForm.openingFloat === '' || isNaN(Number(drawerForm.openingFloat))) {
+         showToast('Please enter a valid opening cash float.', 'warning');
+         return;
+      }
+      if (drawerForm.actualClosingCash === '' || isNaN(Number(drawerForm.actualClosingCash))) {
+         showToast('Please enter actual physical cash counted.', 'warning');
+         return;
+      }
+
+      setSubmittingDrawer(true);
+      try {
+         const res = await api.post('/finance/cash-drawer-reconcile', drawerForm);
+         showToast(res.data.message || 'Cash drawer reconciled successfully!', 'success');
+         setDrawerForm({
+            cashierName: '',
+            shiftType: 'FULL_DAY',
+            openingFloat: '',
+            cashSales: '',
+            cashPayouts: '0',
+            actualClosingCash: '',
+            notes: ''
+         });
+         fetchFinanceData();
+      } catch (err) {
+         showToast(err.response?.data?.message || 'Drawer reconciliation failed.', 'error');
+      } finally {
+         setSubmittingDrawer(false);
       }
    };
 
@@ -358,15 +413,23 @@ export default function AdminFinance() {
             </div>
          )}
 
-         {/* Tab Content 4: Payment Gateway Reconciliation */}
+         {/* Tab Content 4: Payment Gateway & POS Cash Drawer Reconciliation */}
          {activeTab === 'reconciliation' && (
-            <div className="space-y-6">
+            <div className="space-y-8">
                <div className="bg-brand-grey border border-black p-6">
-                  <h3 className="text-sm font-black uppercase tracking-wider">Gateway Payment Reconciliation Ledger</h3>
-                  <p className="text-[10px] text-gray-500 font-mono mt-1">ADAHAN: Reconcile payments received across multiple gateways (COD, PayHere, Koko, Stripe, Cash, Card) against recorded sales.</p>
+                  <div className="flex items-center gap-2">
+                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Financial Audit & Controls</span>
+                     <span className="text-[8px] font-bold uppercase bg-black text-white px-2 py-0.5">Adahan</span>
+                  </div>
+                  <h3 className="text-base font-black uppercase tracking-tight mt-1">Payment Gateway & Cash Drawer Shift Reconciliation</h3>
+                  <p className="text-[10px] text-gray-500 font-mono mt-0.5">ADAHAN: Reconcile payments received across multiple gateways and audit daily POS cashier cash drawer floats.</p>
                </div>
 
                <div className="bg-white border border-black overflow-x-auto">
+                  <div className="p-4 border-b border-black bg-gray-50 flex justify-between items-center">
+                     <h4 className="text-xs font-black uppercase tracking-wider">Gateway Settlement Status</h4>
+                     <span className="text-[9px] font-mono text-gray-500">Live payment method aggregates</span>
+                  </div>
                   <table className="w-full text-left border-collapse">
                      <thead>
                         <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
@@ -409,6 +472,210 @@ export default function AdminFinance() {
                         )}
                      </tbody>
                   </table>
+               </div>
+
+               {/* ADAHAN: POS Cash Drawer Shift Reconciliation Tool */}
+               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Reconciliation Form */}
+                  <div className="bg-white border-2 border-black p-6 space-y-4">
+                     <div className="border-b border-black pb-3">
+                        <div className="flex items-center gap-2">
+                           <CreditCard size={14} className="text-black" />
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500">POS Shift Closeout</span>
+                        </div>
+                        <h4 className="text-sm font-black uppercase tracking-tight mt-1">Reconcile Cash Drawer</h4>
+                        <p className="text-[9px] font-mono text-gray-400">Balance cashier physical cash against expected intake</p>
+                     </div>
+
+                     <form onSubmit={handleDrawerSubmit} className="space-y-3">
+                        <div>
+                           <label className="text-[9px] font-black uppercase tracking-wider text-gray-500 block mb-1">Cashier / Staff Operator *</label>
+                           <Input
+                              required
+                              placeholder="e.g. Ruwan Perera"
+                              value={drawerForm.cashierName}
+                              onChange={(e) => setDrawerForm({ ...drawerForm, cashierName: e.target.value })}
+                           />
+                        </div>
+
+                        <div>
+                           <label className="text-[9px] font-black uppercase tracking-wider text-gray-500 block mb-1">Shift Type</label>
+                           <select
+                              value={drawerForm.shiftType}
+                              onChange={(e) => setDrawerForm({ ...drawerForm, shiftType: e.target.value })}
+                              className="w-full p-2 border border-black font-mono text-xs bg-white"
+                           >
+                              <option value="FULL_DAY">Full Day Shift</option>
+                              <option value="MORNING">Morning Shift</option>
+                              <option value="EVENING">Evening / Night Shift</option>
+                           </select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                           <div>
+                              <label className="text-[9px] font-black uppercase tracking-wider text-gray-500 block mb-1">Opening Float (LKR) *</label>
+                              <Input
+                                 type="number"
+                                 min="0"
+                                 required
+                                 placeholder="e.g. 10000"
+                                 value={drawerForm.openingFloat}
+                                 onChange={(e) => setDrawerForm({ ...drawerForm, openingFloat: e.target.value })}
+                              />
+                           </div>
+                           <div>
+                              <label className="text-[9px] font-black uppercase tracking-wider text-gray-500 block mb-1">Cash Sales (LKR)</label>
+                              <Input
+                                 type="number"
+                                 min="0"
+                                 placeholder="e.g. 45000"
+                                 value={drawerForm.cashSales}
+                                 onChange={(e) => setDrawerForm({ ...drawerForm, cashSales: e.target.value })}
+                              />
+                           </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                           <div>
+                              <label className="text-[9px] font-black uppercase tracking-wider text-gray-500 block mb-1">Cash Payouts (LKR)</label>
+                              <Input
+                                 type="number"
+                                 min="0"
+                                 placeholder="0"
+                                 value={drawerForm.cashPayouts}
+                                 onChange={(e) => setDrawerForm({ ...drawerForm, cashPayouts: e.target.value })}
+                              />
+                           </div>
+                           <div>
+                              <label className="text-[9px] font-black uppercase tracking-wider text-gray-500 block mb-1">Actual Cash Count (LKR) *</label>
+                              <Input
+                                 type="number"
+                                 min="0"
+                                 required
+                                 placeholder="Counted cash"
+                                 value={drawerForm.actualClosingCash}
+                                 onChange={(e) => setDrawerForm({ ...drawerForm, actualClosingCash: e.target.value })}
+                              />
+                           </div>
+                        </div>
+
+                        {/* Live Calculation Preview */}
+                        {(() => {
+                           const opening = Number(drawerForm.openingFloat) || 0;
+                           const sales = Number(drawerForm.cashSales) || 0;
+                           const payouts = Number(drawerForm.cashPayouts) || 0;
+                           const actual = Number(drawerForm.actualClosingCash) || 0;
+                           const expected = opening + sales - payouts;
+                           const variance = actual - expected;
+
+                           return (
+                              <div className="p-3 bg-brand-grey border border-black space-y-1.5 font-mono text-[10px]">
+                                 <div className="flex justify-between">
+                                    <span className="text-gray-500">Expected In Drawer:</span>
+                                    <span className="font-bold">LKR {expected.toLocaleString()}</span>
+                                 </div>
+                                 <div className="flex justify-between">
+                                    <span className="text-gray-500">Actual Counted:</span>
+                                    <span className="font-bold">LKR {actual.toLocaleString()}</span>
+                                 </div>
+                                 <div className="flex justify-between items-center pt-1.5 border-t border-black/20 font-black">
+                                    <span>Drawer Variance:</span>
+                                    <span className={`px-2 py-0.5 border ${
+                                       variance === 0
+                                          ? 'bg-green-100 border-green-600 text-green-700'
+                                          : variance > 0
+                                          ? 'bg-blue-100 border-blue-600 text-blue-700'
+                                          : 'bg-red-100 border-red-600 text-red-700'
+                                    }`}>
+                                       {variance === 0 ? 'BALANCED' : variance > 0 ? `+LKR ${variance.toLocaleString()} OVER` : `-LKR ${Math.abs(variance).toLocaleString()} SHORT`}
+                                    </span>
+                                 </div>
+                              </div>
+                           );
+                        })()}
+
+                        <div>
+                           <label className="text-[9px] font-black uppercase tracking-wider text-gray-500 block mb-1">Reconciliation Notes</label>
+                           <textarea
+                              rows="2"
+                              value={drawerForm.notes}
+                              onChange={(e) => setDrawerForm({ ...drawerForm, notes: e.target.value })}
+                              placeholder="Optional cashier or supervisor notes..."
+                              className="w-full p-2 border border-black text-xs font-mono resize-none"
+                           />
+                        </div>
+
+                        <Button
+                           type="submit"
+                           disabled={submittingDrawer}
+                           className="w-full bg-black text-white text-xs font-black uppercase py-3 shadow-sm hover:bg-gray-800"
+                        >
+                           {submittingDrawer ? 'Reconciling...' : 'Record Shift Reconciliation'}
+                        </Button>
+                     </form>
+                  </div>
+
+                  {/* Reconciliation History Ledger */}
+                  <div className="lg:col-span-2 bg-white border border-black overflow-x-auto">
+                     <div className="p-4 border-b border-black bg-gray-50 flex justify-between items-center">
+                        <h4 className="text-xs font-black uppercase tracking-wider">Cash Drawer Shift Audit Ledger</h4>
+                        <span className="text-[9px] font-mono text-gray-500">{drawerSessions.length} sessions logged</span>
+                     </div>
+                     <table className="w-full text-left border-collapse text-xs font-mono">
+                        <thead>
+                           <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
+                              <th className="p-3">Shift Date</th>
+                              <th className="p-3">Cashier</th>
+                              <th className="p-3">Float</th>
+                              <th className="p-3">Expected</th>
+                              <th className="p-3">Actual Count</th>
+                              <th className="p-3">Variance</th>
+                              <th className="p-3">Status</th>
+                           </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                           {drawerSessions.length === 0 ? (
+                              <tr>
+                                 <td colSpan="7" className="p-10 text-center text-gray-400 font-black uppercase tracking-widest">
+                                    No Cash Drawer Shift Reconciliations Recorded
+                                 </td>
+                              </tr>
+                           ) : (
+                              drawerSessions.map((s) => (
+                                 <tr key={s._id} className="hover:bg-gray-50">
+                                    <td className="p-3 font-bold">
+                                       <p>{new Date(s.createdAt).toLocaleDateString()}</p>
+                                       <p className="text-[9px] text-gray-400">{new Date(s.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                    </td>
+                                    <td className="p-3 font-black">
+                                       <p>{s.cashierName}</p>
+                                       <span className="text-[8px] uppercase tracking-wider text-gray-400">{s.shiftType}</span>
+                                    </td>
+                                    <td className="p-3">LKR {s.openingFloat?.toLocaleString()}</td>
+                                    <td className="p-3 font-bold">LKR {s.expectedClosingCash?.toLocaleString()}</td>
+                                    <td className="p-3 font-bold text-black">LKR {s.actualClosingCash?.toLocaleString()}</td>
+                                    <td className="p-3 font-black">
+                                       <span className={s.variance === 0 ? 'text-green-700' : s.variance > 0 ? 'text-blue-700' : 'text-red-600'}>
+                                          {s.variance >= 0 ? `+${s.variance.toLocaleString()}` : s.variance.toLocaleString()}
+                                       </span>
+                                    </td>
+                                    <td className="p-3">
+                                       <span className={`px-2 py-0.5 text-[8px] font-black uppercase border ${
+                                          s.status === 'BALANCED'
+                                             ? 'bg-green-100 border-green-600 text-green-700'
+                                             : s.status === 'OVERAGE'
+                                             ? 'bg-blue-100 border-blue-600 text-blue-700'
+                                             : 'bg-red-100 border-red-600 text-red-700'
+                                       }`}>
+                                          {s.status}
+                                       </span>
+                                    </td>
+                                 </tr>
+                              ))
+                           )}
+                        </tbody>
+                     </table>
+                  </div>
                </div>
             </div>
          )}

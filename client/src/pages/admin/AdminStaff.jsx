@@ -2,7 +2,7 @@
 // daily attendance clock-in / clock-out tracking, and shift scheduling.
 
 import React, { useState, useEffect } from 'react';
-import { UserCheck, Clock, Calendar, Plus, RefreshCw, X, Shield, CheckCircle } from 'lucide-react';
+import { UserCheck, Clock, Calendar, Plus, RefreshCw, X, Shield, CheckCircle, Trophy, Award, Star, TrendingUp, DollarSign } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
@@ -13,10 +13,12 @@ import { useToast } from '../../components/ui/Toast';
 
 export default function AdminStaff() {
    const { user } = useAuth();
-   const [activeTab, setActiveTab] = useState('directory'); // 'directory' | 'attendance' | 'shifts'
+   const [activeTab, setActiveTab] = useState('directory'); // 'directory' | 'attendance' | 'shifts' | 'leaderboard'
    const [staff, setStaff] = useState([]);
    const [attendance, setAttendance] = useState([]);
    const [shifts, setShifts] = useState([]);
+   const [leaderboardData, setLeaderboardData] = useState([]);
+   const [leaderboardSummary, setLeaderboardSummary] = useState(null);
    const [loading, setLoading] = useState(false);
    const { showToast } = useToast();
 
@@ -63,6 +65,10 @@ export default function AdminStaff() {
          } else if (activeTab === 'shifts') {
             const res = await api.get('/staff/shifts');
             setShifts(res.data.data || []);
+         } else if (activeTab === 'leaderboard') {
+            const res = await api.get('/staff/leaderboard');
+            setLeaderboardData(res.data.data?.leaderboard || []);
+            setLeaderboardSummary(res.data.data?.summary || null);
          }
       } catch (err) {
          console.error('Fetch staff data error:', err);
@@ -183,6 +189,12 @@ export default function AdminStaff() {
                className={`pb-3 text-xs font-black uppercase tracking-wider ${activeTab === 'shifts' ? 'border-b-2 border-black text-black' : 'text-gray-400 hover:text-black'}`}
             >
                <Calendar size={14} className="mr-2 inline" /> Shift Schedules
+            </button>
+            <button
+               onClick={() => setActiveTab('leaderboard')}
+               className={`pb-3 text-xs font-black uppercase tracking-wider ${activeTab === 'leaderboard' ? 'border-b-2 border-black text-black' : 'text-gray-400 hover:text-black'}`}
+            >
+               <Trophy size={14} className="mr-2 inline" /> Sales Leaderboard
             </button>
          </div>
 
@@ -329,6 +341,214 @@ export default function AdminStaff() {
                                  <td className="p-4">
                                     <span className="px-2 py-0.5 text-[8px] font-black uppercase border border-black bg-brand-grey">
                                        {sh.status}
+                                    </span>
+                                 </td>
+                              </tr>
+                           ))
+                        )}
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         )}
+
+         {/* Tab 4: Sales Leaderboard (Mahathir's Feature) */}
+         {activeTab === 'leaderboard' && (
+            <div className="space-y-8">
+               {/* KPI Summary Banner */}
+               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-black text-white p-5 border border-black">
+                     <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 block mb-1">Attributed Revenue</span>
+                     <p className="text-xl font-black font-mono">
+                        LKR {(leaderboardSummary?.totalAttributedRevenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                     </p>
+                  </div>
+                  <div className="bg-white p-5 border border-black">
+                     <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 block mb-1">Total Orders Processed</span>
+                     <p className="text-xl font-black font-mono">{leaderboardSummary?.totalOrdersProcessed || 0}</p>
+                  </div>
+                  <div className="bg-white p-5 border border-black">
+                     <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 block mb-1">Active Sales Staff</span>
+                     <p className="text-xl font-black font-mono">{leaderboardSummary?.activeStaffCount || 0}</p>
+                  </div>
+                  <div className="bg-amber-500 text-black p-5 border border-black">
+                     <span className="text-[9px] font-black uppercase tracking-widest text-black/70 block mb-1">Top Sales Performer</span>
+                     <p className="text-base font-black truncate">{leaderboardSummary?.topPerformer || 'N/A'}</p>
+                  </div>
+               </div>
+
+               {/* Top 3 Podium Cards */}
+               {leaderboardData.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                     {/* Gold Rank #1 */}
+                     {leaderboardData[0] && (
+                        <div className="bg-amber-100 border-2 border-amber-600 p-6 relative flex flex-col justify-between space-y-4">
+                           <div className="flex justify-between items-start">
+                              <span className="px-2.5 py-1 text-[9px] font-black uppercase bg-amber-500 text-black border border-black flex items-center gap-1">
+                                 <Trophy size={12} /> Rank #1 &bull; Top Seller
+                              </span>
+                              <span className="text-[10px] font-black uppercase px-2 py-0.5 bg-black text-white">
+                                 {leaderboardData[0].performanceTier}
+                              </span>
+                           </div>
+                           <div>
+                              <h4 className="text-lg font-black uppercase">{leaderboardData[0].name}</h4>
+                              <p className="text-xs font-mono text-gray-600">ID: {leaderboardData[0].employeeId}</p>
+                           </div>
+                           <div className="border-t border-amber-300 pt-3 space-y-1 font-mono text-xs">
+                              <div className="flex justify-between">
+                                 <span className="text-gray-600">Sales Volume:</span>
+                                 <span className="font-black text-black">LKR {leaderboardData[0].totalSales.toLocaleString()}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                 <span className="text-gray-600">Orders Closed:</span>
+                                 <span className="font-bold">{leaderboardData[0].ordersCount}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                 <span className="text-gray-600">AOV:</span>
+                                 <span className="font-bold">LKR {leaderboardData[0].aov.toLocaleString()}</span>
+                              </div>
+                           </div>
+                        </div>
+                     )}
+
+                     {/* Silver Rank #2 */}
+                     {leaderboardData[1] && (
+                        <div className="bg-slate-100 border-2 border-slate-400 p-6 relative flex flex-col justify-between space-y-4">
+                           <div className="flex justify-between items-start">
+                              <span className="px-2.5 py-1 text-[9px] font-black uppercase bg-slate-300 text-slate-900 border border-slate-500 flex items-center gap-1">
+                                 <Award size={12} /> Rank #2 &bull; Runner Up
+                              </span>
+                              <span className="text-[10px] font-black uppercase px-2 py-0.5 bg-slate-800 text-white">
+                                 {leaderboardData[1].performanceTier}
+                              </span>
+                           </div>
+                           <div>
+                              <h4 className="text-lg font-black uppercase">{leaderboardData[1].name}</h4>
+                              <p className="text-xs font-mono text-gray-600">ID: {leaderboardData[1].employeeId}</p>
+                           </div>
+                           <div className="border-t border-slate-300 pt-3 space-y-1 font-mono text-xs">
+                              <div className="flex justify-between">
+                                 <span className="text-gray-600">Sales Volume:</span>
+                                 <span className="font-black text-black">LKR {leaderboardData[1].totalSales.toLocaleString()}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                 <span className="text-gray-600">Orders Closed:</span>
+                                 <span className="font-bold">{leaderboardData[1].ordersCount}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                 <span className="text-gray-600">AOV:</span>
+                                 <span className="font-bold">LKR {leaderboardData[1].aov.toLocaleString()}</span>
+                              </div>
+                           </div>
+                        </div>
+                     )}
+
+                     {/* Bronze Rank #3 */}
+                     {leaderboardData[2] && (
+                        <div className="bg-amber-50/60 border-2 border-amber-800/40 p-6 relative flex flex-col justify-between space-y-4">
+                           <div className="flex justify-between items-start">
+                              <span className="px-2.5 py-1 text-[9px] font-black uppercase bg-amber-700/20 text-amber-900 border border-amber-800 flex items-center gap-1">
+                                 <Star size={12} /> Rank #3 &bull; High Performer
+                              </span>
+                              <span className="text-[10px] font-black uppercase px-2 py-0.5 bg-amber-900 text-white">
+                                 {leaderboardData[2].performanceTier}
+                              </span>
+                           </div>
+                           <div>
+                              <h4 className="text-lg font-black uppercase">{leaderboardData[2].name}</h4>
+                              <p className="text-xs font-mono text-gray-600">ID: {leaderboardData[2].employeeId}</p>
+                           </div>
+                           <div className="border-t border-amber-200 pt-3 space-y-1 font-mono text-xs">
+                              <div className="flex justify-between">
+                                 <span className="text-gray-600">Sales Volume:</span>
+                                 <span className="font-black text-black">LKR {leaderboardData[2].totalSales.toLocaleString()}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                 <span className="text-gray-600">Orders Closed:</span>
+                                 <span className="font-bold">{leaderboardData[2].ordersCount}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                 <span className="text-gray-600">AOV:</span>
+                                 <span className="font-bold">LKR {leaderboardData[2].aov.toLocaleString()}</span>
+                              </div>
+                           </div>
+                        </div>
+                     )}
+                  </div>
+               )}
+
+               {/* Full Ranking Leaderboard Table */}
+               <div className="bg-white border border-black overflow-x-auto">
+                  <div className="p-4 border-b border-black flex justify-between items-center bg-gray-50">
+                     <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                        <TrendingUp size={14} /> Full Staff Sales Leaderboard & Performance Attributions
+                     </h3>
+                     <span className="text-[10px] font-mono font-bold text-gray-500 uppercase">Synced with Live POS & Online Orders</span>
+                  </div>
+
+                  <table className="w-full text-left border-collapse">
+                     <thead>
+                        <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
+                           <th className="p-4">Rank</th>
+                           <th className="p-4">Staff Member</th>
+                           <th className="p-4 text-right">Total Sales Revenue</th>
+                           <th className="p-4 text-center">Orders Closed</th>
+                           <th className="p-4 text-center">Items Sold</th>
+                           <th className="p-4 text-right">Avg Order Value (AOV)</th>
+                           <th className="p-4 text-center">Performance Tier</th>
+                        </tr>
+                     </thead>
+                     <tbody className="divide-y divide-gray-200 text-xs font-mono">
+                        {loading ? (
+                           <tr>
+                              <td colSpan="7" className="p-12 text-center text-xs font-black uppercase tracking-widest animate-pulse">
+                                 Calculating Staff Sales Leaderboard...
+                              </td>
+                           </tr>
+                        ) : leaderboardData.length === 0 ? (
+                           <tr>
+                              <td colSpan="7" className="p-12 text-center text-gray-400 font-black uppercase tracking-widest">
+                                 No Attributed Sales Records Found
+                              </td>
+                           </tr>
+                        ) : (
+                           leaderboardData.map((staffMember) => (
+                              <tr key={staffMember.id} className="hover:bg-gray-50">
+                                 <td className="p-4 font-sans font-black">
+                                    <span className={`w-7 h-7 flex items-center justify-center text-xs font-black ${
+                                       staffMember.rank === 1 ? 'bg-amber-400 text-black' :
+                                       staffMember.rank === 2 ? 'bg-slate-300 text-black' :
+                                       staffMember.rank === 3 ? 'bg-amber-700 text-white' : 'bg-gray-100 text-gray-700'
+                                    }`}>
+                                       #{staffMember.rank}
+                                    </span>
+                                 </td>
+                                 <td className="p-4 font-sans font-black uppercase">
+                                    {staffMember.name}
+                                    <div className="flex gap-2 text-[9px] font-mono text-gray-500 font-normal">
+                                       <span>ID: {staffMember.employeeId}</span>
+                                       <span>&bull;</span>
+                                       <span className="uppercase">{staffMember.role}</span>
+                                    </div>
+                                 </td>
+                                 <td className="p-4 text-right font-black text-black">
+                                    LKR {staffMember.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                 </td>
+                                 <td className="p-4 text-center font-bold">{staffMember.ordersCount}</td>
+                                 <td className="p-4 text-center">{staffMember.itemsSold}</td>
+                                 <td className="p-4 text-right">
+                                    LKR {staffMember.aov.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                 </td>
+                                 <td className="p-4 text-center">
+                                    <span className={`px-2.5 py-1 text-[8px] font-black uppercase border ${
+                                       staffMember.performanceTier === 'Platinum' ? 'bg-purple-100 text-purple-900 border-purple-600' :
+                                       staffMember.performanceTier === 'Gold' ? 'bg-amber-100 text-amber-900 border-amber-600' :
+                                       staffMember.performanceTier === 'Silver' ? 'bg-slate-100 text-slate-900 border-slate-600' :
+                                       staffMember.performanceTier === 'Bronze' ? 'bg-amber-50 text-amber-800 border-amber-700' :
+                                       'bg-gray-100 text-gray-600 border-gray-400'
+                                    }`}>
+                                       {staffMember.performanceTier}
                                     </span>
                                  </td>
                               </tr>

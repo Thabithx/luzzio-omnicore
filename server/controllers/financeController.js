@@ -388,3 +388,71 @@ exports.getProfitLossStatement = async (req, res) => {
       res.status(500).json({ success: false, message: error.message });
    }
 };
+
+// ADAHAN: POS Cash Drawer Shift Reconciliation
+// @desc    Record POS Cash Drawer reconciliation session
+// @route   POST /api/finance/cash-drawer-reconcile
+// @access  Private (Admin / Sales)
+exports.recordCashDrawerSession = async (req, res) => {
+   try {
+      const CashDrawerSession = require('../models/CashDrawerSession');
+      const { cashierName, shiftType, openingFloat, cashSales, cashPayouts, actualClosingCash, notes } = req.body;
+
+      const fOpening = Number(openingFloat) || 0;
+      const fSales = Number(cashSales) || 0;
+      const fPayouts = Number(cashPayouts) || 0;
+      const fActual = Number(actualClosingCash) || 0;
+
+      const expectedClosing = fOpening + fSales - fPayouts;
+      const variance = fActual - expectedClosing;
+
+      let status = 'BALANCED';
+      if (variance > 0) status = 'OVERAGE';
+      else if (variance < 0) status = 'SHORTAGE';
+
+      const session = await CashDrawerSession.create({
+         cashier: req.user ? req.user._id : null,
+         cashierName: cashierName || (req.user ? req.user.name : 'Cashier'),
+         shiftType: shiftType || 'FULL_DAY',
+         openingFloat: fOpening,
+         cashSales: fSales,
+         cashPayouts: fPayouts,
+         expectedClosingCash: expectedClosing,
+         actualClosingCash: fActual,
+         variance,
+         status,
+         notes: notes || ''
+      });
+
+      res.status(201).json({
+         success: true,
+         message: `Cash Drawer Reconciled: ${status} (Variance: LKR ${variance.toLocaleString()})`,
+         data: session
+      });
+   } catch (error) {
+      console.error('recordCashDrawerSession error:', error);
+      res.status(400).json({ success: false, message: error.message });
+   }
+};
+
+// @desc    Get all POS Cash Drawer reconciliation logs
+// @route   GET /api/finance/cash-drawer-sessions
+// @access  Private (Admin / Sales)
+exports.getCashDrawerSessions = async (req, res) => {
+   try {
+      const CashDrawerSession = require('../models/CashDrawerSession');
+      const sessions = await CashDrawerSession.find()
+         .populate('cashier', 'name email role')
+         .sort({ createdAt: -1 })
+         .limit(100);
+
+      res.status(200).json({
+         success: true,
+         count: sessions.length,
+         data: sessions
+      });
+   } catch (error) {
+      console.error('getCashDrawerSessions error:', error);
+      res.status(500).json({ success: false, message: error.message });
+   }
+};

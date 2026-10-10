@@ -31,6 +31,8 @@ export default function AdminSuppliers() {
       status: 'active'
    });
 
+   const [supplierMetrics, setSupplierMetrics] = useState({});
+
    useEffect(() => {
       fetchSuppliers();
    }, []);
@@ -38,8 +40,16 @@ export default function AdminSuppliers() {
    const fetchSuppliers = async () => {
       setLoading(true);
       try {
-         const res = await api.get(`/suppliers?search=${encodeURIComponent(search)}`);
+         const [res, repRes] = await Promise.all([
+            api.get(`/suppliers?search=${encodeURIComponent(search)}`),
+            api.get('/analytics/order-supplier-report')
+         ]);
          setSuppliers(res.data.data || []);
+         const metricsMap = {};
+         (repRes.data.data?.suppliers?.supplierPerformance || []).forEach(sp => {
+            metricsMap[sp.supplierId] = sp;
+         });
+         setSupplierMetrics(metricsMap);
       } catch (err) {
          console.error('Fetch suppliers error:', err);
       } finally {
@@ -191,6 +201,34 @@ export default function AdminSuppliers() {
                            <p className="text-[10px] bg-brand-grey p-2 border border-gray-300 italic font-sans text-gray-600">
                               "{s.notes}"
                            </p>
+                        )}
+
+                        {/* THABITH: Supplier Reliability Scorecard */}
+                        {supplierMetrics[s._id] && (
+                           <div className="bg-brand-grey p-3 border border-black space-y-1.5 font-mono text-[9px]">
+                              <div className="flex justify-between items-center">
+                                 <span className="text-gray-500 font-bold uppercase tracking-wider">Scorecard Grade:</span>
+                                 <span className={`px-2 py-0.5 text-[8px] font-black uppercase border ${
+                                    supplierMetrics[s._id].grade === 'GRADE_A'
+                                       ? 'bg-emerald-100 border-emerald-600 text-emerald-800'
+                                       : supplierMetrics[s._id].grade === 'GRADE_B'
+                                       ? 'bg-blue-100 border-blue-600 text-blue-800'
+                                       : supplierMetrics[s._id].grade === 'GRADE_C'
+                                       ? 'bg-amber-100 border-amber-600 text-amber-800'
+                                       : 'bg-red-100 border-red-600 text-red-800'
+                                 }`}>
+                                    {supplierMetrics[s._id].gradeLabel || 'Grade A'}
+                                 </span>
+                              </div>
+                              <div className="flex justify-between items-center text-gray-600">
+                                 <span>Fulfillment Velocity:</span>
+                                 <span className="font-black text-black">{supplierMetrics[s._id].fulfillmentRate}%</span>
+                              </div>
+                              <div className="flex justify-between items-center text-gray-600">
+                                 <span>Completed POs:</span>
+                                 <span className="font-black text-black">{supplierMetrics[s._id].completedPOs} / {supplierMetrics[s._id].totalPOs} Orders</span>
+                              </div>
+                           </div>
                         )}
                      </div>
 
