@@ -346,38 +346,47 @@ exports.getStaffLeaderboard = async (req, res) => {
       const unassignedStats = salesAgg.find(s => !s._id) || { totalRevenue: 0, ordersCount: 0, itemsSold: 0 };
 
       // Map metrics for every staff member
-      const leaderboard = staffList.map(staff => {
+      let leaderboard = staffList.map(staff => {
          const stats = salesMap[staff._id.toString()] || { totalRevenue: 0, ordersCount: 0, itemsSold: 0 };
          const aov = stats.ordersCount > 0 ? Math.round(stats.totalRevenue / stats.ordersCount) : 0;
 
-         let tier = 'BRONZE';
+         let tier = 'Bronze';
          let rating = 3.5;
          if (stats.totalRevenue > 150000 || stats.ordersCount >= 15) {
-            tier = 'PLATINUM';
+            tier = 'Platinum';
             rating = 5.0;
          } else if (stats.totalRevenue > 50000 || stats.ordersCount >= 8) {
-            tier = 'GOLD';
+            tier = 'Gold';
             rating = 4.8;
          } else if (stats.totalRevenue > 15000 || stats.ordersCount >= 3) {
-            tier = 'SILVER';
+            tier = 'Silver';
             rating = 4.2;
          }
 
          return {
             staffId: staff._id,
+            id: staff._id,
             name: staff.name,
             email: staff.email,
             role: staff.role,
             phone: staff.phone || 'N/A',
             employeeId: staff.employeeId || 'STF-' + staff._id.toString().slice(-4).toUpperCase(),
-            totalRevenue: stats.totalRevenue,
-            ordersCount: stats.ordersCount,
-            itemsSold: stats.itemsSold,
-            aov,
+            totalRevenue: stats.totalRevenue || 0,
+            totalSales: stats.totalRevenue || 0,
+            ordersCount: stats.ordersCount || 0,
+            itemsSold: stats.itemsSold || 0,
+            aov: aov || 0,
             tier,
+            performanceTier: tier,
             rating
          };
-      }).sort((a, b) => b.totalRevenue - a.totalRevenue || b.ordersCount - a.ordersCount);
+      }).sort((a, b) => (b.totalSales - a.totalSales) || (b.ordersCount - a.ordersCount));
+
+      // Assign ranks 1, 2, 3...
+      leaderboard = leaderboard.map((s, idx) => ({ ...s, rank: idx + 1 }));
+
+      const totalAttributedRevenue = leaderboard.reduce((acc, curr) => acc + (curr.totalSales || 0), 0);
+      const totalOrdersProcessed = leaderboard.reduce((acc, curr) => acc + (curr.ordersCount || 0), 0);
 
       res.status(200).json({
          success: true,
@@ -386,9 +395,13 @@ exports.getStaffLeaderboard = async (req, res) => {
             leaderboard,
             summary: {
                totalStaff: staffList.length,
+               activeStaffCount: staffList.length,
                activeCashiers: leaderboard.filter(s => s.ordersCount > 0).length,
-               topPerformer: leaderboard[0] || null,
-               onlineUnassignedRevenue: unassignedStats.totalRevenue
+               topPerformer: leaderboard[0]?.name || 'N/A',
+               topPerformerObj: leaderboard[0] || null,
+               totalAttributedRevenue,
+               totalOrdersProcessed,
+               onlineUnassignedRevenue: unassignedStats.totalRevenue || 0
             }
          }
       });

@@ -388,25 +388,27 @@ export default function AdminStaff() {
                                  <Trophy size={12} /> Rank #1 &bull; Top Seller
                               </span>
                               <span className="text-[10px] font-black uppercase px-2 py-0.5 bg-black text-white">
-                                 {leaderboardData[0].performanceTier}
+                                 {leaderboardData[0].performanceTier || leaderboardData[0].tier || 'Gold'}
                               </span>
                            </div>
                            <div>
                               <h4 className="text-lg font-black uppercase">{leaderboardData[0].name}</h4>
-                              <p className="text-xs font-mono text-gray-600">ID: {leaderboardData[0].employeeId}</p>
+                              <p className="text-xs font-mono text-gray-600">ID: {leaderboardData[0].employeeId || 'N/A'}</p>
                            </div>
                            <div className="border-t border-amber-300 pt-3 space-y-1 font-mono text-xs">
                               <div className="flex justify-between">
                                  <span className="text-gray-600">Sales Volume:</span>
-                                 <span className="font-black text-black">LKR {leaderboardData[0].totalSales.toLocaleString()}</span>
+                                 <span className="font-black text-black">
+                                    LKR {(leaderboardData[0].totalSales ?? leaderboardData[0].totalRevenue ?? 0).toLocaleString()}
+                                 </span>
                               </div>
                               <div className="flex justify-between">
                                  <span className="text-gray-600">Orders Closed:</span>
-                                 <span className="font-bold">{leaderboardData[0].ordersCount}</span>
+                                 <span className="font-bold">{leaderboardData[0].ordersCount ?? 0}</span>
                               </div>
                               <div className="flex justify-between">
                                  <span className="text-gray-600">AOV:</span>
-                                 <span className="font-bold">LKR {leaderboardData[0].aov.toLocaleString()}</span>
+                                 <span className="font-bold">LKR {(leaderboardData[0].aov ?? 0).toLocaleString()}</span>
                               </div>
                            </div>
                         </div>
@@ -420,25 +422,27 @@ export default function AdminStaff() {
                                  <Award size={12} /> Rank #2 &bull; Runner Up
                               </span>
                               <span className="text-[10px] font-black uppercase px-2 py-0.5 bg-slate-800 text-white">
-                                 {leaderboardData[1].performanceTier}
+                                 {leaderboardData[1].performanceTier || leaderboardData[1].tier || 'Silver'}
                               </span>
                            </div>
                            <div>
                               <h4 className="text-lg font-black uppercase">{leaderboardData[1].name}</h4>
-                              <p className="text-xs font-mono text-gray-600">ID: {leaderboardData[1].employeeId}</p>
+                              <p className="text-xs font-mono text-gray-600">ID: {leaderboardData[1].employeeId || 'N/A'}</p>
                            </div>
                            <div className="border-t border-slate-300 pt-3 space-y-1 font-mono text-xs">
                               <div className="flex justify-between">
                                  <span className="text-gray-600">Sales Volume:</span>
-                                 <span className="font-black text-black">LKR {leaderboardData[1].totalSales.toLocaleString()}</span>
+                                 <span className="font-black text-black">
+                                    LKR {(leaderboardData[1].totalSales ?? leaderboardData[1].totalRevenue ?? 0).toLocaleString()}
+                                 </span>
                               </div>
                               <div className="flex justify-between">
                                  <span className="text-gray-600">Orders Closed:</span>
-                                 <span className="font-bold">{leaderboardData[1].ordersCount}</span>
+                                 <span className="font-bold">{leaderboardData[1].ordersCount ?? 0}</span>
                               </div>
                               <div className="flex justify-between">
                                  <span className="text-gray-600">AOV:</span>
-                                 <span className="font-bold">LKR {leaderboardData[1].aov.toLocaleString()}</span>
+                                 <span className="font-bold">LKR {(leaderboardData[1].aov ?? 0).toLocaleString()}</span>
                               </div>
                            </div>
                         </div>
@@ -452,25 +456,27 @@ export default function AdminStaff() {
                                  <Star size={12} /> Rank #3 &bull; High Performer
                               </span>
                               <span className="text-[10px] font-black uppercase px-2 py-0.5 bg-amber-900 text-white">
-                                 {leaderboardData[2].performanceTier}
+                                 {leaderboardData[2].performanceTier || leaderboardData[2].tier || 'Bronze'}
                               </span>
                            </div>
                            <div>
                               <h4 className="text-lg font-black uppercase">{leaderboardData[2].name}</h4>
-                              <p className="text-xs font-mono text-gray-600">ID: {leaderboardData[2].employeeId}</p>
+                              <p className="text-xs font-mono text-gray-600">ID: {leaderboardData[2].employeeId || 'N/A'}</p>
                            </div>
                            <div className="border-t border-amber-200 pt-3 space-y-1 font-mono text-xs">
                               <div className="flex justify-between">
                                  <span className="text-gray-600">Sales Volume:</span>
-                                 <span className="font-black text-black">LKR {leaderboardData[2].totalSales.toLocaleString()}</span>
+                                 <span className="font-black text-black">
+                                    LKR {(leaderboardData[2].totalSales ?? leaderboardData[2].totalRevenue ?? 0).toLocaleString()}
+                                 </span>
                               </div>
                               <div className="flex justify-between">
                                  <span className="text-gray-600">Orders Closed:</span>
-                                 <span className="font-bold">{leaderboardData[2].ordersCount}</span>
+                                 <span className="font-bold">{leaderboardData[2].ordersCount ?? 0}</span>
                               </div>
                               <div className="flex justify-between">
                                  <span className="text-gray-600">AOV:</span>
-                                 <span className="font-bold">LKR {leaderboardData[2].aov.toLocaleString()}</span>
+                                 <span className="font-bold">LKR {(leaderboardData[2].aov ?? 0).toLocaleString()}</span>
                               </div>
                            </div>
                         </div>
@@ -513,46 +519,54 @@ export default function AdminStaff() {
                               </td>
                            </tr>
                         ) : (
-                           leaderboardData.map((staffMember) => (
-                              <tr key={staffMember.id} className="hover:bg-gray-50">
-                                 <td className="p-4 font-sans font-black">
-                                    <span className={`w-7 h-7 flex items-center justify-center text-xs font-black ${
-                                       staffMember.rank === 1 ? 'bg-amber-400 text-black' :
-                                       staffMember.rank === 2 ? 'bg-slate-300 text-black' :
-                                       staffMember.rank === 3 ? 'bg-amber-700 text-white' : 'bg-gray-100 text-gray-700'
-                                    }`}>
-                                       #{staffMember.rank}
-                                    </span>
-                                 </td>
-                                 <td className="p-4 font-sans font-black uppercase">
-                                    {staffMember.name}
-                                    <div className="flex gap-2 text-[9px] font-mono text-gray-500 font-normal">
-                                       <span>ID: {staffMember.employeeId}</span>
-                                       <span>&bull;</span>
-                                       <span className="uppercase">{staffMember.role}</span>
-                                    </div>
-                                 </td>
-                                 <td className="p-4 text-right font-black text-black">
-                                    LKR {staffMember.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                                 </td>
-                                 <td className="p-4 text-center font-bold">{staffMember.ordersCount}</td>
-                                 <td className="p-4 text-center">{staffMember.itemsSold}</td>
-                                 <td className="p-4 text-right">
-                                    LKR {staffMember.aov.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                                 </td>
-                                 <td className="p-4 text-center">
-                                    <span className={`px-2.5 py-1 text-[8px] font-black uppercase border ${
-                                       staffMember.performanceTier === 'Platinum' ? 'bg-purple-100 text-purple-900 border-purple-600' :
-                                       staffMember.performanceTier === 'Gold' ? 'bg-amber-100 text-amber-900 border-amber-600' :
-                                       staffMember.performanceTier === 'Silver' ? 'bg-slate-100 text-slate-900 border-slate-600' :
-                                       staffMember.performanceTier === 'Bronze' ? 'bg-amber-50 text-amber-800 border-amber-700' :
-                                       'bg-gray-100 text-gray-600 border-gray-400'
-                                    }`}>
-                                       {staffMember.performanceTier}
-                                    </span>
-                                 </td>
-                              </tr>
-                           ))
+                           leaderboardData.map((staffMember, idx) => {
+                              const rank = staffMember.rank || (idx + 1);
+                              const revenue = staffMember.totalSales ?? staffMember.totalRevenue ?? 0;
+                              const orders = staffMember.ordersCount ?? 0;
+                              const items = staffMember.itemsSold ?? 0;
+                              const aov = staffMember.aov ?? 0;
+                              const tier = staffMember.performanceTier || staffMember.tier || 'Bronze';
+
+                              return (
+                                 <tr key={staffMember.staffId || staffMember.id || staffMember._id || idx} className="hover:bg-gray-50">
+                                    <td className="p-4 font-sans font-black">
+                                       <span className={`w-7 h-7 flex items-center justify-center text-xs font-black ${
+                                          rank === 1 ? 'bg-amber-400 text-black' :
+                                          rank === 2 ? 'bg-slate-300 text-black' :
+                                          rank === 3 ? 'bg-amber-700 text-white' : 'bg-gray-100 text-gray-700'
+                                       }`}>
+                                          #{rank}
+                                       </span>
+                                    </td>
+                                    <td className="p-4 font-sans font-black uppercase">
+                                       {staffMember.name}
+                                       <div className="flex gap-2 text-[9px] font-mono text-gray-500 font-normal">
+                                          <span>ID: {staffMember.employeeId || 'N/A'}</span>
+                                          <span>&bull;</span>
+                                          <span className="uppercase">{staffMember.role}</span>
+                                       </div>
+                                    </td>
+                                    <td className="p-4 text-right font-black text-black">
+                                       LKR {revenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    </td>
+                                    <td className="p-4 text-center font-bold">{orders}</td>
+                                    <td className="p-4 text-center">{items}</td>
+                                    <td className="p-4 text-right">
+                                       LKR {aov.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    </td>
+                                    <td className="p-4 text-center">
+                                       <span className={`px-2.5 py-1 text-[8px] font-black uppercase border ${
+                                          tier.toLowerCase() === 'platinum' ? 'bg-purple-100 text-purple-900 border-purple-600' :
+                                          tier.toLowerCase() === 'gold' ? 'bg-amber-100 text-amber-900 border-amber-600' :
+                                          tier.toLowerCase() === 'silver' ? 'bg-slate-100 text-slate-900 border-slate-600' :
+                                          'bg-amber-50 text-amber-800 border-amber-700'
+                                       }`}>
+                                          {tier}
+                                       </span>
+                                    </td>
+                                 </tr>
+                              );
+                           })
                         )}
                      </tbody>
                   </table>
