@@ -90,6 +90,7 @@ const productSchema = new mongoose.Schema({
          images: { type: [String], default: [] },
          isVerified: { type: Boolean, default: false },
          isApproved: { type: Boolean, default: true },
+         isFeatured: { type: Boolean, default: false },
          adminResponse: { type: String, default: '' },
          createdAt: { type: Date, default: Date.now }
       }

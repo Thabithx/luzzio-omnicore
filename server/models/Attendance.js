@@ -26,6 +26,19 @@ const attendanceSchema = new mongoose.Schema({
       enum: ['PRESENT', 'LATE', 'ABSENT', 'LEAVE'],
       default: 'PRESENT'
    },
+   punctuality: {
+      type: String,
+      enum: ['ON_TIME', 'LATE', 'EXCUSED'],
+      default: 'ON_TIME'
+   },
+   minutesLate: {
+      type: Number,
+      default: 0
+   },
+   shiftScheduledStart: {
+      type: String,
+      default: '09:00'
+   },
    workHours: {
       type: Number,
       default: 0

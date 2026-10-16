@@ -3,7 +3,7 @@
 // Fully integrated with central order records and automated inventory restocking vs damaged item tracking.
 
 import React, { useState, useEffect } from 'react';
-import { Search, RotateCcw, CheckCircle, XCircle, RefreshCw, Eye, X, AlertCircle, FileSpreadsheet } from 'lucide-react';
+import { Search, RotateCcw, CheckCircle, XCircle, RefreshCw, Eye, X, AlertCircle, FileSpreadsheet, ArrowRightLeft } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
@@ -44,6 +44,70 @@ export default function AdminReturns() {
       condition: 'RESELLABLE'
    });
    const [creatingReturn, setCreatingReturn] = useState(false);
+
+   // BIHANDU: 1-Click Instant Size Swap State & Handlers
+   const [swapModal, setSwapModal] = useState({
+      open: false,
+      returnItem: null,
+      selectedNewSize: '',
+      productDetails: null,
+      loadingProduct: false,
+      notes: ''
+   });
+   const [swapping, setSwapping] = useState(false);
+
+   const openSizeSwapModal = async (returnReq) => {
+      const firstItem = returnReq.items?.[0];
+      const prodId = firstItem?.product?._id || firstItem?.product;
+      setSwapModal({
+         open: true,
+         returnItem: returnReq,
+         selectedNewSize: '',
+         productDetails: null,
+         loadingProduct: true,
+         notes: ''
+      });
+
+      try {
+         const res = await api.get(`/products/${prodId}`);
+         setSwapModal(prev => ({
+            ...prev,
+            productDetails: res.data.data,
+            loadingProduct: false
+         }));
+      } catch (err) {
+         console.error('Failed to load product variants for exchange:', err);
+         showToast('Could not load product variant stock.', 'error');
+         setSwapModal(prev => ({ ...prev, loadingProduct: false }));
+      }
+   };
+
+   const handleExecuteSizeSwap = async () => {
+      if (!swapModal.returnItem || !swapModal.selectedNewSize) {
+         showToast('Please select a target size for the exchange.', 'warning');
+         return;
+      }
+
+      setSwapping(true);
+      try {
+         const firstItem = swapModal.returnItem.items?.[0];
+         const res = await api.post(`/returns/${swapModal.returnItem._id}/swap-size`, {
+            newSize: swapModal.selectedNewSize,
+            oldSize: firstItem?.size,
+            productId: firstItem?.product?._id || firstItem?.product,
+            notes: swapModal.notes
+         });
+
+         showToast(res.data.message || 'Instant size swap executed successfully!', 'success');
+         setSwapModal({ open: false, returnItem: null, selectedNewSize: '', productDetails: null, loadingProduct: false, notes: '' });
+         fetchReturns();
+      } catch (err) {
+         console.error('Size swap execution error:', err);
+         showToast(err.response?.data?.message || 'Failed to execute size swap.', 'error');
+      } finally {
+         setSwapping(false);
+      }
+   };
 
    useEffect(() => {
       if (activeTab === 'list') {
@@ -348,12 +412,23 @@ export default function AdminReturns() {
                               </span>
                            </td>
                            <td className="p-4 text-right">
-                              <Button
-                                 onClick={() => openInspectModal(r)}
-                                 className="bg-black text-white text-[9px] font-black uppercase px-3 py-1.5"
-                              >
-                                 <Eye size={12} className="mr-1 inline" /> Inspect & Process
-                              </Button>
+                              <div className="flex items-center justify-end gap-1.5">
+                                 {r.status !== 'APPROVED' && r.status !== 'REJECTED' && (
+                                    <button
+                                       onClick={() => openSizeSwapModal(r)}
+                                       className="bg-amber-400 hover:bg-amber-500 text-black border border-black text-[9px] font-black uppercase px-2 py-1.5 flex items-center gap-1 shadow-sm transition-colors"
+                                       title="Instant Size Exchange & Inventory Rebalance"
+                                    >
+                                       <ArrowRightLeft size={11} /> Size Swap
+                                    </button>
+                                 )}
+                                 <Button
+                                    onClick={() => openInspectModal(r)}
+                                    className="bg-black text-white text-[9px] font-black uppercase px-3 py-1.5"
+                                 >
+                                    <Eye size={12} className="mr-1 inline" /> Inspect & Process
+                                 </Button>
+                              </div>
                            </td>
                         </tr>
                      ))
@@ -619,6 +694,94 @@ export default function AdminReturns() {
                         </Button>
                      </div>
                   </form>
+               </div>
+            </div>
+         )}
+
+         {/* Instant Size Swap Modal */}
+         {swapModal.open && swapModal.returnDoc && (
+            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+               <div className="bg-white border-2 border-black max-w-md w-full p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="flex justify-between items-center pb-4 border-b border-black mb-4">
+                     <div className="flex items-center gap-2">
+                        <div className="p-1.5 bg-amber-400 border border-black">
+                           <ArrowRightLeft size={16} className="text-black" />
+                        </div>
+                        <div>
+                           <h3 className="text-sm font-black uppercase tracking-tight">1-Click Instant Size Swap</h3>
+                           <p className="text-[10px] text-gray-500">Auto-restocks returned size & reserves new size</p>
+                        </div>
+                     </div>
+                     <button onClick={() => setSwapModal({ ...swapModal, open: false })} className="text-gray-400 hover:text-black">
+                        <X size={18} />
+                     </button>
+                  </div>
+
+                  <div className="space-y-4">
+                     <div className="bg-gray-50 border border-black/20 p-3 space-y-1">
+                        <div className="text-[10px] text-gray-500 uppercase tracking-widest font-black">Item to Swap</div>
+                        <div className="text-xs font-black uppercase">{swapModal.returnDoc.items?.[0]?.product?.name || 'Selected Item'}</div>
+                        <div className="text-[10px] text-gray-600 font-mono">Current Size on Order: <span className="font-bold text-black uppercase">{swapModal.currentSize || 'N/A'}</span></div>
+                     </div>
+
+                     <div>
+                        <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block mb-1.5">
+                           Select Replacement Size:
+                        </label>
+                        <div className="grid grid-cols-4 gap-2">
+                           {(['XS', 'S', 'M', 'L', 'XL', 'XXL']).map((sz) => {
+                              const isCurrent = sz === swapModal.currentSize;
+                              const isSelected = sz === swapModal.newSize;
+                              return (
+                                 <button
+                                    key={sz}
+                                    type="button"
+                                    onClick={() => setSwapModal({ ...swapModal, newSize: sz })}
+                                    className={`py-2 text-xs font-mono font-bold uppercase border-2 transition-all ${
+                                       isSelected
+                                          ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(245,158,11,1)]'
+                                          : isCurrent
+                                          ? 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed line-through'
+                                          : 'bg-white hover:bg-amber-50 text-black border-black'
+                                    }`}
+                                    disabled={isCurrent}
+                                 >
+                                    {sz}
+                                 </button>
+                              );
+                           })}
+                        </div>
+                     </div>
+
+                     <div className="bg-amber-50 border border-amber-300 p-3 text-[11px] space-y-1">
+                        <div className="font-black text-amber-900 uppercase flex items-center gap-1">
+                           <RotateCcw size={12} /> Automated Exchange Protocol
+                        </div>
+                        <ul className="text-amber-800 list-disc list-inside space-y-0.5 text-[10px]">
+                           <li>Returned size <b>({swapModal.currentSize})</b> will be restocked (+1)</li>
+                           <li>Replacement size <b>({swapModal.newSize || '?'})</b> will be deducted (-1)</li>
+                           <li>Return status will automatically update to <b>APPROVED</b></li>
+                        </ul>
+                     </div>
+
+                     <div className="flex gap-2 pt-2">
+                        <Button
+                           onClick={handleExecuteSizeSwap}
+                           disabled={swapModal.loading || !swapModal.newSize || swapModal.newSize === swapModal.currentSize}
+                           className="flex-1 bg-amber-400 hover:bg-amber-500 text-black border border-black text-xs font-black uppercase py-2.5 flex items-center justify-center gap-1.5 shadow-sm"
+                        >
+                           <ArrowRightLeft size={13} />
+                           {swapModal.loading ? 'Swapping & Restocking...' : `Execute Size Swap to ${swapModal.newSize || ''}`}
+                        </Button>
+                        <Button
+                           type="button"
+                           onClick={() => setSwapModal({ ...swapModal, open: false })}
+                           className="border border-black bg-white text-black text-xs font-black uppercase px-4"
+                        >
+                           Cancel
+                        </Button>
+                     </div>
+                  </div>
                </div>
             </div>
          )}

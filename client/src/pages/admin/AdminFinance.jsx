@@ -3,7 +3,7 @@
 // Consolidated accounting across both ONLINE and POS sales channels.
 
 import React, { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, TrendingDown, CreditCard, Plus, RefreshCw, Trash2, Edit2, X, FileSpreadsheet } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, CreditCard, Plus, RefreshCw, Trash2, Edit2, X, FileSpreadsheet, Activity, ShieldCheck, AlertTriangle, ArrowUpRight } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
@@ -247,6 +247,98 @@ export default function AdminFinance() {
                   </div>
                ) : overview ? (
                   <>
+                     {/* ADAHAN: Executive Daily Net Profit & Margin Health Meter */}
+                     <div className="bg-black text-white border-2 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)] space-y-5">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-4">
+                           <div className="flex items-center gap-3">
+                              <div className="p-2.5 bg-white/10 border border-white/20">
+                                 <Activity className="w-5 h-5 text-emerald-400 animate-pulse" />
+                              </div>
+                              <div>
+                                 <div className="flex items-center gap-2">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-white">
+                                       Executive Margin Health & Daily Net Profit Meter
+                                    </h3>
+                                    <span className={`px-2 py-0.5 text-[9px] font-black uppercase tracking-wider border ${
+                                       overview.marginHealth === 'HEALTHY'
+                                          ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                                          : overview.marginHealth === 'MODERATE'
+                                          ? 'bg-blue-500/20 text-blue-400 border-blue-500/40'
+                                          : overview.marginHealth === 'TIGHT'
+                                          ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                                          : 'bg-red-500/20 text-red-400 border-red-500/40'
+                                    }`}>
+                                       {overview.marginStatusText || 'Margin Health: Good'}
+                                    </span>
+                                 </div>
+                                 <p className="text-[11px] text-gray-400 mt-0.5 font-mono">
+                                    Formula: Total Revenue - COGS (Cost of Goods) - OpEx Expenses - Customer Refunds
+                                 </p>
+                              </div>
+                           </div>
+
+                           <div className="text-right">
+                              <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Net Profit Margin</div>
+                              <div className="text-3xl font-black font-mono text-emerald-400 flex items-center justify-end gap-1">
+                                 <span>{overview.marginPercent ?? 0}%</span>
+                                 <ArrowUpRight className="w-5 h-5 text-emerald-400" />
+                              </div>
+                           </div>
+                        </div>
+
+                        {/* Live Margin Bar Gauge */}
+                        <div>
+                           <div className="flex justify-between text-[10px] font-mono text-gray-400 mb-1.5 uppercase">
+                              <span>Deficit (&lt;0%)</span>
+                              <span>Break-even (0-5%)</span>
+                              <span>Target Retail (5-20%)</span>
+                              <span className="text-emerald-400 font-bold">Optimal Profitability (&gt;20%)</span>
+                           </div>
+                           <div className="h-3 w-full bg-white/10 rounded-none overflow-hidden relative border border-white/20">
+                              <div
+                                 className={`h-full transition-all duration-700 ${
+                                    (overview.marginPercent ?? 0) >= 20
+                                       ? 'bg-gradient-to-r from-emerald-500 to-green-400'
+                                       : (overview.marginPercent ?? 0) >= 5
+                                       ? 'bg-gradient-to-r from-blue-500 to-cyan-400'
+                                       : (overview.marginPercent ?? 0) >= 0
+                                       ? 'bg-amber-400'
+                                       : 'bg-red-500'
+                                 }`}
+                                 style={{ width: `${Math.min(100, Math.max(5, (overview.marginPercent ?? 0) + 15))}%` }}
+                              />
+                           </div>
+                        </div>
+
+                        {/* 4-Stat Breakdown Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                           <div className="bg-white/5 border border-white/10 p-3">
+                              <span className="text-[9px] font-mono uppercase text-gray-400 block">True Net Profit</span>
+                              <span className="text-lg font-black font-mono text-emerald-400">
+                                 Rs. {(overview.realNetProfit ?? overview.netProfit ?? 0).toLocaleString()}
+                              </span>
+                           </div>
+                           <div className="bg-white/5 border border-white/10 p-3">
+                              <span className="text-[9px] font-mono uppercase text-gray-400 block">Wholesale COGS (Est.)</span>
+                              <span className="text-lg font-black font-mono text-amber-300">
+                                 Rs. {(overview.estimatedCOGS ?? 0).toLocaleString()}
+                              </span>
+                           </div>
+                           <div className="bg-white/5 border border-white/10 p-3">
+                              <span className="text-[9px] font-mono uppercase text-gray-400 block">Today's Revenue</span>
+                              <span className="text-lg font-black font-mono text-cyan-300">
+                                 Rs. {(overview.todaySnapshot?.revenue ?? 0).toLocaleString()}
+                              </span>
+                           </div>
+                           <div className="bg-white/5 border border-white/10 p-3">
+                              <span className="text-[9px] font-mono uppercase text-gray-400 block">Today's Net Profit</span>
+                              <span className="text-lg font-black font-mono text-white">
+                                 Rs. {(overview.todaySnapshot?.netProfit ?? 0).toLocaleString()} ({overview.todaySnapshot?.marginPercent ?? 0}%)
+                              </span>
+                           </div>
+                        </div>
+                     </div>
+
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="bg-white border-2 border-black p-6">
                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Total Gross Revenue</span>

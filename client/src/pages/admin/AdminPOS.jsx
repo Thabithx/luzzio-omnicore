@@ -3,7 +3,7 @@
 // walk-in / registered customer checkout, discount/tax calculations, and instant receipt generation.
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Minus, Trash2, User, CreditCard, DollarSign, CheckCircle, Printer, X, RefreshCw, Barcode, FileSpreadsheet } from 'lucide-react';
+import { Search, Plus, Minus, Trash2, User, CreditCard, DollarSign, CheckCircle, Printer, X, RefreshCw, Barcode, FileSpreadsheet, Coins, Banknote } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
@@ -471,25 +471,85 @@ export default function AdminPOS() {
                         ))}
                      </div>
 
-                     {/* Cash Tender Calculation */}
+                     {/* DULARA: Quick-Cash Fast-Tender & Instant Change Calculator */}
                      {paymentMethod === 'CASH' && (
-                        <div className="p-3 bg-brand-grey border border-black space-y-2">
+                        <div className="p-3 bg-brand-grey border border-black space-y-3">
                            <div className="flex justify-between items-center">
-                              <span className="text-[10px] font-black uppercase">Tendered (Rs.)</span>
+                              <span className="text-[10px] font-black uppercase flex items-center gap-1.5">
+                                 <Coins size={12} /> Cash Tendered (Rs.)
+                              </span>
                               <input
                                  type="number"
                                  value={cashTendered}
                                  onChange={(e) => setCashTendered(e.target.value)}
                                  placeholder="0.00"
-                                 className="w-32 p-1 border border-black font-mono text-right text-xs bg-white"
+                                 className="w-36 p-1.5 border border-black font-mono text-right text-xs bg-white font-bold"
                               />
                            </div>
-                           <div className="flex justify-between items-center text-xs font-black">
-                              <span>Change Due</span>
-                              <span className={changeDue > 0 ? 'text-green-600' : 'text-black'}>
-                                 Rs. {changeDue.toLocaleString()}
+
+                           {/* Quick-Cash Buttons */}
+                           <div>
+                              <span className="text-[9px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">
+                                 Fast-Tender Presets:
                               </span>
+                              <div className="grid grid-cols-4 gap-1.5">
+                                 <button
+                                    type="button"
+                                    onClick={() => setCashTendered(grandTotal.toString())}
+                                    className="py-1 px-1 text-[9px] font-black uppercase bg-black text-white border border-black hover:bg-gray-800 transition-all truncate"
+                                    title="Tender Exact Total"
+                                 >
+                                    Exact
+                                 </button>
+                                 {[1000, 2000, 5000].map((amt) => (
+                                    <button
+                                       key={amt}
+                                       type="button"
+                                       onClick={() => setCashTendered(amt.toString())}
+                                       className="py-1 px-1 text-[9px] font-black uppercase bg-white text-black border border-black hover:bg-gray-100 transition-all truncate font-mono"
+                                    >
+                                       {amt >= 1000 ? `${amt / 1000}k` : amt}
+                                    </button>
+                                 ))}
+                              </div>
+                              <div className="grid grid-cols-2 gap-1.5 mt-1.5">
+                                 <button
+                                    type="button"
+                                    onClick={() => setCashTendered('10000')}
+                                    className="py-1 px-1 text-[9px] font-black uppercase bg-white text-black border border-black hover:bg-gray-100 transition-all font-mono"
+                                 >
+                                    Rs. 10,000
+                                 </button>
+                                 {grandTotal > 0 && Math.ceil(grandTotal / 1000) * 1000 !== grandTotal && (
+                                    <button
+                                       type="button"
+                                       onClick={() => setCashTendered((Math.ceil(grandTotal / 1000) * 1000).toString())}
+                                       className="py-1 px-1 text-[9px] font-black uppercase bg-amber-400 text-black border border-black hover:bg-amber-500 transition-all font-mono truncate"
+                                       title="Round Up to Next 1,000"
+                                    >
+                                       Round: Rs. {(Math.ceil(grandTotal / 1000) * 1000).toLocaleString()}
+                                    </button>
+                                 )}
+                              </div>
                            </div>
+
+                           {/* Change Return Alert / Remaining Due */}
+                           {Number(cashTendered) > 0 && (
+                              Number(cashTendered) >= grandTotal ? (
+                                 <div className="bg-emerald-600 text-white p-2.5 border border-black text-center shadow-inner">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-100 block">
+                                       Change to Return Customer
+                                    </span>
+                                    <span className="text-lg font-black font-mono">
+                                       Rs. {changeDue.toLocaleString()}
+                                    </span>
+                                 </div>
+                              ) : (
+                                 <div className="bg-amber-100 text-amber-900 border border-amber-500 p-2 text-center text-[10px] font-mono font-bold">
+                                    Remaining Due: Rs. {(grandTotal - (Number(cashTendered) || 0)).toLocaleString()}
+                                 </div>
+                              )
+                           )}
                         </div>
                      )}
                   </div>

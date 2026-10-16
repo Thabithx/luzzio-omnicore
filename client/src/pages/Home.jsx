@@ -4,7 +4,7 @@ import { ProductCard } from '../components/ui/ProductCard';
 import { Link } from 'react-router-dom';
 import Meta from '../components/ui/Meta';
 import { motion } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Star, ShieldCheck, Quote } from 'lucide-react';
 import api from '../services/api';
 import { cn } from '../utils/cn';
 
@@ -25,20 +25,23 @@ export function Home() {
    const [premiumChinos, setPremiumChinos] = useState([]);
    const [categories, setCategories] = useState([]);
    const [allProducts, setAllProducts] = useState([]);
+   const [featuredReviews, setFeaturedReviews] = useState([]);
    const [activeCategory, setActiveCategory] = useState(null);
    const [loading, setLoading] = useState(true);
 
    useEffect(() => {
       const fetchProducts = async () => {
          try {
-            const [productsRes, categoriesRes] = await Promise.all([
+            const [productsRes, categoriesRes, reviewsRes] = await Promise.all([
                api.get('/products?limit=1000'),
-               api.get('/categories')
+               api.get('/categories'),
+               api.get('/products/reviews/featured').catch(() => ({ data: { data: [] } }))
             ]);
 
             const products = productsRes.data.data;
             setAllProducts(products);
             setCategories(categoriesRes.data.data);
+            setFeaturedReviews(reviewsRes.data.data || []);
 
             // Helpers for custom sections
             const matchesCategory = (p, name) => {
@@ -379,6 +382,66 @@ export function Home() {
                   <Link to="/products" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.5em] border-b border-black pb-1 hover:opacity-50 transition-opacity text-black/60">
                      Shop All Sale
                   </Link>
+               </div>
+            </section>
+         )}
+
+         {/* SRIHARAN: FEATURED CUSTOMER REVIEWS & VERIFIED BUYER SPOTLIGHT */}
+         {featuredReviews.length > 0 && (
+            <section className="bg-white border-t border-b border-black py-16 md:py-20 px-4 md:px-10">
+               <div className="max-w-6xl mx-auto space-y-12">
+                  <div className="text-center space-y-3">
+                     <div className="inline-flex items-center gap-2 bg-amber-400 text-black px-3 py-1 text-[9px] font-black uppercase tracking-widest border border-black">
+                        <Star size={11} className="fill-black" /> Customer Spotlight
+                     </div>
+                     <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight">Verified Buyer Testimonials</h2>
+                     <p className="text-[10px] md:text-xs text-gray-500 font-mono uppercase tracking-wider">
+                        Genuine reviews curated directly from authenticated purchases
+                     </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                     {featuredReviews.slice(0, 3).map((r, idx) => (
+                        <div key={idx} className="bg-brand-grey border border-black p-6 flex flex-col justify-between space-y-4 relative group hover:shadow-lg transition-all">
+                           <div className="space-y-3">
+                              <div className="flex justify-between items-start">
+                                 <div className="flex gap-1">
+                                    {[...Array(5)].map((_, i) => (
+                                       <Star
+                                          key={i}
+                                          size={12}
+                                          className={i < r.rating ? 'fill-black text-black' : 'text-gray-300'}
+                                       />
+                                    ))}
+                                 </div>
+                                 {r.isVerified && (
+                                    <span className="text-[8px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-600 px-2 py-0.5 flex items-center gap-1">
+                                       <ShieldCheck size={10} /> Verified
+                                    </span>
+                                 )}
+                              </div>
+                              <p className="text-xs font-serif italic text-gray-800 leading-relaxed">
+                                 "{r.comment}"
+                              </p>
+                           </div>
+
+                           <div className="pt-3 border-t border-black/20 flex justify-between items-center text-[10px] font-mono">
+                              <div>
+                                 <p className="font-black uppercase text-black">{r.name}</p>
+                                 <p className="text-gray-500 text-[9px]">{new Date(r.createdAt).toLocaleDateString()}</p>
+                              </div>
+                              {r.productName && (
+                                 <Link
+                                    to={`/products/${r.productSlug || r.productId}`}
+                                    className="text-[9px] font-black uppercase text-black/70 hover:text-black border-b border-black truncate max-w-[140px]"
+                                 >
+                                    {r.productName}
+                                 </Link>
+                              )}
+                           </div>
+                        </div>
+                     ))}
+                  </div>
                </div>
             </section>
          )}

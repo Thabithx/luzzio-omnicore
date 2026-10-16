@@ -13,12 +13,43 @@ exports.getStaff = async (req, res) => {
    try {
       const staff = await User.find({ role: { $in: ['admin', 'sales', 'warehouse'] } })
          .select('-password')
-         .sort({ name: 1 });
+         .sort({ name: 1 })
+         .lean();
+
+      // Aggregate punctuality score for each staff member
+      const attendanceAgg = await Attendance.aggregate([
+         {
+            $group: {
+               _id: '$employee',
+               total: { $sum: 1 },
+               onTime: {
+                  $sum: {
+                     $cond: [{ $or: [{ $eq: ['$punctuality', 'ON_TIME'] }, { $eq: ['$status', 'PRESENT'] }] }, 1, 0]
+                  }
+               }
+            }
+         }
+      ]);
+
+      const attMap = {};
+      attendanceAgg.forEach(a => {
+         attMap[a._id.toString()] = a;
+      });
+
+      const enrichedStaff = staff.map(s => {
+         const att = attMap[s._id.toString()];
+         const punctualityRate = att && att.total > 0 ? Math.round((att.onTime / att.total) * 100) : 100;
+         return {
+            ...s,
+            punctualityRate,
+            isOnTimeChampion: punctualityRate >= 90
+         };
+      });
 
       res.status(200).json({
          success: true,
-         count: staff.length,
-         data: staff
+         count: enrichedStaff.length,
+         data: enrichedStaff
       });
    } catch (error) {
       console.error('getStaff error:', error);
@@ -132,6 +163,8 @@ exports.clockIn = async (req, res) => {
       // Check if already clocked in today without clock out
       const startOfDay = new Date();
       startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
 
       const existing = await Attendance.findOne({
          employee: employeeId,
@@ -143,15 +176,40 @@ exports.clockIn = async (req, res) => {
          return res.status(400).json({ success: false, message: 'Employee is already clocked in today' });
       }
 
+      // Check scheduled shift for today to determine punctuality
+      const scheduledShift = await Shift.findOne({
+         employee: employeeId,
+         date: { $gte: startOfDay, $lte: endOfDay },
+         status: { $ne: 'CANCELLED' }
+      });
+
+      const clockInTime = new Date();
+      const scheduledStartTime = scheduledShift?.startTime || '09:00';
+      const [schedH, schedM] = scheduledStartTime.split(':').map(Number);
+      
+      const scheduledDate = new Date(clockInTime);
+      scheduledDate.setHours(schedH || 9, schedM || 0, 0, 0);
+
+      // Grace period of 15 minutes
+      const diffMinutes = Math.round((clockInTime.getTime() - scheduledDate.getTime()) / (1000 * 60));
+      const isLate = diffMinutes > 15;
+      const punctuality = isLate ? 'LATE' : 'ON_TIME';
+      const minutesLate = isLate ? diffMinutes : 0;
+
       const attendance = await Attendance.create({
          employee: employeeId,
-         clockIn: Date.now(),
-         status: 'PRESENT'
+         clockIn: clockInTime,
+         status: isLate ? 'LATE' : 'PRESENT',
+         punctuality,
+         minutesLate,
+         shiftScheduledStart: scheduledStartTime
       });
 
       res.status(201).json({
          success: true,
-         message: 'Clock-in recorded successfully',
+         message: isLate 
+            ? `Clock-in recorded. Arrived ${minutesLate}m past scheduled start (${scheduledStartTime}).`
+            : `Clock-in recorded on time for shift (${scheduledStartTime}).`,
          data: attendance
       });
    } catch (error) {
@@ -209,9 +267,21 @@ exports.getAttendance = async (req, res) => {
          .sort({ clockIn: -1 })
          .limit(50);
 
+      // Compute Overall Punctuality Metrics
+      const totalSessions = records.length;
+      const onTimeSessions = records.filter(r => r.punctuality === 'ON_TIME' || (!r.punctuality && r.status === 'PRESENT')).length;
+      const lateSessions = records.filter(r => r.punctuality === 'LATE' || (!r.punctuality && r.status === 'LATE')).length;
+      const punctualityScore = totalSessions > 0 ? Math.round((onTimeSessions / totalSessions) * 100) : 100;
+
       res.status(200).json({
          success: true,
          count: records.length,
+         punctualityMetrics: {
+            totalSessions,
+            onTimeSessions,
+            lateSessions,
+            punctualityScore
+         },
          data: records
       });
    } catch (error) {

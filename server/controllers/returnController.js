@@ -205,6 +205,87 @@ exports.processReturnStatus = async (req, res) => {
    }
 };
 
+// BIHANDU: 1-Click Instant Size Swap Exchange Flow
+// @desc    Execute immediate size exchange with inventory synchronization
+// @route   POST /api/returns/:id/swap-size
+// @access  Private (Admin / Warehouse / Sales)
+exports.swapReturnSize = async (req, res) => {
+   try {
+      const { newSize, oldSize, productId, notes } = req.body;
+      const returnReq = await ReturnRequest.findById(req.params.id)
+         .populate('items.product', 'name variants stock')
+         .populate('customer', 'name email');
+
+      if (!returnReq) {
+         return res.status(404).json({ success: false, message: 'Return request not found' });
+      }
+
+      const Product = require('../models/Product');
+      const targetProductId = productId || returnReq.items?.[0]?.product?._id;
+      const product = await Product.findById(targetProductId);
+
+      if (!product) {
+         return res.status(404).json({ success: false, message: 'Associated product not found' });
+      }
+
+      const newVariant = product.variants?.find(v => v.size?.toLowerCase() === newSize?.toLowerCase());
+      if (!newVariant || newVariant.stock < 1) {
+         return res.status(400).json({
+            success: false,
+            message: `Selected size "${newSize}" is out of stock (available: ${newVariant ? newVariant.stock : 0})`
+         });
+      }
+
+      const effectiveOldSize = oldSize || returnReq.items?.[0]?.size || 'M';
+
+      // 1. Deduct new size from central inventory
+      await updateCentralInventory({
+         productId: product._id,
+         variantSize: newSize,
+         quantityChange: -1,
+         transactionType: 'EXCHANGE',
+         source: 'WAREHOUSE',
+         referenceId: returnReq._id.toString(),
+         userId: req.user ? req.user._id : null,
+         notes: `Exchange dispatched: Size ${newSize} for return #${returnReq.returnNumber}`
+      });
+
+      // 2. Restock returned old size to central inventory
+      await updateCentralInventory({
+         productId: product._id,
+         variantSize: effectiveOldSize,
+         quantityChange: 1,
+         transactionType: 'RETURN',
+         source: 'WAREHOUSE',
+         referenceId: returnReq._id.toString(),
+         userId: req.user ? req.user._id : null,
+         notes: `Exchange intake: Restocked size ${effectiveOldSize} for return #${returnReq.returnNumber}`
+      });
+
+      // 3. Update return status and notes
+      returnReq.status = 'EXCHANGED';
+      returnReq.requestType = 'EXCHANGE';
+      returnReq.processedBy = req.user ? req.user._id : null;
+      returnReq.notes = `${returnReq.notes || ''}\n[Instant Size Swap]: Swapped size ${effectiveOldSize} -> ${newSize}. ${notes || ''}`.trim();
+
+      if (returnReq.items && returnReq.items.length > 0) {
+         returnReq.items[0].size = `${effectiveOldSize} -> ${newSize} (SWAPPED)`;
+         returnReq.items[0].condition = 'RESELLABLE';
+      }
+
+      await returnReq.save();
+
+      res.status(200).json({
+         success: true,
+         message: `Instant size swap completed: Size ${effectiveOldSize} restocked and Size ${newSize} dispatched!`,
+         data: returnReq
+      });
+   } catch (error) {
+      console.error('swapReturnSize error:', error);
+      res.status(500).json({ success: false, message: error.message });
+   }
+};
+
 // SATHMIRA: Generate Returns & Exchange Analytical Reports
 // @desc    Get detailed Returns & Exchange performance report
 // @route   GET /api/returns/report

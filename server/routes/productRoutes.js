@@ -8,12 +8,14 @@ const {
    createProductReview,
    deleteProductReview,
    getAllReviewsAdmin,
-   moderateProductReview
+   moderateProductReview,
+   getFeaturedReviews
 } = require('../controllers/productController');
 const { protect, admin, optionalProtect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
+router.get('/reviews/featured', getFeaturedReviews);
 router.get('/reviews/all', protect, admin, getAllReviewsAdmin);
 
 router.route('/')

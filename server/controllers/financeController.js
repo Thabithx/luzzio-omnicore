@@ -54,7 +54,51 @@ exports.getFinancialOverview = async (req, res) => {
       ]);
       const accountsReceivable = arOrders[0]?.total || 0;
 
+      // 5. ADAHAN: Cost of Goods Sold (COGS) & Dynamic Margin Health Meter
+      const receivedPOs = await PurchaseOrder.aggregate([
+         { $match: { status: 'RECEIVED' } },
+         { $group: { _id: null, total: { $sum: '$totalCost' } } }
+      ]);
+      const actualReceivedCOGS = receivedPOs[0]?.total || 0;
+      const estimatedCOGS = actualReceivedCOGS > 0 ? actualReceivedCOGS : Math.round(totalRevenue * 0.52);
+
+      const realNetProfit = totalRevenue - estimatedCOGS - totalExpenses - totalRefunds;
       const netProfit = totalRevenue - totalExpenses - totalRefunds;
+      const marginPercent = totalRevenue > 0 ? Number(((realNetProfit / totalRevenue) * 100).toFixed(1)) : 0;
+
+      let marginHealth = 'MODERATE';
+      let marginStatusText = 'Target Retail Margin (5% - 20%)';
+      if (marginPercent >= 20) {
+         marginHealth = 'HEALTHY';
+         marginStatusText = 'High Profitability (> 20%)';
+      } else if (marginPercent >= 5) {
+         marginHealth = 'MODERATE';
+         marginStatusText = 'Healthy Target Margin (5% - 20%)';
+      } else if (marginPercent >= 0) {
+         marginHealth = 'TIGHT';
+         marginStatusText = 'Tight Break-even Runway (0% - 5%)';
+      } else {
+         marginHealth = 'LOSS_ALERT';
+         marginStatusText = 'Loss Alert / Deficit Run (<0%)';
+      }
+
+      // Today's live trading snapshot
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+
+      const todayRevenueAgg = await Order.aggregate([
+         { $match: { isPaid: true, createdAt: { $gte: todayStart }, status: { $ne: 'cancelled' } } },
+         { $group: { _id: null, total: { $sum: '$totalPrice' } } }
+      ]);
+      const todayRevenue = todayRevenueAgg[0]?.total || 0;
+      const todayExpensesAgg = await Expense.aggregate([
+         { $match: { status: 'PAID', createdAt: { $gte: todayStart } } },
+         { $group: { _id: null, total: { $sum: '$amount' } } }
+      ]);
+      const todayExpenses = todayExpensesAgg[0]?.total || 0;
+      const todayCOGS = Math.round(todayRevenue * 0.52);
+      const todayNetProfit = todayRevenue - todayCOGS - todayExpenses;
+      const todayMargin = todayRevenue > 0 ? Number(((todayNetProfit / todayRevenue) * 100).toFixed(1)) : 0;
 
       res.status(200).json({
          success: true,
@@ -66,7 +110,19 @@ exports.getFinancialOverview = async (req, res) => {
             totalRefunds,
             accountsPayable,
             accountsReceivable,
-            netProfit
+            netProfit,
+            estimatedCOGS,
+            realNetProfit,
+            marginPercent,
+            marginHealth,
+            marginStatusText,
+            todaySnapshot: {
+               revenue: todayRevenue,
+               expenses: todayExpenses,
+               cogs: todayCOGS,
+               netProfit: todayNetProfit,
+               marginPercent: todayMargin
+            }
          }
       });
    } catch (error) {

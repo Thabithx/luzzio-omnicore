@@ -19,6 +19,7 @@ export default function AdminStaff() {
    const [shifts, setShifts] = useState([]);
    const [leaderboardData, setLeaderboardData] = useState([]);
    const [leaderboardSummary, setLeaderboardSummary] = useState(null);
+   const [punctualityMetrics, setPunctualityMetrics] = useState(null);
    const [loading, setLoading] = useState(false);
    const { showToast } = useToast();
 
@@ -62,6 +63,7 @@ export default function AdminStaff() {
          } else if (activeTab === 'attendance') {
             const res = await api.get('/staff/attendance');
             setAttendance(res.data.data || []);
+            setPunctualityMetrics(res.data.punctualityMetrics || null);
          } else if (activeTab === 'shifts') {
             const res = await api.get('/staff/shifts');
             setShifts(res.data.data || []);
@@ -241,6 +243,19 @@ export default function AdminStaff() {
                               {s.phone && <p>Phone: {s.phone}</p>}
                               {s.joinedDate && <p className="text-[10px] text-gray-400">Joined: {new Date(s.joinedDate).toLocaleDateString()}</p>}
                            </div>
+
+                           <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                              <div className="text-[10px] font-mono text-gray-500">
+                                 Punctuality: <span className="font-bold text-black">{s.punctualityRate ?? 100}%</span>
+                              </div>
+                              {s.isOnTimeChampion ? (
+                                 <span className="px-2 py-0.5 text-[8px] font-black uppercase bg-emerald-100 border border-emerald-600 text-emerald-800 flex items-center gap-1">
+                                    <Star size={10} className="fill-emerald-600 text-emerald-600" /> On-Time Star
+                                 </span>
+                              ) : (
+                                 <span className="text-[9px] font-mono text-gray-400">Standard</span>
+                              )}
+                           </div>
                         </div>
                      ))
                   )}
@@ -248,52 +263,100 @@ export default function AdminStaff() {
             </div>
          )}
 
-         {/* Tab 2: Attendance Logs */}
+         {/* Tab 2: Attendance Logs & Shift Punctuality Tracker */}
          {activeTab === 'attendance' && (
-            <div className="bg-white border border-black overflow-x-auto">
-               <table className="w-full text-left border-collapse">
-                  <thead>
-                     <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
-                        <th className="p-4">Employee</th>
-                        <th className="p-4">Clock In</th>
-                        <th className="p-4">Clock Out</th>
-                        <th className="p-4">Duration</th>
-                        <th className="p-4">Status</th>
-                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 text-xs font-mono">
-                     {loading ? (
-                        <tr>
-                           <td colSpan="5" className="p-12 text-center text-xs font-black uppercase tracking-widest animate-pulse">
-                              Loading Attendance Logs...
-                           </td>
+            <div className="space-y-6">
+               <div className="bg-black text-white border-2 border-black p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                     <div className="p-2.5 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400">
+                        <Clock size={20} />
+                     </div>
+                     <div>
+                        <div className="flex items-center gap-2">
+                           <h3 className="text-xs font-black uppercase tracking-widest">Shift Punctuality & On-Time Arrival Tracker</h3>
+                           <span className="px-2 py-0.5 text-[8px] font-black uppercase bg-emerald-500 text-black">
+                              15-Min Grace Window
+                           </span>
+                        </div>
+                        <p className="text-[10px] text-gray-400 mt-0.5 font-mono">
+                           Logs clock-in arrivals against scheduled shift rosters (Default 09:00 AM)
+                        </p>
+                     </div>
+                  </div>
+
+                  <div className="flex items-center gap-6">
+                     <div className="text-right">
+                        <span className="text-[9px] font-mono uppercase text-gray-400 block">Overall On-Time Rate</span>
+                        <span className="text-2xl font-black font-mono text-emerald-400">
+                           {punctualityMetrics?.punctualityScore ?? 100}%
+                        </span>
+                     </div>
+                     <div className="text-right border-l border-white/20 pl-4">
+                        <span className="text-[9px] font-mono uppercase text-gray-400 block">On-Time / Late</span>
+                        <span className="text-sm font-bold font-mono text-white">
+                           <span className="text-emerald-400">{punctualityMetrics?.onTimeSessions ?? attendance.length}</span> / <span className="text-amber-400">{punctualityMetrics?.lateSessions ?? 0}</span>
+                        </span>
+                     </div>
+                  </div>
+               </div>
+
+               <div className="bg-white border border-black overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                     <thead>
+                        <tr className="border-b border-black bg-brand-grey text-[9px] font-black uppercase tracking-[0.2em]">
+                           <th className="p-4">Employee</th>
+                           <th className="p-4">Clock In</th>
+                           <th className="p-4">Punctuality</th>
+                           <th className="p-4">Clock Out</th>
+                           <th className="p-4">Duration</th>
+                           <th className="p-4">Status</th>
                         </tr>
-                     ) : attendance.length === 0 ? (
-                        <tr>
-                           <td colSpan="5" className="p-12 text-center text-gray-400 font-black uppercase tracking-widest">
-                              No Attendance Logs Found
-                           </td>
-                        </tr>
-                     ) : (
-                        attendance.map((a) => (
-                           <tr key={a._id} className="hover:bg-gray-50">
-                              <td className="p-4 font-sans font-black uppercase">
-                                 {a.employee?.name || 'Staff Member'}
-                                 <span className="block text-[9px] font-mono text-gray-400">{a.employee?.role}</span>
-                              </td>
-                              <td className="p-4">{new Date(a.clockIn).toLocaleString()}</td>
-                              <td className="p-4">{a.clockOut ? new Date(a.clockOut).toLocaleString() : 'In Progress...'}</td>
-                              <td className="p-4 font-bold">{a.workHours ? `${a.workHours} hrs` : 'Active'}</td>
-                              <td className="p-4">
-                                 <span className="px-2 py-0.5 text-[8px] font-black uppercase border border-green-600 bg-green-100 text-green-700">
-                                    {a.status}
-                                 </span>
+                     </thead>
+                     <tbody className="divide-y divide-gray-200 text-xs font-mono">
+                        {loading ? (
+                           <tr>
+                              <td colSpan="6" className="p-12 text-center text-xs font-black uppercase tracking-widest animate-pulse">
+                                 Loading Attendance Logs...
                               </td>
                            </tr>
-                        ))
-                     )}
-                  </tbody>
-               </table>
+                        ) : attendance.length === 0 ? (
+                           <tr>
+                              <td colSpan="6" className="p-12 text-center text-gray-400 font-black uppercase tracking-widest">
+                                 No Attendance Logs Found
+                              </td>
+                           </tr>
+                        ) : (
+                           attendance.map((a) => (
+                              <tr key={a._id} className="hover:bg-gray-50">
+                                 <td className="p-4 font-sans font-black uppercase">
+                                    {a.employee?.name || 'Staff Member'}
+                                    <span className="block text-[9px] font-mono text-gray-400">{a.employee?.role}</span>
+                                 </td>
+                                 <td className="p-4">{new Date(a.clockIn).toLocaleString()}</td>
+                                 <td className="p-4">
+                                    {a.punctuality === 'LATE' || a.status === 'LATE' ? (
+                                       <span className="px-2 py-0.5 text-[8px] font-black uppercase border border-amber-600 bg-amber-100 text-amber-800 inline-flex items-center gap-1 font-mono">
+                                          LATE (+{a.minutesLate || 15}m)
+                                       </span>
+                                    ) : (
+                                       <span className="px-2 py-0.5 text-[8px] font-black uppercase border border-emerald-600 bg-emerald-100 text-emerald-800 inline-flex items-center gap-1 font-mono">
+                                          <CheckCircle size={10} /> ON-TIME ({a.shiftScheduledStart || '09:00'})
+                                       </span>
+                                    )}
+                                 </td>
+                                 <td className="p-4">{a.clockOut ? new Date(a.clockOut).toLocaleString() : 'In Progress...'}</td>
+                                 <td className="p-4 font-bold">{a.workHours ? `${a.workHours} hrs` : 'Active'}</td>
+                                 <td className="p-4">
+                                    <span className="px-2 py-0.5 text-[8px] font-black uppercase border border-green-600 bg-green-100 text-green-700">
+                                       {a.status}
+                                    </span>
+                                 </td>
+                              </tr>
+                           ))
+                        )}
+                     </tbody>
+                  </table>
+               </div>
             </div>
          )}
 

@@ -238,6 +238,28 @@ exports.createProductReview = async (req, res) => {
          return res.status(404).json({ success: false, message: 'Product not found' });
       }
 
+      // SRIHARAN: Automatic Verified Buyer Verification against paid orders
+      let isVerifiedBuyer = false;
+      try {
+         const Order = require('../models/Order');
+         const orderQuery = {
+            isPaid: true,
+            status: { $ne: 'cancelled' },
+            'orderItems.product': product._id
+         };
+         if (req.user) {
+            orderQuery.$or = [{ user: req.user._id }, { email: email.toLowerCase() }, { 'shippingAddress.email': email.toLowerCase() }];
+         } else if (email) {
+            orderQuery.$or = [{ email: email.toLowerCase() }, { 'shippingAddress.email': email.toLowerCase() }, { guestEmail: email.toLowerCase() }];
+         }
+         const verifiedOrder = await Order.findOne(orderQuery);
+         if (verifiedOrder || (req.user && req.user.role === 'admin')) {
+            isVerifiedBuyer = true;
+         }
+      } catch (orderCheckErr) {
+         console.warn('Verified buyer check skipped:', orderCheckErr.message);
+      }
+
       const review = {
          name,
          email,
@@ -245,7 +267,9 @@ exports.createProductReview = async (req, res) => {
          comment,
          images: images || [],
          user: req.user ? req.user._id : null,
-         isVerified: req.user ? req.user.role === 'admin' : false,
+         isVerified: isVerifiedBuyer,
+         isApproved: true,
+         isFeatured: false,
          createdAt: new Date()
       };
 
@@ -327,7 +351,9 @@ exports.getAllReviewsAdmin = async (req, res) => {
                email: r.email,
                rating: r.rating,
                comment: r.comment,
+               isVerified: r.isVerified === true,
                isApproved: r.isApproved !== false,
+               isFeatured: r.isFeatured === true,
                adminResponse: r.adminResponse || '',
                createdAt: r.createdAt
             });
@@ -346,13 +372,12 @@ exports.getAllReviewsAdmin = async (req, res) => {
    }
 };
 
-// @desc    Moderate review (Approve/Reject) or respond to review
+// @desc    Moderate review (Approve/Reject), pin to featured spotlight, or respond to review
 // @route   PUT /api/products/:productId/reviews/:reviewId/moderate
 // @access  Private/Admin
 exports.moderateProductReview = async (req, res) => {
    try {
-      const { isApproved, adminResponse } = req.body;
-      // Route is /:id/reviews/:reviewId/moderate — param is 'id', not 'productId'
+      const { isApproved, isFeatured, isVerified, adminResponse } = req.body;
       const product = await Product.findById(req.params.id);
 
       if (!product) {
@@ -367,6 +392,12 @@ exports.moderateProductReview = async (req, res) => {
       if (typeof isApproved === 'boolean') {
          review.isApproved = isApproved;
       }
+      if (typeof isFeatured === 'boolean') {
+         review.isFeatured = isFeatured;
+      }
+      if (typeof isVerified === 'boolean') {
+         review.isVerified = isVerified;
+      }
       if (adminResponse !== undefined) {
          review.adminResponse = adminResponse;
       }
@@ -380,6 +411,47 @@ exports.moderateProductReview = async (req, res) => {
          data: review
       });
    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+   }
+};
+
+// SRIHARAN: Featured Review Spotlight for Storefront
+// @desc    Get pinned / featured customer reviews for home page showcase
+// @route   GET /api/products/reviews/featured
+// @access  Public
+exports.getFeaturedReviews = async (req, res) => {
+   try {
+      const products = await Product.find({ 'reviews.0': { $exists: true } }).select('name slug images reviews');
+      const featured = [];
+      products.forEach(p => {
+         p.reviews.forEach(r => {
+            if (r.isApproved !== false && (r.isFeatured === true || (r.rating === 5 && r.isVerified))) {
+               featured.push({
+                  productId: p._id,
+                  productSlug: p.slug,
+                  productName: p.name,
+                  productImage: p.images[0] || '',
+                  reviewId: r._id,
+                  name: r.name,
+                  rating: r.rating,
+                  comment: r.comment,
+                  isVerified: r.isVerified === true,
+                  isFeatured: r.isFeatured === true,
+                  createdAt: r.createdAt
+               });
+            }
+         });
+      });
+
+      featured.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0) || new Date(b.createdAt) - new Date(a.createdAt));
+
+      res.status(200).json({
+         success: true,
+         count: featured.slice(0, 8).length,
+         data: featured.slice(0, 8)
+      });
+   } catch (err) {
+      console.error('getFeaturedReviews error:', err);
       res.status(500).json({ success: false, message: err.message });
    }
 };

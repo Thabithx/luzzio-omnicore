@@ -3,7 +3,7 @@
 // Moderate, approve, respond to, and delete customer product reviews.
 
 import React, { useState, useEffect } from 'react';
-import { Star, CheckCircle, XCircle, Trash2, MessageSquare, RefreshCw, Eye, CornerDownRight, FileSpreadsheet } from 'lucide-react';
+import { Star, CheckCircle, XCircle, Trash2, MessageSquare, RefreshCw, Eye, CornerDownRight, FileSpreadsheet, ShieldCheck, Pin, Sparkles } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import api from '../../services/api';
 import { useToast } from '../../components/ui/Toast';
@@ -75,6 +75,20 @@ export default function AdminReviews() {
          fetchReviews();
       } catch (err) {
          showToast('Failed to update review moderation status.', 'error');
+      }
+   };
+
+   // SRIHARAN: Pin / Spotlight Review to Homepage
+   const handleToggleFeatured = async (review) => {
+      try {
+         const newFeaturedState = !review.isFeatured;
+         await api.put(`/products/${review.productId}/reviews/${review.reviewId}/moderate`, {
+            isFeatured: newFeaturedState
+         });
+         showToast(newFeaturedState ? 'Review pinned to Homepage Spotlight!' : 'Review unpinned from Spotlight.', 'success');
+         fetchReviews();
+      } catch (err) {
+         showToast('Failed to toggle review spotlight status.', 'error');
       }
    };
 
@@ -195,12 +209,32 @@ export default function AdminReviews() {
                               </div>
                            </div>
 
-                           <div className="flex items-center gap-2">
+                           <div className="flex flex-wrap items-center gap-2">
+                              {r.isVerified && (
+                                 <span className="px-2 py-0.5 text-[8px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-600 flex items-center gap-1">
+                                    <ShieldCheck size={10} /> Verified Buyer
+                                 </span>
+                              )}
+                              {r.isFeatured && (
+                                 <span className="px-2 py-0.5 text-[8px] font-black uppercase bg-amber-400 text-black border border-black flex items-center gap-1">
+                                    <Sparkles size={10} /> Home Spotlight
+                                 </span>
+                              )}
                               <span className={`px-2.5 py-1 text-[9px] font-black uppercase border ${
                                  r.isApproved ? 'bg-green-100 border-green-600 text-green-800' : 'bg-red-100 border-red-600 text-red-800'
                               }`}>
                                  {r.isApproved ? 'Approved' : 'Hidden'}
                               </span>
+                              <Button
+                                 onClick={() => handleToggleFeatured(r)}
+                                 className={`text-[9px] font-black uppercase px-2.5 py-1.5 border flex items-center gap-1 ${
+                                    r.isFeatured ? 'bg-amber-400 text-black border-black' : 'bg-white text-black border-black hover:bg-gray-100'
+                                 }`}
+                                 title="Pin review to homepage customer spotlight"
+                              >
+                                 <Pin size={11} className={r.isFeatured ? 'fill-black text-black' : ''} />
+                                 {r.isFeatured ? 'Pinned' : 'Pin Spotlight'}
+                              </Button>
                               <Button
                                  onClick={() => handleToggleApprove(r, r.isApproved)}
                                  className={`text-[9px] font-black uppercase px-3 py-1.5 border ${
@@ -226,7 +260,14 @@ export default function AdminReviews() {
 
                         <div className="bg-gray-50 border border-gray-200 p-4 font-sans text-xs space-y-2">
                            <div className="flex justify-between items-center text-[10px] text-gray-500 font-mono border-b border-gray-200 pb-2">
-                              <span><strong className="text-black">{r.name}</strong> ({r.email})</span>
+                              <span className="flex items-center gap-2">
+                                 <strong className="text-black">{r.name}</strong> ({r.email})
+                                 {r.isVerified && (
+                                    <span className="text-[9px] text-emerald-700 font-bold flex items-center gap-0.5">
+                                       <ShieldCheck size={11} /> Verified Order
+                                    </span>
+                                 )}
+                              </span>
                               <span>{new Date(r.createdAt).toLocaleDateString()}</span>
                            </div>
                            <p className="text-gray-800 font-medium italic">"{r.comment}"</p>
