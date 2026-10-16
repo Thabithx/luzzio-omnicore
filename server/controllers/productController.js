@@ -149,6 +149,27 @@ exports.createProduct = async (req, res) => {
          if (Number(salePrice) >= Number(price)) return fail(res, 'Sale price must be less than the regular price');
       }
 
+      // DULARA: Auto-populate unique barcode and SKU when adding a new product
+      if (!req.body.barcode || String(req.body.barcode).trim() === '') {
+         let uniqueBarcode;
+         let isUnique = false;
+         while (!isUnique) {
+            const randomNum = Math.floor(10000000 + Math.random() * 90000000);
+            uniqueBarcode = `LUZ-${randomNum}`;
+            const existing = await Product.findOne({ barcode: uniqueBarcode });
+            if (!existing) isUnique = true;
+         }
+         req.body.barcode = uniqueBarcode;
+      } else {
+         req.body.barcode = String(req.body.barcode).trim().toUpperCase();
+      }
+
+      if (!req.body.sku || String(req.body.sku).trim() === '') {
+         req.body.sku = `SKU-${Date.now().toString().slice(-6)}`;
+      } else {
+         req.body.sku = String(req.body.sku).trim().toUpperCase();
+      }
+
       const product = await Product.create(req.body);
       clearCache();
 
