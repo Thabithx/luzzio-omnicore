@@ -9,6 +9,7 @@ import api from '../../services/api';
 import { useToast } from '../../components/ui/Toast';
 import { useConfirm } from '../../components/ui/ConfirmModal';
 import { exportEngagementExcelReport } from '../../utils/excelExporter';
+import Modal from '../../components/ui/Modal';
 
 export default function AdminReviews() {
    const [activeTab, setActiveTab] = useState('moderation'); // 'moderation' | 'reports'
@@ -386,8 +387,8 @@ export default function AdminReviews() {
 
          {/* Reply Modal */}
          {replyModal.open && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6">
+            <Modal isOpen={replyModal.open} onClose={() => setReplyModal({ open: false, review: null, text: '' })}>
+               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6 my-auto shadow-2xl">
                   <div className="border-b border-black pb-4">
                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Moderator Response</span>
                      <h3 className="text-base font-black uppercase tracking-tight mt-1">Respond to {replyModal.review?.name}</h3>
@@ -416,7 +417,7 @@ export default function AdminReviews() {
                      </div>
                   </form>
                </div>
-            </div>
+            </Modal>
          )}
       </div>
    );

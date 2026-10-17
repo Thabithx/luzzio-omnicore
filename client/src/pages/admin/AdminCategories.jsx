@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/cn';
 import { useToast } from '../../components/ui/Toast';
 import { useConfirm } from '../../components/ui/ConfirmModal';
+import Modal from '../../components/ui/Modal';
 
 const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
    const [formData, setFormData] = useState({
@@ -36,8 +37,8 @@ const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
    };
 
    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-         <div className="bg-white w-full max-w-lg border border-black shadow-2xl">
+      <Modal isOpen={isOpen} onClose={onClose}>
+         <div className="bg-white w-full max-w-lg border border-black shadow-2xl my-auto">
             <div className="p-8 bg-black flex justify-between items-center sticky top-0 z-10">
                <div className="space-y-1">
                   <p className="text-[9px] text-white/40 font-black uppercase tracking-[0.2em]">Archive Classification</p>
@@ -89,7 +90,7 @@ const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
                </div>
             </form>
          </div>
-      </div>
+      </Modal>
    );
 };
 

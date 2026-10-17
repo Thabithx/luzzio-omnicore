@@ -10,6 +10,7 @@ import api from '../../services/api';
 import { firstError, isBlank, isNonNeg, isInt } from '../../utils/formValidate';
 import { useToast } from '../../components/ui/Toast';
 import { exportSupplierPerformanceExcelReport } from '../../utils/excelExporter';
+import Modal from '../../components/ui/Modal';
 
 export default function AdminPurchaseOrders() {
    const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'reports'
@@ -437,8 +438,8 @@ export default function AdminPurchaseOrders() {
 
          {/* Create PO Modal */}
          {showCreateModal && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-2xl w-full space-y-6 max-h-[90vh] overflow-y-auto">
+            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
+               <div className="bg-white border-2 border-black p-8 max-w-2xl w-full space-y-6 max-h-[90vh] overflow-y-auto my-auto shadow-2xl">
                   <div className="flex justify-between items-center border-b border-black pb-4">
                      <h3 className="text-sm font-black uppercase tracking-widest">Issue New Purchase Order</h3>
                      <button onClick={() => setShowCreateModal(false)}><X size={18} /></button>
@@ -535,13 +536,13 @@ export default function AdminPurchaseOrders() {
                      </div>
                   </form>
                </div>
-            </div>
+            </Modal>
          )}
 
          {/* Receive Stock Modal */}
          {showReceiveModal && selectedPO && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6">
+            <Modal isOpen={Boolean(showReceiveModal && selectedPO)} onClose={() => setShowReceiveModal(false)}>
+               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6 my-auto shadow-2xl">
                   <div className="border-b border-black pb-4">
                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Stock Intake Protocol</span>
                      <h3 className="text-base font-black uppercase tracking-tight mt-1">Receive PO #{selectedPO.poNumber}</h3>
@@ -584,7 +585,7 @@ export default function AdminPurchaseOrders() {
                      </div>
                   </form>
                </div>
-            </div>
+            </Modal>
          )}
       </div>
    );

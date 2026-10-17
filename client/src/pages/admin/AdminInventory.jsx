@@ -10,6 +10,7 @@ import api from '../../services/api';
 import { firstError, isBlank } from '../../utils/formValidate';
 import { useToast } from '../../components/ui/Toast';
 import { exportMultiSheetExcelReport } from '../../utils/excelExporter';
+import Modal from '../../components/ui/Modal';
 
 
 export default function AdminInventory() {
@@ -472,8 +473,8 @@ export default function AdminInventory() {
 
          {/* Stock Adjustment Modal */}
          {showAdjustModal && selectedProduct && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6">
+            <Modal isOpen={Boolean(showAdjustModal && selectedProduct)} onClose={() => setShowAdjustModal(false)}>
+               <div className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6 my-auto shadow-2xl">
                   <div className="border-b border-black pb-4">
                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Manual Stock Entry</span>
                      <h3 className="text-base font-black uppercase tracking-tight mt-1">{selectedProduct.name}</h3>
@@ -557,13 +558,13 @@ export default function AdminInventory() {
                      </div>
                   </form>
                </div>
-            </div>
+            </Modal>
          )}
 
          {/* DULARA: Printable Barcode & Shelf Price Label Modal */}
          {showBarcodeModal && barcodeProduct && (
-            <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 space-y-6">
+            <Modal isOpen={Boolean(showBarcodeModal && barcodeProduct)} onClose={() => setShowBarcodeModal(false)}>
+               <div className="bg-white border-2 border-black max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 space-y-6 my-auto shadow-2xl">
                   <div className="flex justify-between items-start border-b border-black pb-4">
                      <div>
                         <div className="flex items-center gap-2">
@@ -702,7 +703,7 @@ export default function AdminInventory() {
                      </Button>
                   </div>
                </div>
-            </div>
+            </Modal>
          )}
 
          {/* Embedded Print CSS Rules */}

@@ -9,6 +9,7 @@ import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { firstError, isBlank, isEmail, isPhone } from '../../utils/formValidate';
 import { useToast } from '../../components/ui/Toast';
+import Modal from '../../components/ui/Modal';
 
 
 export default function AdminStaff() {
@@ -639,8 +640,8 @@ export default function AdminStaff() {
 
          {/* Create Staff Modal */}
          {showStaffModal && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6">
+            <Modal isOpen={showStaffModal} onClose={() => setShowStaffModal(false)}>
+               <div className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6 my-auto shadow-2xl">
                   <div className="flex justify-between items-center border-b border-black pb-4">
                      <h3 className="text-sm font-black uppercase tracking-widest">Register Staff User</h3>
                      <button onClick={() => setShowStaffModal(false)}><X size={18} /></button>
@@ -711,13 +712,13 @@ export default function AdminStaff() {
                      </div>
                   </form>
                </div>
-            </div>
+            </Modal>
          )}
 
          {/* Create Shift Modal */}
          {showShiftModal && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6">
+            <Modal isOpen={showShiftModal} onClose={() => setShowShiftModal(false)}>
+               <div className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6 my-auto shadow-2xl">
                   <div className="flex justify-between items-center border-b border-black pb-4">
                      <h3 className="text-sm font-black uppercase tracking-widest">Schedule Employee Shift</h3>
                      <button onClick={() => setShowShiftModal(false)}><X size={18} /></button>
@@ -780,7 +781,7 @@ export default function AdminStaff() {
                      </div>
                   </form>
                </div>
-            </div>
+            </Modal>
          )}
       </div>
    );

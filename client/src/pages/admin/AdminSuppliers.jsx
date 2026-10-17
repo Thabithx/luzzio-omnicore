@@ -11,6 +11,7 @@ import api from '../../services/api';
 import { firstError, isBlank, isEmail, isPhone } from '../../utils/formValidate';
 import { useToast } from '../../components/ui/Toast';
 import { useConfirm } from '../../components/ui/ConfirmModal';
+import Modal from '../../components/ui/Modal';
 
 export default function AdminSuppliers() {
    const [suppliers, setSuppliers] = useState([]);
@@ -308,8 +309,8 @@ export default function AdminSuppliers() {
 
          {/* Create / Edit Supplier Modal */}
          {showModal && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6">
+            <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6 my-auto shadow-2xl">
                   <div className="flex justify-between items-center border-b border-black pb-4">
                      <h3 className="text-sm font-black uppercase tracking-widest">
                         {editingSupplier ? 'Edit Supplier Profile' : 'Register New Supplier'}
@@ -397,13 +398,13 @@ export default function AdminSuppliers() {
                      </div>
                   </form>
                </div>
-            </div>
+            </Modal>
          )}
 
          {/* THABITH: 1-Click Smart Restock Modal */}
          {showRestockModal && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-2xl w-full space-y-6 max-h-[90vh] overflow-y-auto">
+            <Modal isOpen={showRestockModal} onClose={() => setShowRestockModal(false)}>
+               <div className="bg-white border-2 border-black p-8 max-w-2xl w-full space-y-6 max-h-[90vh] overflow-y-auto my-auto shadow-2xl">
                   <div className="flex justify-between items-center border-b border-black pb-4">
                      <div>
                         <div className="flex items-center gap-2">
@@ -534,7 +535,7 @@ export default function AdminSuppliers() {
                      </div>
                   )}
                </div>
-            </div>
+            </Modal>
          )}
       </div>
    );

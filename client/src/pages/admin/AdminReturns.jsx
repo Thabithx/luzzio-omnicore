@@ -9,6 +9,7 @@ import { Input } from '../../components/ui/Input';
 import api from '../../services/api';
 import { useToast } from '../../components/ui/Toast';
 import { exportReturnsAnalyticsExcelReport } from '../../utils/excelExporter';
+import Modal from '../../components/ui/Modal';
 
 export default function AdminReturns() {
    const [activeTab, setActiveTab] = useState('list'); // 'list' | 'reports'
@@ -530,8 +531,8 @@ export default function AdminReturns() {
 
          {/* Inspection & Processing Modal */}
          {showModal && selectedReturn && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6">
+            <Modal isOpen={Boolean(showModal && selectedReturn)} onClose={() => setShowModal(false)}>
+               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6 my-auto shadow-2xl">
                   <div className="border-b border-black pb-4">
                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Reverse Logistics Inspection</span>
                      <h3 className="text-base font-black uppercase tracking-tight mt-1">Process Return #{selectedReturn.returnNumber}</h3>
@@ -608,12 +609,12 @@ export default function AdminReturns() {
                      </div>
                   </form>
                </div>
-            </div>
+            </Modal>
          )}
          {/* Create Return / Exchange Modal */}
          {showCreateModal && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6">
+            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
+               <div className="bg-white border-2 border-black p-8 max-w-lg w-full space-y-6 my-auto shadow-2xl">
                   <div className="border-b border-black pb-4">
                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Reverse Logistics</span>
                      <h3 className="text-base font-black uppercase tracking-tight mt-1">Log New Return / Exchange Request</h3>
@@ -695,13 +696,13 @@ export default function AdminReturns() {
                      </div>
                   </form>
                </div>
-            </div>
+            </Modal>
          )}
 
          {/* Instant Size Swap Modal */}
          {swapModal.open && swapModal.returnDoc && (
-            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black max-w-md w-full p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <Modal isOpen={Boolean(swapModal.open && swapModal.returnDoc)} onClose={() => setSwapModal({ ...swapModal, open: false })}>
+               <div className="bg-white border-2 border-black max-w-md w-full p-6 shadow-2xl my-auto">
                   <div className="flex justify-between items-center pb-4 border-b border-black mb-4">
                      <div className="flex items-center gap-2">
                         <div className="p-1.5 bg-amber-400 border border-black">
@@ -783,7 +784,7 @@ export default function AdminReturns() {
                      </div>
                   </div>
                </div>
-            </div>
+            </Modal>
          )}
       </div>
    );

@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { SRI_LANKA_LOCATIONS } from '../../constants/sl-locations';
 import { useToast } from '../../components/ui/Toast';
 import { useConfirm } from '../../components/ui/ConfirmModal';
+import Modal from '../../components/ui/Modal';
 
 const STATUS_COLORS = {
    'draft': 'bg-gray-100 text-gray-800 border-gray-200',
@@ -49,8 +50,8 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
    };
 
    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-         <div className="bg-white w-full max-w-3xl max-h-[95vh] overflow-y-auto border border-black shadow-2xl">
+      <Modal isOpen={isOpen} onClose={onClose}>
+         <div className="bg-white w-full max-w-3xl max-h-[95vh] overflow-y-auto border border-black shadow-2xl my-auto">
             <div className="p-8 bg-black flex justify-between items-center sticky top-0 z-10">
                <div className="space-y-1">
                   <p className="text-[9px] text-white/40 font-black uppercase tracking-[0.2em]">Draft Sequence Audit</p>
@@ -235,7 +236,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
                </div>
             </div>
          </div>
-      </div >
+      </Modal>
    );
 };
 

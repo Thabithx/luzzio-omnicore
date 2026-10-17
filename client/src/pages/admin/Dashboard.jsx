@@ -9,6 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { useToast } from '../../components/ui/Toast';
 import { exportMultiSheetExcelReport } from '../../utils/excelExporter';
+import Modal from '../../components/ui/Modal';
 
 
 const StatCard = ({ label, value, icon: Icon, trend, accent }) => (
@@ -42,8 +43,8 @@ const QuickNavTile = ({ to, icon: Icon, label, count, color }) => (
 const OrderDetailsModal = ({ isOpen, onClose, order }) => {
    if (!isOpen || !order) return null;
    return (
-      <div className='fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm'>
-         <div className='bg-white w-full max-w-3xl max-h-[95vh] overflow-y-auto border border-black shadow-2xl relative'>
+      <Modal isOpen={isOpen} onClose={onClose}>
+         <div className='bg-white w-full max-w-3xl max-h-[95vh] overflow-y-auto border border-black shadow-2xl relative my-auto'>
             <div className='p-8 bg-black flex justify-between items-center sticky top-0 z-10'>
                <div className='space-y-1'>
                   <p className='text-[9px] text-white/40 font-black uppercase tracking-[0.2em]'>Acquisition Sequence Audit</p>
@@ -85,7 +86,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order }) => {
                </div>
             </div>
          </div>
-      </div>
+      </Modal>
    );
 };
 

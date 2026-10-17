@@ -11,6 +11,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { firstError, isBlank, isPositive, isNonNeg } from '../../utils/formValidate';
 import { useToast } from '../../components/ui/Toast';
 import { useConfirm } from '../../components/ui/ConfirmModal';
+import Modal from '../../components/ui/Modal';
 
 const SortableImage = ({ url, index, onRemove }) => {
    const {
@@ -271,8 +272,8 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
    };
 
    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-         <div className="bg-white w-full max-w-2xl max-h-[95vh] overflow-y-auto overflow-x-hidden border border-black shadow-2xl">
+      <Modal isOpen={isOpen} onClose={onClose}>
+         <div className="bg-white w-full max-w-2xl max-h-[95vh] overflow-y-auto overflow-x-hidden border border-black shadow-2xl my-auto">
             <div className="p-8 bg-black flex justify-between items-center sticky top-0 z-10">
                <div className="space-y-1">
                   <p className="text-[9px] text-white/40 font-black uppercase tracking-[0.2em]">Archive Protocol</p>
@@ -705,7 +706,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                </div>
             </form>
          </div>
-      </div>
+      </Modal>
    );
 };
 
@@ -947,8 +948,8 @@ const AdminProducts = () => {
 
          {/* DULARA: Barcode & Shelf Price Label Print Modal */}
          {barcodeModalProduct && (
-            <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 space-y-6">
+            <Modal isOpen={!!barcodeModalProduct} onClose={() => setBarcodeModalProduct(null)}>
+               <div className="bg-white border-2 border-black max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 space-y-6 my-auto shadow-2xl">
                   <div className="flex justify-between items-start border-b border-black pb-4">
                      <div>
                         <div className="flex items-center gap-2">
@@ -1086,7 +1087,7 @@ const AdminProducts = () => {
                      </Button>
                   </div>
                </div>
-            </div>
+            </Modal>
          )}
       </div>
    );

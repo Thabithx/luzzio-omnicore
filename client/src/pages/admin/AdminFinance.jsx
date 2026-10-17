@@ -11,6 +11,7 @@ import { firstError, isBlank, isPositive } from '../../utils/formValidate';
 import { useToast } from '../../components/ui/Toast';
 import { useConfirm } from '../../components/ui/ConfirmModal';
 import { exportFinancePnlExcelReport } from '../../utils/excelExporter';
+import Modal from '../../components/ui/Modal';
 
 
 export default function AdminFinance() {
@@ -972,8 +973,8 @@ export default function AdminFinance() {
 
          {/* Create Expense Modal */}
          {showExpenseModal && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6">
+            <Modal isOpen={showExpenseModal} onClose={() => setShowExpenseModal(false)}>
+               <div className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6 my-auto shadow-2xl">
                   <div className="flex justify-between items-center border-b border-black pb-4">
                      <h3 className="text-sm font-black uppercase tracking-widest">Record Business Expense</h3>
                      <button onClick={() => setShowExpenseModal(false)}><X size={18} /></button>
@@ -1056,7 +1057,7 @@ export default function AdminFinance() {
                      </div>
                   </form>
                </div>
-            </div>
+            </Modal>
          )}
       </div>
    );
