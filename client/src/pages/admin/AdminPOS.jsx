@@ -3,6 +3,7 @@
 // walk-in / registered customer checkout, discount/tax calculations, and instant receipt generation.
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Search, Plus, Minus, Trash2, User, CreditCard, DollarSign, CheckCircle, Printer, X, RefreshCw, Barcode, FileSpreadsheet, Coins, Banknote } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -41,6 +42,17 @@ export default function AdminPOS() {
    useEffect(() => {
       fetchProducts('');
    }, []);
+
+   // Lock background scroll when modal is active to prevent page layout shifting
+   useEffect(() => {
+      if (receiptData || showCustomerModal) {
+         const originalOverflow = document.body.style.overflow;
+         document.body.style.overflow = 'hidden';
+         return () => {
+            document.body.style.overflow = originalOverflow;
+         };
+      }
+   }, [receiptData, showCustomerModal]);
 
    const fetchProducts = async (q = '') => {
       setLoadingProducts(true);
@@ -376,9 +388,9 @@ export default function AdminPOS() {
                   </div>
 
                   {/* Cart Itemized List */}
-                  <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                  <div className="space-y-3 min-h-[160px] max-h-[300px] overflow-y-auto pr-1">
                      {cart.length === 0 ? (
-                        <div className="py-12 text-center text-gray-400 text-xs font-black uppercase tracking-widest border border-dashed border-gray-300">
+                        <div className="h-[160px] flex items-center justify-center text-center text-gray-400 text-xs font-black uppercase tracking-widest border border-dashed border-gray-300">
                            Cart is Empty
                         </div>
                      ) : (
@@ -568,9 +580,9 @@ export default function AdminPOS() {
          </div>
 
          {/* Customer Search / Selection Modal */}
-         {showCustomerModal && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-               <div className="bg-white border border-black p-8 max-w-lg w-full space-y-6">
+         {showCustomerModal && createPortal(
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 overflow-y-auto">
+               <div className="bg-white border border-black p-8 max-w-lg w-full space-y-6 my-auto shadow-2xl">
                   <div className="flex justify-between items-center border-b border-black pb-4">
                      <h3 className="text-sm font-black uppercase tracking-widest">Select or Register Customer</h3>
                      <button type="button" onClick={() => setShowCustomerModal(false)}><X size={18} /></button>
@@ -632,13 +644,43 @@ export default function AdminPOS() {
                      </Button>
                   </form>
                </div>
-            </div>
+            </div>,
+            document.body
          )}
 
          {/* Receipt Print Modal */}
-         {receiptData && (
-            <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-               <div className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6 print:border-none print:shadow-none">
+         {receiptData && createPortal(
+            <div id="pos-receipt-modal" className="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 overflow-y-auto">
+               <style>{`
+                  @media print {
+                     body * {
+                        visibility: hidden !important;
+                     }
+                     #pos-receipt-print-area,
+                     #pos-receipt-print-area * {
+                        visibility: visible !important;
+                     }
+                     #pos-receipt-print-area {
+                        position: absolute !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: 100% !important;
+                        max-width: 420px !important;
+                        margin: 0 auto !important;
+                        padding: 16px !important;
+                        border: none !important;
+                        box-shadow: none !important;
+                        background: white !important;
+                        color: black !important;
+                     }
+                     .no-print,
+                     .no-print * {
+                        display: none !important;
+                        visibility: hidden !important;
+                     }
+                  }
+               `}</style>
+               <div id="pos-receipt-print-area" className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6 print:border-none print:shadow-none my-auto shadow-2xl">
                   <div className="text-center border-b border-black pb-4 space-y-1">
                      <h2 className="text-2xl font-black uppercase tracking-tighter">LUZZIO</h2>
                      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Official POS Sales Receipt</p>
@@ -676,7 +718,7 @@ export default function AdminPOS() {
                      Thank you for shopping at Luzzio Storefront!
                   </div>
 
-                  <div className="flex gap-4 print:hidden">
+                  <div className="flex gap-4 print:hidden no-print">
                      <Button type="button" onClick={() => window.print()} className="flex-1 bg-black text-white text-xs font-black uppercase">
                         <Printer size={14} className="mr-2" /> Print Receipt
                      </Button>
@@ -685,7 +727,8 @@ export default function AdminPOS() {
                      </Button>
                   </div>
                </div>
-            </div>
+            </div>,
+            document.body
          )}
       </div>
    );
