@@ -1,4 +1,12 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// Configure reliable DNS servers for Atlas SRV resolution on macOS/local dev
+try {
+   dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+   // Ignore in environments where setting DNS servers is restricted
+}
 
 // Disable buffering so DB operations fail immediately (not after 10s timeout)
 // when Mongoose is not connected. This gives instant clear errors.
