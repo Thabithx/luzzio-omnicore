@@ -270,31 +270,22 @@ exports.getSmartRestockSuggestions = async (req, res) => {
       });
 
       let targetProducts = [];
+      let statusMessage = '';
 
-      if (associatedProductIds.size > 0) {
-         // Priority: Products that have previously been supplied by this supplier
+      if (associatedProductIds.size === 0) {
+         // Supplier has 0 past POs: Do not fabricate random catalog products
+         statusMessage = `No purchase order history found for ${supplier.supplierName}. Create an initial Purchase Order to link products to this vendor.`;
+      } else {
+         // Products previously supplied by this vendor
          const supplierProducts = await Product.find({
             _id: { $in: Array.from(associatedProductIds) }
          }).select('name sku price stock lowStockThreshold images variants');
 
-         // Filter to low stock items first
-         const lowStock = supplierProducts.filter(p => (p.stock || 0) <= (p.lowStockThreshold || 10) || (p.stock || 0) <= 12);
-         // If some are low stock, suggest those; otherwise suggest their lowest-stock items
-         targetProducts = lowStock.length > 0 ? lowStock : supplierProducts.sort((a, b) => (a.stock || 0) - (b.stock || 0)).slice(0, 5);
-      } else {
-         // New supplier with 0 orders: Assign a distinct segment of products based on supplier index
-         // so different suppliers never show the same suggested products!
-         const allSuppliers = await Supplier.find({ status: 'active' }).sort({ createdAt: 1 });
-         const supplierIdx = Math.max(0, allSuppliers.findIndex(s => s._id.toString() === supplier._id.toString()));
-         const totalSuppliers = Math.max(1, allSuppliers.length);
-
-         const allProducts = await Product.find().sort({ createdAt: 1 }).select('name sku price stock lowStockThreshold images variants');
-         const chunkSize = Math.max(1, Math.ceil(allProducts.length / totalSuppliers));
-         const sliceStart = (supplierIdx % totalSuppliers) * chunkSize;
-         targetProducts = allProducts.slice(sliceStart, sliceStart + chunkSize);
+         // Filter strictly to products that are currently low on stock
+         targetProducts = supplierProducts.filter(p => (p.stock || 0) <= (p.lowStockThreshold || 10));
 
          if (targetProducts.length === 0) {
-            targetProducts = allProducts.slice(0, 5);
+            statusMessage = `All products supplied by ${supplier.supplierName} currently have safe stock levels. No replenishments required right now.`;
          }
       }
 
@@ -329,6 +320,8 @@ exports.getSmartRestockSuggestions = async (req, res) => {
                contactPerson: supplier.contactPerson,
                email: supplier.email
             },
+            hasHistory: associatedProductIds.size > 0,
+            statusMessage,
             suggestions,
             totalItems: suggestions.length,
             totalEstimatedCost
@@ -358,12 +351,23 @@ exports.generateSmartRestockPO = async (req, res) => {
          const productIds = new Set();
          pastPOs.forEach(po => po.items.forEach(it => { if (it.product) productIds.add(it.product.toString()); }));
 
-         let lowProducts = [];
-         if (productIds.size > 0) {
-            lowProducts = await Product.find({ _id: { $in: Array.from(productIds) }, stock: { $lte: 12 } });
+         if (productIds.size === 0) {
+            return res.status(400).json({
+               success: false,
+               message: `No purchase history found for ${supplier.supplierName}. Please create an initial Purchase Order manually.`
+            });
          }
+
+         const lowProducts = await Product.find({
+            _id: { $in: Array.from(productIds) },
+            stock: { $lte: 10 }
+         });
+
          if (lowProducts.length === 0) {
-            lowProducts = await Product.find().sort({ stock: 1 }).limit(5);
+            return res.status(400).json({
+               success: false,
+               message: `All products from ${supplier.supplierName} are currently at safe stock levels.`
+            });
          }
 
          itemsToOrder = lowProducts.map(p => ({

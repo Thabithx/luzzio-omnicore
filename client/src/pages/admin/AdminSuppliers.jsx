@@ -3,7 +3,7 @@
 // Create, edit, and manage supplier profiles for product procurement and purchase order generation.
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Trash2, Truck, RefreshCw, X, Phone, Mail, MapPin, Zap, Package, ExternalLink, CheckCircle } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Truck, RefreshCw, X, Phone, Mail, MapPin, Zap, Package, ExternalLink, CheckCircle, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -487,6 +487,39 @@ export default function AdminSuppliers() {
                            </Button>
                         </div>
                      </div>
+                  ) : (!restockData?.suggestions || restockData.suggestions.length === 0) ? (
+                     <div className="py-12 px-6 text-center space-y-6">
+                        <div className="w-16 h-16 bg-amber-50 border-2 border-amber-500 text-amber-600 flex items-center justify-center mx-auto">
+                           <AlertCircle size={32} />
+                        </div>
+                        <div className="space-y-2 max-w-md mx-auto">
+                           <h4 className="text-base font-black uppercase tracking-tight text-black">
+                              {restockData?.hasHistory 
+                                 ? 'All Products At Safe Stock Levels' 
+                                 : 'No Purchase History for This Supplier'}
+                           </h4>
+                           <p className="text-xs text-gray-600 font-mono leading-relaxed">
+                              {restockData?.statusMessage || (restockData?.hasHistory
+                                 ? `All products supplied by ${selectedSupplierForRestock?.supplierName} currently have healthy stock levels. No replenishments required.`
+                                 : `No previous purchase orders have been placed with ${selectedSupplierForRestock?.supplierName}. To use Smart Restock, first create a Purchase Order with the specific products they supply.`)}
+                           </p>
+                        </div>
+                        <div className="flex justify-center gap-4 pt-4 border-t border-black">
+                           <Link
+                              to="/admin/purchase-orders"
+                              className="bg-black text-white text-xs font-black uppercase px-6 py-3 flex items-center gap-2 hover:bg-gray-800"
+                           >
+                              <ExternalLink size={14} /> Go to Purchase Orders
+                           </Link>
+                           <Button
+                              type="button"
+                              onClick={() => setShowRestockModal(false)}
+                              className="bg-brand-grey border border-black text-black text-xs font-black uppercase px-6 py-3"
+                           >
+                              Close
+                           </Button>
+                        </div>
+                     </div>
                   ) : (
                      <div className="space-y-6">
                         <div className="p-4 bg-brand-grey border border-black text-xs font-mono flex justify-between items-center">
@@ -517,67 +550,59 @@ export default function AdminSuppliers() {
                                  </tr>
                               </thead>
                               <tbody className="divide-y divide-gray-200">
-                                 {(!restockData?.suggestions || restockData.suggestions.length === 0) ? (
-                                    <tr>
-                                       <td colSpan="7" className="p-8 text-center text-gray-400 uppercase font-black">
-                                          All Products Are Currently at Safe Stock Levels
+                                 {restockData.suggestions.map((item, idx) => (
+                                    <tr key={idx} className="hover:bg-gray-50">
+                                       <td className="p-3 font-sans font-black uppercase">
+                                          {item.name}
+                                          <span className="block text-[9px] font-mono text-gray-500">SKU: {item.sku}</span>
                                        </td>
-                                    </tr>
-                                 ) : (
-                                    restockData.suggestions.map((item, idx) => (
-                                       <tr key={idx} className="hover:bg-gray-50">
-                                          <td className="p-3 font-sans font-black uppercase">
-                                             {item.name}
-                                             <span className="block text-[9px] font-mono text-gray-500">SKU: {item.sku}</span>
-                                          </td>
-                                          <td className="p-3 text-center font-bold text-red-600 bg-red-50/50">
-                                             {item.currentStock} units
-                                          </td>
-                                          <td className="p-3 text-center text-gray-500">{item.threshold}</td>
-                                          <td className="p-3 text-center bg-amber-50">
-                                             <div className="flex items-center justify-center gap-1">
-                                                <button
-                                                   type="button"
-                                                   onClick={() => handleUpdateRestockQty(idx, item.suggestedQuantity - 1)}
-                                                   className="w-6 h-6 bg-white border border-black font-black text-xs flex items-center justify-center hover:bg-gray-100 select-none"
-                                                   title="Decrease Qty"
-                                                >
-                                                   -
-                                                </button>
-                                                <input
-                                                   type="number"
-                                                   min="1"
-                                                   value={item.suggestedQuantity}
-                                                   onChange={(e) => handleUpdateRestockQty(idx, e.target.value)}
-                                                   className="w-16 p-1 border border-black font-mono font-black text-center text-xs bg-white focus:outline-none focus:ring-1 focus:ring-black"
-                                                />
-                                                <button
-                                                   type="button"
-                                                   onClick={() => handleUpdateRestockQty(idx, item.suggestedQuantity + 1)}
-                                                   className="w-6 h-6 bg-white border border-black font-black text-xs flex items-center justify-center hover:bg-gray-100 select-none"
-                                                   title="Increase Qty"
-                                                >
-                                                   +
-                                                </button>
-                                             </div>
-                                          </td>
-                                          <td className="p-3 text-right">LKR {item.purchasePrice?.toLocaleString()}</td>
-                                          <td className="p-3 text-right font-black">
-                                             LKR {item.subtotal?.toLocaleString()}
-                                          </td>
-                                          <td className="p-3 text-center">
+                                       <td className="p-3 text-center font-bold text-red-600 bg-red-50/50">
+                                          {item.currentStock} units
+                                       </td>
+                                       <td className="p-3 text-center text-gray-500">{item.threshold}</td>
+                                       <td className="p-3 text-center bg-amber-50">
+                                          <div className="flex items-center justify-center gap-1">
                                              <button
                                                 type="button"
-                                                onClick={() => handleRemoveRestockItem(idx)}
-                                                className="text-gray-400 hover:text-red-600 p-1 transition-colors"
-                                                title="Remove Item from Restock PO"
+                                                onClick={() => handleUpdateRestockQty(idx, item.suggestedQuantity - 1)}
+                                                className="w-6 h-6 bg-white border border-black font-black text-xs flex items-center justify-center hover:bg-gray-100 select-none"
+                                                title="Decrease Qty"
                                              >
-                                                <Trash2 size={14} />
+                                                -
                                              </button>
-                                          </td>
-                                       </tr>
-                                    ))
-                                 )}
+                                             <input
+                                                type="number"
+                                                min="1"
+                                                value={item.suggestedQuantity}
+                                                onChange={(e) => handleUpdateRestockQty(idx, e.target.value)}
+                                                className="w-16 p-1 border border-black font-mono font-black text-center text-xs bg-white focus:outline-none focus:ring-1 focus:ring-black"
+                                             />
+                                             <button
+                                                type="button"
+                                                onClick={() => handleUpdateRestockQty(idx, item.suggestedQuantity + 1)}
+                                                className="w-6 h-6 bg-white border border-black font-black text-xs flex items-center justify-center hover:bg-gray-100 select-none"
+                                                title="Increase Qty"
+                                             >
+                                                +
+                                             </button>
+                                          </div>
+                                       </td>
+                                       <td className="p-3 text-right">LKR {item.purchasePrice?.toLocaleString()}</td>
+                                       <td className="p-3 text-right font-black">
+                                          LKR {item.subtotal?.toLocaleString()}
+                                       </td>
+                                       <td className="p-3 text-center">
+                                          <button
+                                             type="button"
+                                             onClick={() => handleRemoveRestockItem(idx)}
+                                             className="text-gray-400 hover:text-red-600 p-1 transition-colors"
+                                             title="Remove Item from Restock PO"
+                                          >
+                                             <Trash2 size={14} />
+                                          </button>
+                                       </td>
+                                    </tr>
+                                 ))}
                               </tbody>
                            </table>
                         </div>
