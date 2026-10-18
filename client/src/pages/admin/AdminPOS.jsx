@@ -515,7 +515,7 @@ export default function AdminPOS() {
                         ))}
                      </div>
 
-                     {/* DULARA: Quick-Cash Fast-Tender & Instant Change Calculator */}
+
                      {paymentMethod === 'CASH' && (
                         <div className="p-3 bg-brand-grey border border-black space-y-3">
                            <div className="flex justify-between items-center">

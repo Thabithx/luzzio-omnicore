@@ -45,6 +45,10 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
    if (!isOpen || !order) return null;
 
    const handleSaveAddress = () => {
+      if (!addressData.firstName?.trim() || !addressData.lastName?.trim() || !addressData.address?.trim() || !addressData.city?.trim() || !addressData.phone?.trim()) {
+         alert('Please complete all required shipping address fields (First Name, Last Name, Address, City, and Phone).');
+         return;
+      }
       onAddressUpdate(order._id, addressData);
       setEditingAddress(false);
    };
@@ -280,7 +284,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onTrackingUpdate, onAddress
    );
 };
 
-// THABITH SRIHARAN: Customer order management - supports both ONLINE and POS channels.
+
 const AdminOrders = () => {
    const [orders, setOrders] = useState([]);
    const [loading, setLoading] = useState(true);

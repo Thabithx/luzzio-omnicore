@@ -1,4 +1,4 @@
-// THABITH SRIHARAN
+
 // Purchase order & procurement controller.
 // Manages creation, item addition, purchase pricing, status tracking,
 // and automatic centralized stock intake upon receiving inventory.
@@ -249,7 +249,7 @@ exports.updatePOStatus = async (req, res) => {
    }
 };
 
-// THABITH: 1-Click Smart Restock PO Builder
+
 // @desc    Get low-stock products suitable for a supplier and calculate replenishment suggestions
 // @route   GET /api/purchase-orders/smart-restock/:supplierId
 // @access  Private (Admin / Warehouse)

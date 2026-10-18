@@ -1,4 +1,4 @@
-// DULARA
+
 // Centralized inventory transaction ledger.
 // Tracks all stock movement across ONLINE, POS, RESTOCK, RETURN, PO receiving, and manual adjustments.
 

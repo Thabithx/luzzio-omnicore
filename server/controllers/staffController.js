@@ -1,4 +1,4 @@
-// MAHATHIR
+// Staff Management & Operations
 // Staff user management, employee profiles, attendance (Clock In/Out), and shift scheduling.
 
 const User = require('../models/User');
@@ -382,7 +382,7 @@ exports.updateShift = async (req, res) => {
    }
 };
 
-// MAHATHIR: Staff Performance & Sales Attribution Leaderboard
+// Staff Performance & Sales Attribution Leaderboard
 // @desc    Get staff sales attribution and cashier performance leaderboard
 // @route   GET /api/staff/leaderboard
 // @access  Private (Admin / Sales)

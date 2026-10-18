@@ -175,7 +175,7 @@ exports.createOrder = async (req, res) => {
 
       console.log(`[ORDER PROTOCOL DISPATCHED] Order ${createdOrder._id} created with draft status. Awaiting payment.`);
 
-      // 5. If COD, process centralized inventory deduction and revenue logging (THABITH SRIHARAN)
+
       if (paymentMethod === 'COD' || paymentMethod === 'Cash on Delivery') {
          try {
             // Deduct stock via centralized inventory ledger (creates InventoryTransaction records)
@@ -419,7 +419,7 @@ exports.syncMyOrders = async (req, res) => {
 // @desc    Get all orders
 // @route   GET /api/orders
 // @access  Private/Admin
-// THABITH SRIHARAN: Customer order management logic.
+
 // Handles creation, updates, cancellation and order status transitions.
 // Supports both ONLINE and POS order channels.
 exports.getOrders = async (req, res) => {

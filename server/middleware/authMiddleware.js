@@ -83,7 +83,7 @@ const admin = (req, res, next) => {
    }
 };
 
-// BIHANDU: Role-based authorization middleware
+// Role-based authorization middleware
 const authorize = (...roles) => {
    return (req, res, next) => {
       if (!req.user) {

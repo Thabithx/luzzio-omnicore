@@ -1,4 +1,4 @@
-// DULARA
+
 // Centralized inventory management logic.
 // Ensures a single source of truth for stock quantities across Online and POS channels.
 // Every stock change creates an auditable InventoryTransaction record.
@@ -194,7 +194,7 @@ exports.getInventoryHistory = async (req, res) => {
    }
 };
 
-// DULARA: Stock Valuation & Inventory Movement Reports
+
 // @desc    Get Stock Valuation & Inventory Movement Report Summary
 // @route   GET /api/inventory/report
 // @access  Private (Admin / Warehouse)

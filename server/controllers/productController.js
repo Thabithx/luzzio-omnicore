@@ -149,7 +149,7 @@ exports.createProduct = async (req, res) => {
          if (Number(salePrice) >= Number(price)) return fail(res, 'Sale price must be less than the regular price');
       }
 
-      // DULARA: Auto-populate unique barcode and SKU when adding a new product
+
       if (!req.body.barcode || String(req.body.barcode).trim() === '') {
          let uniqueBarcode;
          let isUnique = false;
@@ -259,7 +259,7 @@ exports.createProductReview = async (req, res) => {
          return res.status(404).json({ success: false, message: 'Product not found' });
       }
 
-      // SRIHARAN: Automatic Verified Buyer Verification against paid orders
+
       let isVerifiedBuyer = false;
       try {
          const Order = require('../models/Order');
@@ -352,7 +352,7 @@ exports.deleteProductReview = async (req, res) => {
    }
 };
 
-// SRIHARAN: Review & Engagement Moderation System
+
 // @desc    Get all reviews across all products for Admin Moderation
 // @route   GET /api/products/reviews/all
 // @access  Private/Admin
@@ -436,7 +436,7 @@ exports.moderateProductReview = async (req, res) => {
    }
 };
 
-// SRIHARAN: Featured Review Spotlight for Storefront
+
 // @desc    Get pinned / featured customer reviews for home page showcase
 // @route   GET /api/products/reviews/featured
 // @access  Public

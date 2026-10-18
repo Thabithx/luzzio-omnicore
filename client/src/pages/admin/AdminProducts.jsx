@@ -147,7 +147,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
             variants: product.variants || (product.sizes || []).map(s => ({ size: s, stock: '' }))
          });
       } else {
-         // DULARA: Auto-populate unique barcode and SKU when adding a new product
+         
          setFormData({
             name: '',
             sku: generateUniqueSku(),
@@ -310,7 +310,7 @@ const ProductModal = ({ isOpen, onClose, product, onSave, categories }) => {
                      />
                   </div>
 
-                  {/* DULARA: SKU & Auto-Generated Unique Barcode */}
+
                   <div className="space-y-2">
                      <label className="text-small-brand text-gray-400">Stock Keeping Unit (SKU)</label>
                      <Input
@@ -946,7 +946,7 @@ const AdminProducts = () => {
             categories={categories}
          />
 
-         {/* DULARA: Barcode & Shelf Price Label Print Modal */}
+
          {barcodeModalProduct && (
             <Modal isOpen={!!barcodeModalProduct} onClose={() => setBarcodeModalProduct(null)}>
                <div className="bg-white border-2 border-black max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 space-y-6 my-auto shadow-2xl">
@@ -954,7 +954,7 @@ const AdminProducts = () => {
                      <div>
                         <div className="flex items-center gap-2">
                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Inventory Merchandising</span>
-                           <span className="text-[8px] font-bold uppercase bg-black text-white px-2 py-0.5">Dulara</span>
+                           
                         </div>
                         <h3 className="text-base font-black uppercase tracking-tight mt-1">Print Barcode & Price Labels</h3>
                         <div className="flex flex-wrap items-center gap-2 mt-1">

@@ -1,4 +1,4 @@
-// BIHANDU
+// Omnichannel Commerce Management
 // Returns & Exchanges management system replacing legacy Excel workflow.
 // Fully integrated with central order records and automated inventory restocking vs damaged item tracking.
 
@@ -46,7 +46,7 @@ export default function AdminReturns() {
    });
    const [creatingReturn, setCreatingReturn] = useState(false);
 
-   // BIHANDU: 1-Click Instant Size Swap State & Handlers
+   // 1-Click Instant Size Swap State & Handlers
    const [swapModal, setSwapModal] = useState({
       open: false,
       returnItem: null,
@@ -162,6 +162,11 @@ export default function AdminReturns() {
          showToast('Please select an order and a product item.', 'warning');
          return;
       }
+      const qty = parseInt(createForm.quantity, 10);
+      if (isNaN(qty) || qty < 1) {
+         showToast('Return quantity must be a positive number (at least 1).', 'warning');
+         return;
+      }
 
       setCreatingReturn(true);
       try {
@@ -172,7 +177,7 @@ export default function AdminReturns() {
             items: [{
                productId: createForm.productId,
                size: createForm.size,
-               quantity: Number(createForm.quantity) || 1,
+               quantity: qty,
                reason: createForm.reason,
                condition: createForm.condition
             }]
@@ -246,6 +251,14 @@ export default function AdminReturns() {
       e.preventDefault();
       if (!selectedReturn) return;
 
+      if (statusUpdate.refundAmount !== undefined && statusUpdate.refundAmount !== '') {
+         const refundVal = Number(statusUpdate.refundAmount);
+         if (isNaN(refundVal) || refundVal < 0) {
+            showToast('Refund amount cannot be negative.', 'warning');
+            return;
+         }
+      }
+
       setSubmitting(true);
       try {
          await api.put(`/returns/${selectedReturn._id}/status`, statusUpdate);
@@ -310,7 +323,7 @@ export default function AdminReturns() {
          {/* Tab Content 1: Returns Table */}
          {activeTab === 'list' && (
             <div className="space-y-4">
-               {/* Bihandu's Search & Live Filter Toolbar */}
+               {/* Search & Live Filter Toolbar */}
                <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white border border-black p-4">
                   <div className="relative flex-1">
                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -584,8 +597,10 @@ export default function AdminReturns() {
                         <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">Refund Amount (Rs.)</label>
                         <Input
                            type="number"
+                           min="0"
+                           step="0.01"
                            value={statusUpdate.refundAmount}
-                           onChange={(e) => setStatusUpdate({ ...statusUpdate, refundAmount: e.target.value })}
+                           onChange={(e) => setStatusUpdate({ ...statusUpdate, refundAmount: Math.max(0, parseFloat(e.target.value) || 0) })}
                         />
                      </div>
 
@@ -647,6 +662,43 @@ export default function AdminReturns() {
                            ))}
                         </select>
                      </div>
+
+                     {createForm.originalOrderId && (
+                        <div className="grid grid-cols-3 gap-3">
+                           <div className="col-span-2">
+                              <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">Item to Return</label>
+                              <select
+                                 value={`${createForm.productId}__${createForm.size}`}
+                                 onChange={(e) => {
+                                    const [prodId, sz] = e.target.value.split('__');
+                                    setCreateForm({
+                                       ...createForm,
+                                       productId: prodId,
+                                       size: sz
+                                    });
+                                 }}
+                                 required
+                                 className="w-full p-2.5 border border-black font-mono text-xs bg-white"
+                              >
+                                 {ordersList.find(o => o._id === createForm.originalOrderId)?.orderItems?.map((it, idx) => (
+                                    <option key={idx} value={`${it.product?._id || it.product}__${it.size || ''}`}>
+                                       {it.name || it.product?.name || 'Product'} (Size: {it.size || 'N/A'}, Qty: {it.quantity})
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+                           <div>
+                              <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">Quantity</label>
+                              <Input
+                                 type="number"
+                                 min="1"
+                                 value={createForm.quantity}
+                                 onChange={(e) => setCreateForm({ ...createForm, quantity: Math.max(1, parseInt(e.target.value, 10) || 1) })}
+                                 required
+                              />
+                           </div>
+                        </div>
+                     )}
 
                      <div className="grid grid-cols-2 gap-4">
                         <div>

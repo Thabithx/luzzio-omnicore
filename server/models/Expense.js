@@ -1,4 +1,4 @@
-// ADHAN
+
 // Business expense management schema.
 // Tracks operating overheads such as rent, salaries, utilities, and vendor payments.
 

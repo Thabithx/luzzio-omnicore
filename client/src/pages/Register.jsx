@@ -26,6 +26,19 @@ export function Register() {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+      if (!formData.firstName.trim()) {
+         showToast('Please enter your first name.', 'warning');
+         return setError('Please enter your first name.');
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email.trim())) {
+         showToast('Please enter a valid email address.', 'warning');
+         return setError('Please enter a valid email address.');
+      }
+      if (!formData.password || formData.password.length < 6) {
+         showToast('Password must be at least 6 characters long.', 'warning');
+         return setError('Password must be at least 6 characters long.');
+      }
       if (formData.password !== formData.confirmPassword) {
          showToast('Passwords do not match', 'warning');
          return setError('Passwords do not match');

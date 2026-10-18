@@ -33,7 +33,7 @@ exports.finalizeOrder = async (orderId, paymentId, provider) => {
          provider: provider
       };
 
-      // 2. CENTRALIZED STOCK DEDUCTION (DULARA / THABITH SRIHARAN)
+
       for (const item of order.orderItems) {
          try {
             await updateCentralInventory({
@@ -51,7 +51,7 @@ exports.finalizeOrder = async (orderId, paymentId, provider) => {
          }
       }
 
-      // 3. LOG REVENUE TRANSACTION (ADHAN)
+
       try {
          await RevenueTransaction.create({
             order: order._id,

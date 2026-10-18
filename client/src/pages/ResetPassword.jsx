@@ -18,6 +18,14 @@ export default function ResetPassword() {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+      if (!code.trim()) {
+         showToast('Please enter your verification code.', 'warning');
+         return setError('Please enter your verification code.');
+      }
+      if (!password || password.length < 6) {
+         showToast('New password must be at least 6 characters.', 'warning');
+         return setError('New password must be at least 6 characters.');
+      }
       if (password !== confirmPassword) {
          showToast('Passwords do not match.', 'warning');
          return setError('Password verification failed. Inputs do not match.');

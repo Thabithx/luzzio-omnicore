@@ -193,7 +193,7 @@ export default function AdminContact() {
             <div>
                <div className="flex items-center gap-2">
                   <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400">Customer Communication Hub</span>
-                  <span className="text-[8px] font-bold uppercase bg-white/20 text-white px-2 py-0.5">Sriharan</span>
+                  
                </div>
                <h1 className="text-2xl font-black uppercase tracking-tight mt-1">Customer Inquiries & Support</h1>
             </div>

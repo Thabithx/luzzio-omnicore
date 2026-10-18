@@ -1,4 +1,4 @@
-// THABITH SRIHARAN
+
 // Supplier / Vendor management schema for procurement and purchase orders.
 
 const mongoose = require('mongoose');

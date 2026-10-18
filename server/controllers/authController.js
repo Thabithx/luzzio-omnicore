@@ -71,7 +71,7 @@ exports.login = async (req, res) => {
       const { email, password, guestEmail } = req.body;
       const normalizedEmail = (email || '').trim().toLowerCase();
 
-      // Local Dev Catalog Fallback Login Bypass (THABITH SRIHARAN)
+
       if (isDevStore()) {
          if (normalizedEmail === 'admin@luzzio.com' && password === 'password123') {
             console.log('[DEV LOGIN] Bypassing MongoDB authentication via mock admin user credentials.');

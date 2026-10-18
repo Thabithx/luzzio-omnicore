@@ -31,9 +31,9 @@ async function connectDB() {
          serverSelectionTimeoutMS: 10000,
          connectTimeoutMS: 10000,
       });
-      console.log('✅  Connected to MongoDB successfully');
+      console.log(' Connected to MongoDB successfully');
 
-      // Auto-seed default admin user if not exists (THABITH SRIHARAN)
+
       const User = require('../models/User');
       const adminExists = await User.findOne({ email: 'admin@luzzio.com' });
       if (!adminExists) {

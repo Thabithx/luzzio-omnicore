@@ -46,6 +46,14 @@ export function Contact() {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+      if (!formData.subject || formData.subject.trim().length < 3) {
+         setStatus({ type: 'error', message: 'Subject must be at least 3 characters long.' });
+         return;
+      }
+      if (!formData.message || formData.message.trim().length < 5) {
+         setStatus({ type: 'error', message: 'Message must be at least 5 characters long.' });
+         return;
+      }
       setLoading(true);
       setStatus({ type: '', message: '' });
 

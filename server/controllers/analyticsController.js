@@ -40,7 +40,7 @@ exports.logVisit = async (req, res) => {
    }
 };
 
-// MRM THABITH: Order & Supplier Performance Analytics Report
+
 // @desc    Get order velocity and supplier fulfillment performance
 // @route   GET /api/analytics/order-supplier-report
 // @access  Private (Admin / Warehouse / Sales)
@@ -170,7 +170,7 @@ exports.getOrderSupplierReport = async (req, res) => {
    }
 };
 
-// SRIHARAN: User Activity & Review/FAQ Engagement Reports
+
 // @desc    Get customer activity, review moderation, and FAQ metrics
 // @route   GET /api/analytics/user-review-faq-report
 // @access  Private (Admin / Sales)
@@ -263,7 +263,7 @@ exports.getUserReviewFAQReport = async (req, res) => {
    }
 };
 
-// MAHATHIR: Consolidated Executive Analytics Report
+// Consolidated Executive Analytics Report
 // @desc    Consolidated Multi-Module Executive Report across Sales, Margins, Inventory, Returns, and Staff
 // @route   GET /api/analytics/consolidated-report
 // @access  Private (Admin)

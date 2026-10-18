@@ -118,17 +118,24 @@ const AdminCategories = () => {
    }, []);
 
    const handleSave = async (formData) => {
+      if (!formData.name || formData.name.trim().length < 2) {
+         showToast('Category name must be at least 2 characters long.', 'warning');
+         return;
+      }
       try {
          if (editingCategory) {
             await api.put(`/categories/${editingCategory._id}`, formData);
+            showToast('Category updated successfully.', 'success');
          } else {
             await api.post('/categories', formData);
+            showToast('Category created successfully.', 'success');
          }
          setIsModalOpen(false);
          setEditingCategory(null);
          fetchCategories();
       } catch (err) {
          console.error('Classification synchronization failed:', err);
+         showToast(err.response?.data?.message || 'Failed to save category.', 'error');
       }
    };
 

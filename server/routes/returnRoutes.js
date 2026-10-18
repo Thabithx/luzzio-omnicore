@@ -1,4 +1,4 @@
-// BIHANDU: Return & Exchange Routes
+// Omnichannel Commerce Management: Return & Exchange Routes
 
 const express = require('express');
 const router = express.Router();

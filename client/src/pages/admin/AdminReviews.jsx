@@ -1,4 +1,4 @@
-// K. SRIHARAN
+
 // Product Review & Engagement Moderation System
 // Moderate, approve, respond to, and delete customer product reviews.
 
@@ -79,7 +79,7 @@ export default function AdminReviews() {
       }
    };
 
-   // SRIHARAN: Pin / Spotlight Review to Homepage
+   // Pin / Spotlight Review to Homepage
    const handleToggleFeatured = async (review) => {
       try {
          const newFeaturedState = !review.isFeatured;
@@ -113,10 +113,14 @@ export default function AdminReviews() {
    const handleSaveReply = async (e) => {
       e.preventDefault();
       if (!replyModal.review) return;
+      if (!replyModal.text || !replyModal.text.trim()) {
+         showToast('Response message cannot be blank.', 'warning');
+         return;
+      }
       setSubmitting(true);
       try {
          await api.put(`/products/${replyModal.review.productId}/reviews/${replyModal.review.reviewId}/moderate`, {
-            adminResponse: replyModal.text
+            adminResponse: replyModal.text.trim()
          });
          setReplyModal({ open: false, review: null, text: '' });
          showToast('Official response published successfully.', 'success');

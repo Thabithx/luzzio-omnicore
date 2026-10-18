@@ -17,6 +17,16 @@ export function Login() {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email.trim())) {
+         showToast('Please enter a valid email address.', 'warning');
+         return setError('Please enter a valid email address.');
+      }
+      if (!password) {
+         showToast('Please enter your password.', 'warning');
+         return setError('Please enter your password.');
+      }
+
       setLoading(true);
       setError('');
 

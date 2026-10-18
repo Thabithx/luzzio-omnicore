@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
       enum: ['user', 'admin', 'sales', 'warehouse', 'customer'],
       default: 'user'
    },
-   // BIHANDU / MAHATHIR: Staff Profile & RBAC extensions
+   // Staff Profile & RBAC extensions
    employeeId: {
       type: String,
       unique: true,

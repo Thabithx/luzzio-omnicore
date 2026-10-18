@@ -1,4 +1,4 @@
-// THABITH SRIHARAN
+
 // Supplier / Vendor procurement management interface.
 // Create, edit, and manage supplier profiles for product procurement and purchase order generation.
 
@@ -35,7 +35,7 @@ export default function AdminSuppliers() {
 
    const [supplierMetrics, setSupplierMetrics] = useState({});
 
-   // THABITH: 1-Click Smart Restock PO Builder State
+   // 1-Click Smart Restock
    const [showRestockModal, setShowRestockModal] = useState(false);
    const [restockLoading, setRestockLoading] = useState(false);
    const [restockGenerating, setRestockGenerating] = useState(false);
@@ -143,7 +143,7 @@ export default function AdminSuppliers() {
       }
    };
 
-   // THABITH: 1-Click Smart Restock Handlers
+   // 1-Click Smart Restock
    const handleOpenSmartRestock = async (supplier) => {
       setSelectedSupplierForRestock(supplier);
       setCreatedPO(null);
@@ -281,7 +281,7 @@ export default function AdminSuppliers() {
                            </p>
                         )}
 
-                        {/* THABITH: Supplier Reliability Scorecard */}
+                        {/* Supplier Reliability Scorecard */}
                         {supplierMetrics[s._id] && (
                            <div className="bg-brand-grey p-3 border border-black space-y-1.5 font-mono text-[9px]">
                               <div className="flex justify-between items-center">
@@ -433,7 +433,7 @@ export default function AdminSuppliers() {
             </Modal>
          )}
 
-         {/* THABITH: 1-Click Smart Restock Modal */}
+         {/* 1-Click Smart Restock Modal */}
          {showRestockModal && (
             <Modal isOpen={showRestockModal} onClose={() => setShowRestockModal(false)}>
                <div className="bg-white border-2 border-black p-8 max-w-2xl w-full space-y-6 max-h-[90vh] overflow-y-auto my-auto shadow-2xl">

@@ -1,4 +1,4 @@
-// BIHANDU
+// Omnichannel Commerce Management
 // Return and Exchange workflow schema linked to original orders.
 // Handles status transitions and restock vs damaged inventory logic.
 

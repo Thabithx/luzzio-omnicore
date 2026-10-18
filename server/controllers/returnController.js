@@ -1,4 +1,4 @@
-// BIHANDU
+// Omnichannel Commerce Management
 // Return & Exchange management system replacing legacy Excel-based workflow.
 // Fully linked to original order records with automated stock restock / damage audit handling.
 
@@ -128,7 +128,13 @@ exports.processReturnStatus = async (req, res) => {
       const previousStatus = returnReq.status;
       returnReq.status = status;
       returnReq.processedBy = req.user ? req.user._id : null;
-      if (refundAmount !== undefined) returnReq.refundAmount = Number(refundAmount);
+      if (refundAmount !== undefined && refundAmount !== null && refundAmount !== '') {
+         const parsedRefund = Number(refundAmount);
+         if (isNaN(parsedRefund) || parsedRefund < 0) {
+            return res.status(400).json({ success: false, message: 'Refund amount cannot be negative' });
+         }
+         returnReq.refundAmount = parsedRefund;
+      }
       if (notes) returnReq.notes = `${returnReq.notes}\n[Update Note]: ${notes}`.trim();
 
       // If condition overrides were provided during inspection
@@ -205,7 +211,7 @@ exports.processReturnStatus = async (req, res) => {
    }
 };
 
-// BIHANDU: 1-Click Instant Size Swap Exchange Flow
+// 1-Click Instant Size Swap Exchange Flow
 // @desc    Execute immediate size exchange with inventory synchronization
 // @route   POST /api/returns/:id/swap-size
 // @access  Private (Admin / Warehouse / Sales)

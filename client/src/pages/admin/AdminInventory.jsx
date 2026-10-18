@@ -34,7 +34,7 @@ export default function AdminInventory() {
    });
    const [submittingAdjust, setSubmittingAdjust] = useState(false);
 
-   // DULARA: Barcode & Shelf Label Printing State
+   
    const [showBarcodeModal, setShowBarcodeModal] = useState(false);
    const [barcodeProduct, setBarcodeProduct] = useState(null);
    const [barcodeSize, setBarcodeSize] = useState('ALL');
@@ -142,6 +142,16 @@ export default function AdminInventory() {
          qty = -Math.abs(qty);
       } else if (adjustData.transactionType === 'RESTOCK') {
          qty = Math.abs(qty);
+      }
+
+      if (qty < 0) {
+         const currentStock = (selectedProduct.variants && selectedProduct.variants.length > 0)
+            ? (selectedProduct.variants.find(v => v.size === adjustData.variantSize)?.stock || 0)
+            : (selectedProduct.stock || 0);
+         if (Math.abs(qty) > currentStock) {
+            showToast(`Cannot deduct ${Math.abs(qty)} units. Current available stock is only ${currentStock}.`, 'warning');
+            return;
+         }
       }
 
       setSubmittingAdjust(true);
@@ -561,7 +571,7 @@ export default function AdminInventory() {
             </Modal>
          )}
 
-         {/* DULARA: Printable Barcode & Shelf Price Label Modal */}
+
          {showBarcodeModal && barcodeProduct && (
             <Modal isOpen={Boolean(showBarcodeModal && barcodeProduct)} onClose={() => setShowBarcodeModal(false)}>
                <div className="bg-white border-2 border-black max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 space-y-6 my-auto shadow-2xl">
@@ -569,7 +579,7 @@ export default function AdminInventory() {
                      <div>
                         <div className="flex items-center gap-2">
                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Shelf & Inventory Merchandising</span>
-                           <span className="text-[8px] font-bold uppercase bg-black text-white px-2 py-0.5">Dulara</span>
+                           
                         </div>
                         <h3 className="text-base font-black uppercase tracking-tight mt-1">Print Barcode & Price Labels</h3>
                         <div className="flex flex-wrap items-center gap-2 mt-1">

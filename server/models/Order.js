@@ -77,7 +77,7 @@ const orderSchema = new mongoose.Schema({
       required: true,
       default: false
    },
-   // THABITH SRIHARAN: Omnicommerce channel and order tracking
+
    channel: {
       type: String,
       enum: ['ONLINE', 'POS'],

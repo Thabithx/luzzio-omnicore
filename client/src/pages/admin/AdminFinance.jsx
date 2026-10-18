@@ -1,4 +1,4 @@
-// ADHAN
+
 // Financial control center for revenue breakdown, expense tracking, and estimated net profit metrics.
 // Consolidated accounting across both ONLINE and POS sales channels.
 
@@ -150,6 +150,10 @@ export default function AdminFinance() {
       }
       if (drawerForm.actualClosingCash === '' || isNaN(Number(drawerForm.actualClosingCash))) {
          showToast('Please enter actual physical cash counted.', 'warning');
+         return;
+      }
+      if (Number(drawerForm.openingFloat) < 0 || Number(drawerForm.actualClosingCash) < 0 || Number(drawerForm.cashSales || 0) < 0 || Number(drawerForm.cashPayouts || 0) < 0) {
+         showToast('Cash drawer amounts cannot be negative numbers.', 'warning');
          return;
       }
 

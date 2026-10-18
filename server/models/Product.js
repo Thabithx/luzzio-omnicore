@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema({
       maxlength: [100, 'Name can not be more than 100 characters']
    },
    slug: String,
-   // DULARA: Centralized inventory identification
+
    sku: {
       type: String,
       trim: true,

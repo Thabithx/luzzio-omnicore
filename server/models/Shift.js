@@ -1,4 +1,4 @@
-// MAHATHIR
+// Staff Operations
 // Employee shift scheduling schema.
 // Defines staff working schedules and roles.
 

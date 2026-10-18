@@ -1,4 +1,4 @@
-// THABITH SRIHARAN
+
 // Purchase order generation, procurement tracking, and stock intake receiving interface.
 // Receiving stock automatically increases central inventory and updates accounting ledgers.
 
@@ -172,6 +172,12 @@ export default function AdminPurchaseOrders() {
    const handleReceiveSubmit = async (e) => {
       e.preventDefault();
       if (!selectedPO) return;
+
+      const hasInvalid = receiveItems.some(i => isNaN(Number(i.quantityReceived)) || Number(i.quantityReceived) < 0);
+      if (hasInvalid) {
+         showToast('Received quantities cannot be negative numbers.', 'warning');
+         return;
+      }
 
       setSubmitting(true);
       try {
@@ -353,13 +359,13 @@ export default function AdminPurchaseOrders() {
                         </div>
                      </div>
 
-                     {/* THABITH: Supplier Breakdown Table & Reliability Scorecard */}
+
                      <div className="bg-white border-2 border-black p-6 space-y-4">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-black pb-3">
                            <div>
                               <div className="flex items-center gap-2">
                                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Procurement Intelligence</span>
-                                 <span className="text-[8px] font-bold uppercase bg-black text-white px-2 py-0.5">Thabith</span>
+                                 
                               </div>
                               <h4 className="text-sm font-black uppercase tracking-wider mt-0.5">Supplier Reliability Scorecard & Spend Matrix</h4>
                            </div>

@@ -1,4 +1,4 @@
-// MAHATHIR
+// Staff Operations
 // Employee attendance schema.
 // Tracks daily clock in / clock out logs and shift durations.
 

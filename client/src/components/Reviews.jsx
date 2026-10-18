@@ -78,6 +78,25 @@ export function Reviews({ productId, reviews = [], onReviewAdded, onReviewDelete
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+      const numRating = Number(formData.rating);
+      if (isNaN(numRating) || numRating < 1 || numRating > 5) {
+         showToast('Please select a rating between 1 and 5 stars.', 'warning');
+         return;
+      }
+      if (!formData.comment || formData.comment.trim().length < 3) {
+         showToast('Please provide a review comment (minimum 3 characters).', 'warning');
+         return;
+      }
+      if (!formData.name || formData.name.trim().length < 2) {
+         showToast('Please provide your name (minimum 2 characters).', 'warning');
+         return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!formData.email || !emailRegex.test(formData.email.trim())) {
+         showToast('Please provide a valid email address.', 'warning');
+         return;
+      }
+
       setSubmitting(true);
       try {
          const res = await api.post(`/products/${productId}/reviews`, formData);

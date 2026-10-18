@@ -35,6 +35,16 @@ const AdminSettings = () => {
 
    const handleSave = async (e) => {
       e.preventDefault();
+      if (settings.timerEnabled) {
+         if (!settings.timerEndTime) {
+            setMessage({ type: 'error', text: 'Please specify an end timestamp for the timer protocol.' });
+            return;
+         }
+         if (new Date(settings.timerEndTime).getTime() <= Date.now()) {
+            setMessage({ type: 'error', text: 'Timer end timestamp must be set in the future.' });
+            return;
+         }
+      }
       setSaving(true);
       setMessage({ type: '', text: '' });
       try {

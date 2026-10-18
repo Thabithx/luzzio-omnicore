@@ -13,6 +13,7 @@ import { cn } from '../utils/cn';
 import { KokoWidget } from '../components/ui/KokoWidget';
 import { SearchableSelect } from '../components/ui/SearchableSelect';
 import { useToast } from '../components/ui/Toast';
+import { firstError, isBlank, isEmail, isPhone } from '../utils/formValidate';
 
 
 export function Checkout() {
@@ -68,6 +69,29 @@ export function Checkout() {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+
+      if (!cart || cart.length === 0) {
+         showToast('Your shopping bag is empty.', 'warning');
+         return;
+      }
+
+      const error = firstError([
+         { condition: isBlank(formData.email), message: 'Email address is required.' },
+         { condition: !isEmail(formData.email), message: 'Please enter a valid email address.' },
+         { condition: isBlank(formData.firstName), message: 'First name is required.' },
+         { condition: isBlank(formData.lastName), message: 'Last name is required.' },
+         { condition: isBlank(formData.address), message: 'Delivery address is required.' },
+         { condition: isBlank(formData.city), message: 'Please select a delivery city/location.' },
+         { condition: isBlank(formData.phone), message: 'Contact phone number is required.' },
+         { condition: !isPhone(formData.phone), message: 'Please enter a valid phone number (e.g. 0771234567).' },
+         { condition: formData.phone2 && !isPhone(formData.phone2), message: 'Alternative phone number is invalid.' },
+      ]);
+
+      if (error) {
+         showToast(error, 'warning');
+         return;
+      }
+
       setLoading(true);
       try {
          const orderItems = cart.map(item => ({

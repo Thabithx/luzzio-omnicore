@@ -416,7 +416,7 @@ export default function AdminStaff() {
             </div>
          )}
 
-         {/* Tab 4: Sales Leaderboard (Mahathir's Feature) */}
+         {/* Tab 4: Sales Leaderboard */}
          {activeTab === 'leaderboard' && (
             <div className="space-y-8">
                {/* KPI Summary Banner */}

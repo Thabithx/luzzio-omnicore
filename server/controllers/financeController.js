@@ -1,4 +1,4 @@
-// ADHAN
+
 // Centralized financial management controller.
 // Tracks Online vs POS revenue streams, business expense records, and computes net profit metrics.
 

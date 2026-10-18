@@ -16,6 +16,11 @@ export default function ForgotPassword() {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email.trim())) {
+         showToast('Please enter a valid email address.', 'warning');
+         return setError('Please enter a valid email address.');
+      }
       setLoading(true);
       setError('');
       setMessage('');

@@ -1,4 +1,4 @@
-// THABITH SRIHARAN
+
 // Purchase order management schema for procurement, vendor orders, and stock intake.
 
 const mongoose = require('mongoose');

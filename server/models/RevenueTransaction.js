@@ -1,4 +1,4 @@
-// ADHAN
+
 // Centralized revenue transaction schema.
 // Consolidates both ONLINE and POS sales channels into unified financial accounting.
 

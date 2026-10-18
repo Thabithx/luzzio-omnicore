@@ -386,7 +386,7 @@ export function Home() {
             </section>
          )}
 
-         {/* SRIHARAN: FEATURED CUSTOMER REVIEWS & VERIFIED BUYER SPOTLIGHT */}
+
          {featuredReviews.length > 0 && (
             <section className="bg-white border-t border-b border-black py-16 md:py-20 px-4 md:px-10">
                <div className="max-w-6xl mx-auto space-y-12">
