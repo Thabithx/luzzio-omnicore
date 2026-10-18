@@ -260,6 +260,7 @@ exports.getSmartRestockSuggestions = async (req, res) => {
          return res.status(404).json({ success: false, message: 'Supplier not found' });
       }
 
+      // 1. Check past purchase orders for this supplier
       const pastPOs = await PurchaseOrder.find({ supplier: supplier._id });
       const associatedProductIds = new Set();
       pastPOs.forEach(po => {
@@ -268,31 +269,36 @@ exports.getSmartRestockSuggestions = async (req, res) => {
          });
       });
 
-      let lowStockProducts = [];
+      let targetProducts = [];
+
       if (associatedProductIds.size > 0) {
-         lowStockProducts = await Product.find({
-            _id: { $in: Array.from(associatedProductIds) },
-            $or: [
-               { stock: { $lte: 10 } },
-               { $expr: { $lte: ['$stock', '$lowStockThreshold'] } }
-            ]
+         // Priority: Products that have previously been supplied by this supplier
+         const supplierProducts = await Product.find({
+            _id: { $in: Array.from(associatedProductIds) }
          }).select('name sku price stock lowStockThreshold images variants');
+
+         // Filter to low stock items first
+         const lowStock = supplierProducts.filter(p => (p.stock || 0) <= (p.lowStockThreshold || 10) || (p.stock || 0) <= 12);
+         // If some are low stock, suggest those; otherwise suggest their lowest-stock items
+         targetProducts = lowStock.length > 0 ? lowStock : supplierProducts.sort((a, b) => (a.stock || 0) - (b.stock || 0)).slice(0, 5);
+      } else {
+         // New supplier with 0 orders: Assign a distinct segment of products based on supplier index
+         // so different suppliers never show the same suggested products!
+         const allSuppliers = await Supplier.find({ status: 'active' }).sort({ createdAt: 1 });
+         const supplierIdx = Math.max(0, allSuppliers.findIndex(s => s._id.toString() === supplier._id.toString()));
+         const totalSuppliers = Math.max(1, allSuppliers.length);
+
+         const allProducts = await Product.find().sort({ createdAt: 1 }).select('name sku price stock lowStockThreshold images variants');
+         const chunkSize = Math.max(1, Math.ceil(allProducts.length / totalSuppliers));
+         const sliceStart = (supplierIdx % totalSuppliers) * chunkSize;
+         targetProducts = allProducts.slice(sliceStart, sliceStart + chunkSize);
+
+         if (targetProducts.length === 0) {
+            targetProducts = allProducts.slice(0, 5);
+         }
       }
 
-      if (!lowStockProducts || lowStockProducts.length === 0) {
-         lowStockProducts = await Product.find({
-            $or: [
-               { stock: { $lte: 8 } },
-               { $expr: { $lte: ['$stock', '$lowStockThreshold'] } }
-            ]
-         }).limit(8).select('name sku price stock lowStockThreshold images variants');
-      }
-
-      if (!lowStockProducts || lowStockProducts.length === 0) {
-         lowStockProducts = await Product.find().sort({ stock: 1 }).limit(5).select('name sku price stock lowStockThreshold images variants');
-      }
-
-      const suggestions = (lowStockProducts || []).map(p => {
+      const suggestions = (targetProducts || []).map(p => {
          const threshold = p.lowStockThreshold || 5;
          const currentStock = p.stock || 0;
          const targetStock = Math.max(20, threshold * 3);

@@ -147,6 +147,7 @@ export default function AdminSuppliers() {
    const handleOpenSmartRestock = async (supplier) => {
       setSelectedSupplierForRestock(supplier);
       setCreatedPO(null);
+      setRestockData(null);
       setShowRestockModal(true);
       setRestockLoading(true);
       try {
