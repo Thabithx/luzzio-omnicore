@@ -132,10 +132,35 @@ export default function AdminPOS() {
 
    // Calculations
    const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
-   const discountAmount = Number(discount) || 0;
+   const discountAmount = Math.min(subtotal, Math.max(0, Number(discount) || 0));
    const taxAmount = (subtotal - discountAmount) * ((Number(taxRate) || 0) / 100);
    const grandTotal = Math.max(0, subtotal - discountAmount + Math.max(0, taxAmount));
    const changeDue = Math.max(0, (Number(cashTendered) || 0) - grandTotal);
+
+   // Clamp discount if cart items decrease below current discount
+   useEffect(() => {
+      if (Number(discount) > subtotal) {
+         setDiscount(subtotal);
+      }
+   }, [subtotal]);
+
+   const handleDiscountChange = (val) => {
+      if (val === '') {
+         setDiscount('');
+         return;
+      }
+      const num = Number(val);
+      if (isNaN(num) || num < 0) {
+         setDiscount(0);
+         return;
+      }
+      if (num > subtotal) {
+         showToast(`Discount cannot exceed subtotal (Rs. ${subtotal.toLocaleString()}). Clamped to max.`, 'warning');
+         setDiscount(subtotal);
+         return;
+      }
+      setDiscount(num);
+   };
 
    // Customer search
    const handleSearchCustomer = async () => {
@@ -165,6 +190,11 @@ export default function AdminPOS() {
    const handleCheckout = async () => {
       if (cart.length === 0) {
          showToast('Cart is empty. Add products before checking out.', 'warning');
+         return;
+      }
+
+      if (discountAmount > subtotal) {
+         showToast(`Discount (Rs. ${discountAmount.toLocaleString()}) cannot exceed subtotal (Rs. ${subtotal.toLocaleString()}).`, 'warning');
          return;
       }
 
@@ -451,9 +481,11 @@ export default function AdminPOS() {
                         <input
                            type="number"
                            min="0"
+                           max={subtotal}
                            value={discount}
-                           onChange={(e) => setDiscount(e.target.value)}
-                           className="w-28 p-1.5 border border-black font-mono text-right text-xs"
+                           onChange={(e) => handleDiscountChange(e.target.value)}
+                           placeholder="0.00"
+                           className="w-28 p-1.5 border border-black font-mono text-right text-xs bg-white font-bold"
                         />
                      </div>
 

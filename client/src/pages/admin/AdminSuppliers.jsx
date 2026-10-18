@@ -161,6 +161,34 @@ export default function AdminSuppliers() {
       }
    };
 
+   const handleUpdateRestockQty = (index, newQty) => {
+      const validQty = Math.max(1, parseInt(newQty) || 1);
+      const updatedSuggestions = [...restockData.suggestions];
+      const item = updatedSuggestions[index];
+      if (!item) return;
+
+      item.suggestedQuantity = validQty;
+      item.subtotal = validQty * (item.purchasePrice || 0);
+
+      const totalEstimatedCost = updatedSuggestions.reduce((acc, it) => acc + (it.subtotal || 0), 0);
+      setRestockData({
+         ...restockData,
+         suggestions: updatedSuggestions,
+         totalEstimatedCost
+      });
+   };
+
+   const handleRemoveRestockItem = (index) => {
+      const updatedSuggestions = restockData.suggestions.filter((_, idx) => idx !== index);
+      const totalEstimatedCost = updatedSuggestions.reduce((acc, it) => acc + (it.subtotal || 0), 0);
+      setRestockData({
+         ...restockData,
+         suggestions: updatedSuggestions,
+         totalItems: updatedSuggestions.length,
+         totalEstimatedCost
+      });
+   };
+
    const handleConfirmSmartRestock = async () => {
       if (!selectedSupplierForRestock || !restockData?.suggestions?.length) return;
       setRestockGenerating(true);
@@ -281,26 +309,29 @@ export default function AdminSuppliers() {
                         )}
                      </div>
 
-                     <div className="pt-4 border-t border-black flex gap-2">
+                     <div className="pt-4 border-t border-black space-y-2">
                         <Button
                            onClick={() => handleOpenSmartRestock(s)}
-                           className="bg-amber-400 hover:bg-amber-500 text-black border border-black text-[9px] font-black uppercase py-2 px-3 flex items-center justify-center gap-1.5 transition-all shadow-sm"
-                           title="1-Click Smart Restock PO"
+                           className="w-full bg-amber-400 hover:bg-amber-500 text-black border border-black text-[10px] font-black uppercase py-2 flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                           title="1-Click Smart Restock PO Builder"
                         >
-                           <Zap size={12} className="fill-black text-black" /> Restock PO
+                           <Zap size={13} className="fill-black text-black" /> 1-Click Smart Restock PO
                         </Button>
-                        <Button
-                           onClick={() => openModal(s)}
-                           className="flex-1 bg-brand-grey border border-black text-black text-[9px] font-black uppercase py-2"
-                        >
-                           <Edit2 size={12} className="mr-1 inline" /> Edit
-                        </Button>
-                        <Button
-                           onClick={() => handleDelete(s._id)}
-                           className="bg-red-50 text-red-600 border border-red-600 hover:bg-red-600 hover:text-white text-[9px] font-black uppercase px-3 py-2"
-                        >
-                           <Trash2 size={12} />
-                        </Button>
+                        <div className="flex gap-2">
+                           <Button
+                              onClick={() => openModal(s)}
+                              className="flex-1 bg-brand-grey border border-black text-black text-[9px] font-black uppercase py-2 flex items-center justify-center gap-1 hover:bg-gray-200"
+                           >
+                              <Edit2 size={12} /> Edit Profile
+                           </Button>
+                           <Button
+                              onClick={() => handleDelete(s._id)}
+                              className="bg-red-50 text-red-600 border border-red-600 hover:bg-red-600 hover:text-white text-[9px] font-black uppercase px-3 py-2 flex items-center justify-center transition-all"
+                              title="Delete Supplier"
+                           >
+                              <Trash2 size={12} />
+                           </Button>
+                        </div>
                      </div>
                   </div>
                ))}
@@ -478,15 +509,16 @@ export default function AdminSuppliers() {
                                     <th className="p-3">Product</th>
                                     <th className="p-3 text-center">Current Stock</th>
                                     <th className="p-3 text-center">Threshold</th>
-                                    <th className="p-3 text-center">Suggested PO Qty</th>
+                                    <th className="p-3 text-center">Restock Qty (Editable)</th>
                                     <th className="p-3 text-right">Est. Unit Cost</th>
                                     <th className="p-3 text-right">Subtotal</th>
+                                    <th className="p-3 text-center">Action</th>
                                  </tr>
                               </thead>
                               <tbody className="divide-y divide-gray-200">
                                  {(!restockData?.suggestions || restockData.suggestions.length === 0) ? (
                                     <tr>
-                                       <td colSpan="6" className="p-8 text-center text-gray-400 uppercase font-black">
+                                       <td colSpan="7" className="p-8 text-center text-gray-400 uppercase font-black">
                                           All Products Are Currently at Safe Stock Levels
                                        </td>
                                     </tr>
@@ -501,12 +533,46 @@ export default function AdminSuppliers() {
                                              {item.currentStock} units
                                           </td>
                                           <td className="p-3 text-center text-gray-500">{item.threshold}</td>
-                                          <td className="p-3 text-center font-black bg-amber-50">
-                                             +{item.suggestedQuantity}
+                                          <td className="p-3 text-center bg-amber-50">
+                                             <div className="flex items-center justify-center gap-1">
+                                                <button
+                                                   type="button"
+                                                   onClick={() => handleUpdateRestockQty(idx, item.suggestedQuantity - 1)}
+                                                   className="w-6 h-6 bg-white border border-black font-black text-xs flex items-center justify-center hover:bg-gray-100 select-none"
+                                                   title="Decrease Qty"
+                                                >
+                                                   -
+                                                </button>
+                                                <input
+                                                   type="number"
+                                                   min="1"
+                                                   value={item.suggestedQuantity}
+                                                   onChange={(e) => handleUpdateRestockQty(idx, e.target.value)}
+                                                   className="w-16 p-1 border border-black font-mono font-black text-center text-xs bg-white focus:outline-none focus:ring-1 focus:ring-black"
+                                                />
+                                                <button
+                                                   type="button"
+                                                   onClick={() => handleUpdateRestockQty(idx, item.suggestedQuantity + 1)}
+                                                   className="w-6 h-6 bg-white border border-black font-black text-xs flex items-center justify-center hover:bg-gray-100 select-none"
+                                                   title="Increase Qty"
+                                                >
+                                                   +
+                                                </button>
+                                             </div>
                                           </td>
                                           <td className="p-3 text-right">LKR {item.purchasePrice?.toLocaleString()}</td>
                                           <td className="p-3 text-right font-black">
                                              LKR {item.subtotal?.toLocaleString()}
+                                          </td>
+                                          <td className="p-3 text-center">
+                                             <button
+                                                type="button"
+                                                onClick={() => handleRemoveRestockItem(idx)}
+                                                className="text-gray-400 hover:text-red-600 p-1 transition-colors"
+                                                title="Remove Item from Restock PO"
+                                             >
+                                                <Trash2 size={14} />
+                                             </button>
                                           </td>
                                        </tr>
                                     ))

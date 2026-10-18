@@ -192,7 +192,15 @@ exports.processSale = async (req, res) => {
          });
       }
 
-      const calculatedDiscount = Math.max(0, Number(discount) || 0);
+      const rawDiscount = Number(discount) || 0;
+      if (rawDiscount > itemsPrice) {
+         return res.status(400).json({
+            success: false,
+            message: `Discount (Rs. ${rawDiscount.toLocaleString()}) cannot exceed cart total (Rs. ${itemsPrice.toLocaleString()})`
+         });
+      }
+
+      const calculatedDiscount = Math.min(itemsPrice, Math.max(0, rawDiscount));
       const calculatedTax = Math.max(0, Number(tax) || 0);
       const totalPrice = Math.max(0, itemsPrice - calculatedDiscount + calculatedTax);
 
